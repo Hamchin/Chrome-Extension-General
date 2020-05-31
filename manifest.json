@@ -1,0 +1,124 @@
+{
+  "name": "My Chrome Extension",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://tweetdeck.twitter.com/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/tweetdeck/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://twitter.com/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/twitter/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/youtube/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://drive.google.com/drive/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/google/drive/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://colab.research.google.com/drive/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/google/colab/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://accounts.google.com/signin/oauth/*",
+        "https://accounts.google.com/o/oauth2/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/google/oauth/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://www.google.com/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/google/search/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://translate.google.com/*",
+        "https://translate.google.co.jp/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/google/translate/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://www.deepl.com/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/deepl/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://www.dropbox.com/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/dropbox/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "https://app.slack.com/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/slack/content.js"
+      ]
+    },
+    {
+      "matches": [
+        "http://jin115.com/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/blog/content.js"
+      ]
+    }
+  ]
+}
