@@ -88,8 +88,14 @@ function translate(sentences) {
 
 // ロード時
 window.onload = () => {
-    // ローカルストレージ内のセンテンスの初期化
+    // ローカルストレージの初期化
     localStorage.setItem('sentences', JSON.stringify([]));
+}
+
+// アンロード時
+window.onunload = () => {
+    // ローカルストレージのクリア
+    localStorage.clear();
 }
 
 // マウスダウン時
