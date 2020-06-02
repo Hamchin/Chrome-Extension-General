@@ -6,15 +6,23 @@ function expandTitle() {
 
 // チャンネル紹介動画停止
 function stopChannelVideo() {
-    let videos = document.getElementsByClassName('video-stream');
-    videos = Array.from(videos);
-    videos.forEach((video) => video.pause());
+    $('.video-stream').each((i, video) => {
+        const videoElement = $(video).get(0);
+        // 既にチェック済みの場合
+        if ($(video).data('checked') === state.timestamp) return;
+        // 動画の準備が完了していない場合
+        if (videoElement.paused) return;
+        // 動画の停止
+        videoElement.pause();
+        // チェック
+        $(video).data('checked', state.timestamp);
+    });
 }
 
 // 動画プレイヤーのポジション制御
-function controlVideoPosition() {
+function controlVideoPosition(scrollTop) {
     const video = $('.video-stream');
-    if ($(this).scrollTop() > 560) {
+    if (scrollTop > 560) {
         if ($(video).css('position') !== 'fixed') {
             const videoWidth = $(video).width();
             const videoHeight = $(video).height();
@@ -38,49 +46,73 @@ function controlVideoPosition() {
     }
 }
 
+// 強制スクロール防止
+function stopForceScroll(scrollTop) {
+    // クリック時に画面トップまで戻った場合
+    if (state.clicked && scrollTop === 0) {
+        // 元のスクロール位置へ戻る
+        $(this).scrollTop(state.scrollTop);
+    }
+    else {
+        // スクロール位置の保持
+        state.scrollTop = scrollTop;
+    }
+    state.clicked = false;
+}
+
 // 状態
 const state = {
     pathname: '',
-    nowOnChannel: false,
-    alreadyWatched: false,
+    onChannel: false,
+    onVideo: false,
     clicked: false,
-    scrollTop: 0
+    scrollTop: 0,
+    timestamp: 0
 };
 
 // オブザーバー
 const observer = new MutationObserver(() => {
+    const pathname = location.pathname;
     // タイトルスペース拡張
     expandTitle();
-    // ページ遷移検出
-    const pathname = location.pathname;
+    // ページが遷移した場合
     if (state.pathname !== pathname) {
         state.pathname = pathname;
         const pathList = pathname.split('/');
         // チャンネルページへ遷移したか否か
-        state.nowOnChannel = pathList.includes('channel') || pathList.includes('user');
-        // 動画ページへ初めて訪れた場合
-        if (pathList.includes('watch') && !state.alreadyWatched) {
-            state.alreadyWatched = true;
-            $(window).scroll(controlVideoPosition);
-            $('#comments').click(() => (state.clicked = true));
-        }
+        state.onChannel = pathList.includes('channel') || pathList.includes('user');
+        // 動画ページへ遷移したか否か
+        state.onVideo = pathList.includes('watch');
+        // 状態リセット
+        state.clicked = false;
+        state.scrollTop = 0;
+        state.timestamp = Date.now();
     }
     // チャンネル紹介動画停止
-    if (state.nowOnChannel) stopChannelVideo();
+    if (state.onChannel) stopChannelVideo();
 });
 const target = window.document;
 const config = {childList: true, subtree: true};
 observer.observe(target, config);
 
-// 強制スクロール防止
+// スクロールイベント
 $(window).scroll(() => {
     const scrollTop = $(this).scrollTop();
-    // クリック時に画面トップまで戻った場合 -> 元のスクロール位置へ戻る
-    if (state.clicked && scrollTop === 0) {
-        $(this).scrollTop(state.scrollTop);
-        state.clicked = false;
-        return;
+    // 動画ページにいる場合
+    if (state.onVideo) {
+        stopForceScroll(scrollTop);
+        controlVideoPosition(scrollTop);
     }
-    // スクロール位置の保持
-    state.scrollTop = scrollTop;
+});
+
+// クリックイベント
+$(window).click((e) => {
+    // 動画ページにいる場合
+    if (state.onVideo) {
+        const id = e.target.parentNode.id;
+        // 要素がコメントである場合
+        if (id === 'content-text') {
+            state.clicked = true;
+        }
+    }
 });
