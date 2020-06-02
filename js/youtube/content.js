@@ -1,3 +1,13 @@
+// 状態
+const state = {
+    pathname: '',
+    onChannel: false,
+    onVideo: false,
+    clicked: false,
+    scrollTop: 0,
+    timestamp: 0
+};
+
 // タイトルスペース拡張
 function expandTitle() {
     const titleStyle = {'max-height': '80px', '-webkit-line-clamp': '4'};
@@ -59,16 +69,6 @@ function stopForceScroll(scrollTop) {
     }
     state.clicked = false;
 }
-
-// 状態
-const state = {
-    pathname: '',
-    onChannel: false,
-    onVideo: false,
-    clicked: false,
-    scrollTop: 0,
-    timestamp: 0
-};
 
 // オブザーバー
 const observer = new MutationObserver(() => {
