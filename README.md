@@ -20,6 +20,7 @@
 #### Functions
 
 - Prevent an accidental return to the top of the page
+- Automatically delete search history
 
 ## YouTube
 
@@ -32,6 +33,19 @@
 - Allow you to watch videos in a floating window
 - Prevent the channel video from being played
 - Extend the space of the video title
+- Automatically delete search history
+
+## Google Search
+
+#### URL
+
+- https://www.google.com
+- https://www.google.co.jp
+
+#### Functions
+
+- Hide the search recommendation
+- Automatically delete search history
 
 ## Google Drive
 
@@ -67,16 +81,6 @@
 - Click the button automatically
 - Close the tab when copied
 
-## Google Search
-
-#### URL
-
-- https://www.google.com/search
-
-#### Functions
-
-- Hide the search recommendation
-
 ## Google Translate
 
 #### URL
@@ -89,6 +93,7 @@
 - Allow you to select languages with arrow keys
 - Press Enter / Esc to focus / de-focus the text box
 - Format text with Shift + Enter
+- Automatically delete translation history
 
 ## DeepL
 
@@ -101,6 +106,7 @@
 - Fix the position of the language selection
 - Press Enter / Esc to focus / de-focus the text box
 - Format text with Shift + Enter
+- Automatically delete translation history
 
 ## Dropbox
 

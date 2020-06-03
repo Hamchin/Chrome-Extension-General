@@ -3,10 +3,9 @@ const state = {url: ''};
 
 // オブザーバー
 const observer = new MutationObserver(() => {
-    const url = location.href;
     // ページが遷移した場合
-    if (state.url !== url) {
-        state.url = url;
+    if (state.url !== location.href) {
+        state.url = location.href;
         // 履歴削除リクエスト
         chrome.runtime.sendMessage('deleteHistory');
     }

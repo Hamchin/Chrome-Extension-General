@@ -50,6 +50,16 @@
     },
     {
       "matches": [
+        "https://www.google.com/*",
+        "https://www.google.co.jp/*"
+      ],
+      "js": [
+        "lib/jquery.min.js",
+        "scripts/google/www/content.js"
+      ]
+    },
+    {
+      "matches": [
         "https://drive.google.com/drive/*"
       ],
       "js": [
@@ -74,16 +84,6 @@
       "js": [
         "lib/jquery.min.js",
         "scripts/google/oauth/content.js"
-      ]
-    },
-    {
-      "matches": [
-        "https://www.google.com/*",
-        "https://www.google.co.jp/*"
-      ],
-      "js": [
-        "lib/jquery.min.js",
-        "scripts/google/www/content.js"
       ]
     },
     {

@@ -72,17 +72,21 @@ function stopForceScroll(scrollTop) {
 
 // オブザーバー
 const observer = new MutationObserver(() => {
-    const url = location.href;
     // タイトルスペース拡張
     expandTitle();
     // ページが遷移した場合
-    if (state.url !== url) {
-        state.url = url;
+    if (state.url !== location.href) {
+        state.url = location.href;
         const pathList = location.pathname.split('/');
         // チャンネルページへ遷移したか否か
         state.onChannel = pathList.includes('channel') || pathList.includes('user');
         // 動画ページへ遷移したか否か
         state.onVideo = pathList.includes('watch');
+        // 検索ページの場合
+        if (pathList.includes('results')) {
+            // 履歴削除リクエスト
+            chrome.runtime.sendMessage('deleteHistory');
+        }
         // 状態リセット
         state.clicked = false;
         state.scrollTop = 0;
