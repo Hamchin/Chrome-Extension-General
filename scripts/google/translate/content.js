@@ -65,15 +65,3 @@ $('body').on('keydown', (e) => {
     }
     return true;
 });
-
-// オブザーバー
-const observer = new MutationObserver(() => {
-    // ハッシュが存在する場合
-    if (location.hash !== '') {
-        // 履歴削除リクエスト
-        chrome.runtime.sendMessage('deleteHistory');
-    }
-});
-const target = window.document;
-const config = {childList: true, subtree: true};
-observer.observe(target, config);

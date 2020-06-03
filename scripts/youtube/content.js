@@ -82,11 +82,6 @@ const observer = new MutationObserver(() => {
         state.onChannel = pathList.includes('channel') || pathList.includes('user');
         // 動画ページへ遷移したか否か
         state.onVideo = pathList.includes('watch');
-        // 検索ページの場合
-        if (pathList.includes('results')) {
-            // 履歴削除リクエスト
-            chrome.runtime.sendMessage('deleteHistory');
-        }
         // 状態リセット
         state.clicked = false;
         state.scrollTop = 0;

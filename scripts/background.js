@@ -1,28 +1,25 @@
-// 連想配列 { タブID : URLリスト }
-const tabMap = new Map();
+// 削除対象
+const texts = [
+    "https://twitter.com/search",
+    "https://www.youtube.com/results",
+    "https://www.google.com/search",
+    "https://www.google.co.jp/search",
+    "https://www.google.com/maps",
+    "https://www.google.co.jp/maps",
+    "https://translate.google.com text",
+    "https://translate.google.co.jp text",
+    "https://www.deepl.com/translator en ja",
+    "http://jin115.com comment"
+];
 
-// メッセージ受信イベント
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // 履歴削除リクエストの場合
-    if (message === 'deleteHistory') {
-        const tabId = sender.tab.id;
-        const url = sender.tab.url;
-        const urls = tabMap.has(tabId) ? tabMap.get(tabId) : [];
-        // 重複していない場合 -> 履歴追加
-        if (!urls.includes(url)) tabMap.set(tabId, [...urls, url]);
-        sendResponse();
-    }
-});
+// 履歴削除
+function deleteHistory(texts) {
+    texts.forEach((text) => {
+        chrome.history.search({text: text}, (items) => {
+            items.forEach((item) => chrome.history.deleteUrl({url: item.url}));
+        });
+    });
+}
 
 // タブ削除イベント
-chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-    // 履歴削除
-    if (tabMap.has(tabId)) {
-        const urls = tabMap.get(tabId);
-        urls.forEach((url) => chrome.history.deleteUrl({url: url}));
-        tabMap.delete(tabId);
-    }
-});
-
-// 連想配列の出力
-chrome.browserAction.onClicked.addListener(() => console.log(tabMap));
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => deleteHistory(texts));

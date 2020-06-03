@@ -40,11 +40,6 @@ $('body').on('keydown', (e) => {
 
 // オブザーバー
 const observer = new MutationObserver(() => {
-    // ハッシュが存在する場合
-    if (location.hash !== '') {
-        // 履歴削除リクエスト
-        chrome.runtime.sendMessage('deleteHistory');
-    }
     // 言語選択の位置を最上部へ固定
     $('.lmt__language_container').css('top', '');
 });
