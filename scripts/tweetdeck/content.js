@@ -1,12 +1,11 @@
-API_URL = "http://0.0.0.0:2000/notice/create";
+// リンクの最終部分の抽出
+function getLastPart(link) {
+    const parts = link.split('/');
+    return parts[parts.length - 1];
+}
 
 // 通知送信
 function sendNotices() {
-    // リンクの最終部分の抽出
-    const getLastPart = (link) => {
-        const parts = link.split('/');
-        return parts[parts.length - 1];
-    }
     // 自身のユーザーネーム取得
     const receiver = $('.js-account-summary').find('[rel="user"]').attr('data-user-name');
     // 通知カラム取得
@@ -38,19 +37,17 @@ function sendNotices() {
         const dataTime = $(item).find('.activity-header').find('.tweet-timestamp').attr('data-time');
         const timestamp = dataTime.substr(0, 10);
         // 通知送信
-        const params = `receiver=${receiver}&sender=${sender}&tweet_id=${tweet_id}&timestamp=${timestamp}`;
-        $.ajax({
-            url: API_URL + '?' + params
-        })
-        .then(
-            () => $(heart).css('color', color), // 成功 -> マーキング
-            () => {} // 失敗
-        );
+        const data = {receiver, sender, tweet_id, timestamp};
+        const message = {type: 'sendNotice', data: data};
+        chrome.runtime.sendMessage(message, (status) => {
+            // 成功時 -> マーキング
+            if (status === 200) $(heart).css('color', color);
+        });
     });
 }
 
 // 通知送信 (1分毎)
-setInterval(() => sendNotices(), 1000 * 60);
+setInterval(sendNotices, 1000 * 60);
 
 // クリックイベント
 $('body').on('click', (e) => {
@@ -83,7 +80,8 @@ $('body').on('click', (e) => {
     }
     // オプション表示
     if (classList.contains('icon-sliders')) {
-        $('.js-column-options-container').show();
+        const parentNode = e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+        $(parentNode).find('.js-column-options-container').show();
     }
 });
 
