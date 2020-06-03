@@ -1,6 +1,6 @@
 // 状態
 const state = {
-    pathname: '',
+    url: '',
     onChannel: false,
     onVideo: false,
     clicked: false,
@@ -72,13 +72,13 @@ function stopForceScroll(scrollTop) {
 
 // オブザーバー
 const observer = new MutationObserver(() => {
-    const pathname = location.pathname;
+    const url = location.href;
     // タイトルスペース拡張
     expandTitle();
     // ページが遷移した場合
-    if (state.pathname !== pathname) {
-        state.pathname = pathname;
-        const pathList = pathname.split('/');
+    if (state.url !== url) {
+        state.url = url;
+        const pathList = location.pathname.split('/');
         // チャンネルページへ遷移したか否か
         state.onChannel = pathList.includes('channel') || pathList.includes('user');
         // 動画ページへ遷移したか否か
