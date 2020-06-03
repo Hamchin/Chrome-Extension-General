@@ -19,6 +19,7 @@
     ],
     "persistent": false
   },
+  "browser_action": {},
   "content_scripts": [
     {
       "matches": [
