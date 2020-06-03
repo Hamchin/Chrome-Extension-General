@@ -78,11 +78,12 @@
     },
     {
       "matches": [
-        "https://www.google.com/*"
+        "https://www.google.com/*",
+        "https://www.google.co.jp/*"
       ],
       "js": [
         "lib/jquery.min.js",
-        "scripts/google/search/content.js"
+        "scripts/google/www/content.js"
       ]
     },
     {
