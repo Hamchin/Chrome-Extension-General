@@ -48,11 +48,18 @@ function stopChannelVideo() {
     });
 }
 
-// 動画ページのレイアウト制御
-function controlVideoLayout() {
+// ピクチャーインピクチャーが有効かどうか
+function isPictureInPictureEnable(scrollTop) {
     // 動画プレイヤー
     const player = $('#movie_player');
-    const playerRect = $(player).get(0).getBoundingClientRect();
+    // ページ左側
+    const primary = $('#primary');
+    const primaryPaddingTop = Number($(primary).css('padding-top').replace('px', ''));
+    return scrollTop > primaryPaddingTop + $(player).height();
+}
+
+// 動画ページのレイアウト制御
+function controlVideoLayout(scrollTop) {
     // 動画本体
     const video = $('.video-stream');
     // シークバー
@@ -60,16 +67,19 @@ function controlVideoLayout() {
     // ヘッダー
     const header = $('#container');
     // ページ右側
-    const rightSide = $('#secondary');
+    const rightSide = $('#secondary-inner');
+    const videoDetails = $(rightSide).find('.details');
+    const videoTexts = $(rightSide).find('span,yt-formatted-string');
     // ページ左側
     const leftSide = $('#primary-inner');
     // 動画情報
-    const videoInfo = $('#info.style-scope');
-    const videoMeta = $('#meta');
+    const menuRenderer = $('ytd-menu-renderer');
+    const sponsorButton = $('#sponsor-button');
+    const subscribeButton = $('[id=subscribe-button]');
     // ページ全体
     const page = $('#page-manager');
     // 動画が隠れるまでスクロールされた場合 -> レイアウトを変更する
-    if (playerRect.height + playerRect.top < $(header).height()) {
+    if (isPictureInPictureEnable(scrollTop)) {
         if (!state.pictureInPicture || $(video).css('top') === '0px') {
             state.pictureInPicture = true;
             // 動画本体 -> サイズを縮小して左上に固定する
@@ -77,55 +87,75 @@ function controlVideoLayout() {
             const videoHeight = $(video).height();
             $(video).data('width', videoWidth);
             $(video).data('height', videoHeight);
-            const getSize = (size) => Math.floor(size * 0.8);
-            $(video).css({width: getSize(videoWidth), height: getSize(videoHeight)});
-            const videoTop = $(header).height() + 10;
-            $(video).css({position: 'fixed', top: videoTop, left: 10});
+            $(video).css('position', 'fixed');
+            $(video).css('width', Math.floor(videoWidth * 0.8));
+            $(video).css('height', Math.floor(videoHeight * 0.8));
+            $(video).css('top', $(header).height() + 10);
+            $(video).css('left', 10)
             // シークバー -> サイズを縮小して動画下部に固定する
-            const barTop = videoTop + $(video).height() - 36;
-            const barMarginLeft = -0.1 * $(seekBar).width() + 8;
-            $(seekBar).css({position: 'fixed', top: barTop, transform: 'scale(0.82)'});
-            $(seekBar).css({'margin-left': barMarginLeft, 'background-color': 'rgba(0, 0, 0, 0.5)'});
+            $(seekBar).css('position', 'fixed');
+            $(seekBar).css('top', $(header).height() + $(video).height() - 26);
+            $(seekBar).css('transform', 'scale(0.82)');
+            $(seekBar).css('margin-left', -Math.floor($(seekBar).width() * 0.1) + 8);
+            $(seekBar).css('background-color', 'rgba(0, 0, 0, 0.5)');
             // ページ右側 -> 縮小して右に寄せる
-            $(rightSide).css({position: 'relative', left: 60, transform: 'scaleX(0.9)'});
+            $(rightSide).css('position', 'relative');
+            $(rightSide).css('left', Math.floor($(rightSide).width() * 0.62) - 80);
             // ページ左側 -> 縮小して右に寄せる
-            const leftSideLeft = $(video).width() + 10;
-            const leftSideWidth = $('body').width() - leftSideLeft - $(rightSide).width() + 60;
-            $(leftSide).css({position: 'relative', left: leftSideLeft, width: leftSideWidth});
+            $(leftSide).css('position', 'relative');
+            $(leftSide).css('width', $('body').width() - $(video).width() - 280);
+            $(leftSide).css('left', $(video).width());
             // 動画情報 -> 非表示
-            $(videoInfo).hide();
-            $(videoMeta).hide();
+            $(menuRenderer).hide();
+            $(sponsorButton).hide();
+            $(subscribeButton).hide();
             // ページ全体 -> 横スクロール禁止
-            $(page).css({'overflow-x': 'hidden'});
+            $(page).css('overflow-x', 'hidden');
         }
+        // ページ右側の動画情報 -> 縮小する
+        $(videoDetails).css('width', 100);
+        $(videoTexts).css('font-size', 12);
     }
     // 元の位置までスクロールが戻った場合 -> レイアウトを戻す
     else {
         if (state.pictureInPicture || $(video).css('top') !== '0px') {
             state.pictureInPicture = false;
             // 動画本体
-            $(video).css({width: $(video).data('width'), height: $(video).data('height')});
-            $(video).css({position: 'absolute', top: 0, left: 0});
+            $(video).css('position', 'absolute');
+            $(video).css('width', $(video).data('width'));
+            $(video).css('height', $(video).data('height'))
+            $(video).css('top', 0);
+            $(video).css('left', 0);
             // シークバー
-            $(seekBar).css({position: '', top: '', transform: ''});
-            $(seekBar).css({'margin-left': '', 'background-color': ''});
+            $(seekBar).css('position', '');
+            $(seekBar).css('top', '');
+            $(seekBar).css('transform', '');
+            $(seekBar).css('margin-left', '');
+            $(seekBar).css('background-color', '');
             // ページ右側
-            $(rightSide).css({position: '', left: '', transform: ''});
+            $(rightSide).css('position', '');
+            $(rightSide).css('left', '');
             // ページ左側
-            $(leftSide).css({position: '', left: '', width: ''});
+            $(leftSide).css('position', '');
+            $(leftSide).css('width', '');
+            $(leftSide).css('left', '');
             // 動画情報
-            $(videoInfo).show();
-            $(videoMeta).show();
+            $(menuRenderer).show();
+            $(sponsorButton).show();
+            $(subscribeButton).show();
             // ページ全体
-            $(page).css({'overflow-x': ''});
+            $(page).css('overflow-x', '');
         }
+        // ページ右側の動画情報
+        $(videoDetails).css('width', '');
+        $(videoTexts).css('font-size', '');
     }
 }
 
 // 強制スクロール防止
 function stopForceScroll(scrollTop) {
-    // 強制的に画面トップまで戻った場合
-    if (scrollTop === 0 && state.scrollTop > 500) {
+    // ピクチャーインピクチャー中に画面トップまで戻った場合
+    if (isPictureInPictureEnable(state.scrollTop) && scrollTop === 0) {
         // 元のスクロール位置へ戻る
         $(this).scrollTop(state.scrollTop);
     }
@@ -153,9 +183,14 @@ const observer = new MutationObserver(() => {
         state.pictureInPicture = false;
     }
     // チャンネル紹介動画停止
-    if (state.onChannel) stopChannelVideo();
+    if (state.onChannel) {
+        stopChannelVideo();
+    }
     // 動画ページのレイアウト制御
-    if (state.onVideo) controlVideoLayout();
+    if (state.onVideo) {
+        const scrollTop = $(window).scrollTop();
+        controlVideoLayout(scrollTop);
+    }
 });
 const target = window.document;
 const config = {childList: true, subtree: true};
@@ -167,6 +202,6 @@ $(window).scroll(() => {
     // 動画ページにいる場合
     if (state.onVideo) {
         stopForceScroll(scrollTop);
-        controlVideoLayout();
+        controlVideoLayout(scrollTop);
     }
 });
