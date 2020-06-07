@@ -15,7 +15,7 @@
 
 ## YouTube
 
-- Allow you to watch videos in a floating window
+- Long press to Picture-in-Picture
 - Prevent the channel video from being played
 - Extend the space of the video title
 
