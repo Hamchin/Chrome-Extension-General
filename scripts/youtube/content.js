@@ -54,6 +54,7 @@ function isPictureInPictureEnable(scrollTop) {
     const player = $('#movie_player');
     // ページ左側
     const primary = $('#primary');
+    if ($(primary).length === 0) return false;
     const primaryPaddingTop = Number($(primary).css('padding-top').replace('px', ''));
     return scrollTop > primaryPaddingTop + $(player).height();
 }
