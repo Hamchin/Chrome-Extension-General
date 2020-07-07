@@ -5,7 +5,8 @@ const state = {
     onVideo: false,
     scrollTop: 0,
     timestamp: 0,
-    mouseDownTime: null
+    mouseDownTime: null,
+    pointer: false
 };
 
 // タイトルスペース拡張
@@ -45,7 +46,7 @@ function controlPictureInPicture() {
 // 強制スクロール防止
 function stopForceScroll(scrollTop) {
     // ピクチャーインピクチャー中に画面トップまで戻った場合
-    if (scrollTop === 0 && document.pictureInPictureElement) {
+    if (scrollTop === 0 && state.pointer && document.pictureInPictureElement) {
         // 元のスクロール位置へ戻る
         $(this).scrollTop(state.scrollTop);
     }
@@ -71,6 +72,7 @@ const observer = new MutationObserver(() => {
         state.scrollTop = 0;
         state.timestamp = Date.now();
         state.mouseDownTime = null;
+        state.pointer = false
         document.exitPictureInPicture().catch(() => {});
     }
     // チャンネル紹介動画停止
@@ -81,28 +83,36 @@ const config = {childList: true, subtree: true};
 observer.observe(target, config);
 
 // スクロールイベント
-$(window).scroll(() => {
-    if (!state.onVideo) return;
-    const scrollTop = $(this).scrollTop();
-    stopForceScroll(scrollTop);
+$(window).scroll((e) => {
+    // 動画ページ -> 強制スクロール防止
+    if (state.onVideo) {
+        const scrollTop = $(this).scrollTop();
+        stopForceScroll(scrollTop);
+    }
 });
 
 // マウスダウンイベント
-$(window).mousedown(() => {
-    if (!state.onVideo) return;
-    state.mouseDownTime = performance.now();
+$(window).mousedown((e) => {
+    // 動画ページ -> 状態記録
+    if (state.onVideo) {
+        state.mouseDownTime = performance.now();
+        state.pointer = $(e.target).css('cursor') === 'pointer';
+    }
 });
 
 // マウスアップイベント
-$(window).mouseup(() => {
-    if (!state.onVideo) return;
-    if (!state.mouseDownTime) return;
-    const mouseUpTime = performance.now();
-    if (mouseUpTime - state.mouseDownTime < 200) return;
-    controlPictureInPicture();
-});
-
-// マウス移動イベント
-$(window).mousemove(() => {
-    state.mouseDownTime = null;
+$(window).mouseup((e) => {
+    // 動画ページ
+    if (state.onVideo) {
+        setTimeout(() => (state.pointer = false), 100);
+        // ポインターカーソルの場合 -> キャンセル
+        if (state.pointer) return;
+        // テキスト選択中の場合 -> キャンセル
+        if (window.getSelection().toString()) return;
+        // クリック時間が短い場合 -> キャンセル
+        const mouseUpTime = performance.now();
+        if (mouseUpTime - state.mouseDownTime < 200) return;
+        // ピクチャーインピクチャー制御
+        controlPictureInPicture();
+    }
 });
