@@ -65,7 +65,11 @@ const observer = new MutationObserver(() => {
         state.url = location.href;
         const pathList = location.pathname.split('/');
         // チャンネルページへ遷移したか否か
-        state.onChannel = pathList.includes('channel') || pathList.includes('user');
+        state.onChannel = (() => {
+            const keys = ['c', 'channel', 'user'];
+            const includeList = keys.map(key => pathList.includes(key));
+            return includeList.includes(true);
+        })();
         // 動画ページへ遷移したか否か
         state.onVideo = pathList.includes('watch');
         // 状態リセット

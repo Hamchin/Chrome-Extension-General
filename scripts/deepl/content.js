@@ -38,6 +38,13 @@ $('body').on('keydown', (e) => {
     return true;
 });
 
+// クリックイベント on コピーボタン
+$('.lmt__target_toolbar__copy').click(() => {
+    // テキストエリアへフォーカス
+    const source = $('.lmt__source_textarea');
+    $(source).focus();
+});
+
 // オブザーバー
 const observer = new MutationObserver(() => {
     // 言語選択の位置を最上部へ固定

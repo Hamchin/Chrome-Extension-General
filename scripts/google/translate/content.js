@@ -12,7 +12,7 @@ function convertText(text) {
     return text;
 }
 
-// キーイベント in 言語選択
+// キーイベント on 言語選択
 $('.tl-wrap').on('keydown', (e) => {
     const activeElement = document.activeElement;
     // 左または上でフォーカスの逆移動
@@ -28,7 +28,7 @@ $('.tl-wrap').on('keydown', (e) => {
     return true;
 });
 
-// キーイベント in 全体
+// キーイベント on 全体
 $('body').on('keydown', (e) => {
     // Escキーでフォーカス解除
     if (e.keyCode === 27) {
