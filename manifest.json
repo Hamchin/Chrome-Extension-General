@@ -50,6 +50,16 @@
     },
     {
       "matches": [
+        "https://www.nicovideo.jp/*",
+        "https://live2.nicovideo.jp/*"
+      ],
+      "js": [
+        "lib/jquery.min.js",
+        "scripts/niconico/content.js"
+      ]
+    },
+    {
+      "matches": [
         "https://www.google.com/*",
         "https://www.google.co.jp/*"
       ],
