@@ -1,12 +1,12 @@
 // 状態
 const state = {
     url: '',
+    cursor: '',
     onChannel: false,
     onVideo: false,
+    press: false,
     scrollTop: 0,
-    timestamp: 0,
-    mouseDownTime: null,
-    pointer: false
+    timestamp: 0
 };
 
 // タイトルスペース拡張
@@ -17,6 +17,7 @@ function expandTitle() {
 
 // チャンネル紹介動画停止
 function stopChannelVideo() {
+    if (state.onChannel === false) return;
     $('.video-stream').each((i, video) => {
         const videoElement = $(video).get(0);
         // 既にチェック済みの場合
@@ -32,6 +33,10 @@ function stopChannelVideo() {
 
 // ピクチャーインピクチャー制御
 function controlPictureInPicture() {
+    if (state.onVideo === false) return;
+    if (state.press === false) return;
+    if (state.cursor !== 'auto') return;
+    if (window.getSelection().toString() !== '') return;
     // モード解除
     if (document.pictureInPictureElement) {
         document.exitPictureInPicture().catch(() => {});
@@ -39,6 +44,7 @@ function controlPictureInPicture() {
     // モード移行
     else {
         const video = $('.video-stream').get(0);
+        if (video === undefined) return;
         video.requestPictureInPicture().catch(() => {});
     }
 }
@@ -46,7 +52,7 @@ function controlPictureInPicture() {
 // 強制スクロール防止
 function stopForceScroll(scrollTop) {
     // ピクチャーインピクチャー中に画面トップまで戻った場合
-    if (scrollTop === 0 && state.pointer && document.pictureInPictureElement) {
+    if (scrollTop === 0 && state.cursor === 'pointer' && document.pictureInPictureElement) {
         // 元のスクロール位置へ戻る
         $(this).scrollTop(state.scrollTop);
     }
@@ -73,14 +79,14 @@ const observer = new MutationObserver(() => {
         // 動画ページへ遷移したか否か
         state.onVideo = pathList.includes('watch');
         // 状態リセット
+        state.cursor = '';
+        state.press = false;
         state.scrollTop = 0;
         state.timestamp = Date.now();
-        state.mouseDownTime = null;
-        state.pointer = false
         document.exitPictureInPicture().catch(() => {});
     }
     // チャンネル紹介動画停止
-    if (state.onChannel) stopChannelVideo();
+    stopChannelVideo();
 });
 const target = window.document;
 const config = {childList: true, subtree: true};
@@ -88,35 +94,19 @@ observer.observe(target, config);
 
 // スクロールイベント
 $(window).scroll((e) => {
-    // 動画ページ -> 強制スクロール防止
-    if (state.onVideo) {
-        const scrollTop = $(this).scrollTop();
-        stopForceScroll(scrollTop);
-    }
+    const scrollTop = $(this).scrollTop();
+    stopForceScroll(scrollTop);
 });
 
 // マウスダウンイベント
 $(window).mousedown((e) => {
-    // 動画ページ -> 状態記録
-    if (state.onVideo) {
-        state.mouseDownTime = performance.now();
-        state.pointer = $(e.target).css('cursor') === 'pointer';
-    }
+    state.press = true;
+    state.cursor = $(e.target).css('cursor');
+    setTimeout(controlPictureInPicture, 200);
 });
 
 // マウスアップイベント
 $(window).mouseup((e) => {
-    // 動画ページ
-    if (state.onVideo) {
-        setTimeout(() => (state.pointer = false), 100);
-        // ポインターカーソルの場合 -> キャンセル
-        if (state.pointer) return;
-        // テキスト選択中の場合 -> キャンセル
-        if (window.getSelection().toString()) return;
-        // クリック時間が短い場合 -> キャンセル
-        const mouseUpTime = performance.now();
-        if (mouseUpTime - state.mouseDownTime < 200) return;
-        // ピクチャーインピクチャー制御
-        controlPictureInPicture();
-    }
+    state.press = false;
+    setTimeout(() => (state.cursor = ''), 100);
 });
