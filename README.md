@@ -15,13 +15,13 @@
 
 ## YouTube
 
-- Press 'p' key to Picture-in-Picture
+- Press <kbd>p</kbd> to Picture-in-Picture
 - Prevent the channel video from being played
 - Extend the space of the video title
 
 ## Niconico
 
-- Press 'p' key to Picture-in-Picture
+- Press <kbd>p</kbd> to Picture-in-Picture
 
 ## Google Search
 
@@ -45,19 +45,19 @@
 ## Google Translate
 
 - Allow you to select languages with arrow keys
-- Press Enter / Esc to focus / de-focus the text box
-- Format text with Shift + Enter
+- Press <kbd>Enter</kbd> / <kbd>Esc</kbd> to focus / de-focus the text box
+- Format text with <kbd>Shift</kbd> + <kbd>Enter</kbd>
 
 ## DeepL
 
 - Fix the position of the language selection
-- Press Enter / Esc to focus / de-focus the text box
-- Format text with Shift + Enter
+- Press <kbd>Enter</kbd> / <kbd>Esc</kbd> to focus / de-focus the text box
+- Format text with <kbd>Shift</kbd> + <kbd>Enter</kbd>
 
 ## Dropbox
 
 - Translate when selecting English text in PDF
-- Press Enter to translate the previously selected text
+- Press <kbd>Enter</kbd> to translate the previously selected text
 
 ## Slack
 
