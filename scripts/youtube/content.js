@@ -4,7 +4,6 @@ const state = {
     cursor: '',
     onChannel: false,
     onVideo: false,
-    press: false,
     scrollTop: 0,
     timestamp: 0
 };
@@ -34,9 +33,6 @@ function stopChannelVideo() {
 // ピクチャーインピクチャー制御
 function controlPictureInPicture() {
     if (state.onVideo === false) return;
-    if (state.press === false) return;
-    if (state.cursor !== 'auto') return;
-    if (window.getSelection().toString() !== '') return;
     // モード解除
     if (document.pictureInPictureElement) {
         document.exitPictureInPicture().catch(() => {});
@@ -80,7 +76,6 @@ const observer = new MutationObserver(() => {
         state.onVideo = pathList.includes('watch');
         // 状態リセット
         state.cursor = '';
-        state.press = false;
         state.scrollTop = 0;
         state.timestamp = Date.now();
         document.exitPictureInPicture().catch(() => {});
@@ -100,13 +95,18 @@ $(window).scroll((e) => {
 
 // マウスダウンイベント
 $(window).mousedown((e) => {
-    state.press = true;
     state.cursor = $(e.target).css('cursor');
-    setTimeout(controlPictureInPicture, 200);
 });
 
 // マウスアップイベント
 $(window).mouseup((e) => {
-    state.press = false;
     setTimeout(() => (state.cursor = ''), 100);
+});
+
+// キーダウンイベント
+$(window).keydown((e) => {
+    const tagName = $(':focus').prop('tagName');
+    if (tagName === 'INPUT' || tagName === 'TEXTAREA') return;
+    // p キー -> ピクチャーインピクチャー制御
+    if (e.keyCode === 80) controlPictureInPicture();
 });

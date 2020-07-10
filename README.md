@@ -15,13 +15,13 @@
 
 ## YouTube
 
-- Long press to Picture-in-Picture
+- Press 'p' key to Picture-in-Picture
 - Prevent the channel video from being played
 - Extend the space of the video title
 
 ## Niconico
 
-- Long press to Picture-in-Picture
+- Press 'p' key to Picture-in-Picture
 
 ## Google Search
 

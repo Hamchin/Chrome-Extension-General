@@ -1,17 +1,14 @@
 // 状態
 const state = {
     url: '',
-    cursor: '',
     onVideo: false,
-    press: false
+    allowPictureInPicture: false
 };
 
 // ピクチャーインピクチャー制御
 function controlPictureInPicture() {
     if (state.onVideo === false) return;
-    if (state.press === false) return;
-    if (state.cursor !== 'auto') return;
-    if (window.getSelection().toString() !== '') return;
+    if (state.allowPictureInPicture === false) return;
     // モード解除
     if (document.pictureInPictureElement) {
         document.exitPictureInPicture().catch(() => {});
@@ -31,23 +28,24 @@ const observer = new MutationObserver(() => {
         state.url = location.href;
         const pathList = location.pathname.split('/');
         state.onVideo = pathList.includes('watch');
-        state.cursor = '';
-        state.press = false;
     }
 });
 const target = window.document;
 const config = {childList: true, subtree: true};
 observer.observe(target, config);
 
-// マウスダウンイベント
-$(window).mousedown((e) => {
-    state.press = true;
-    state.cursor = $(e.target).css('cursor');
-    setTimeout(controlPictureInPicture, 200);
+// スクロールイベント
+$(window).scroll((e) => {
+    state.allowPictureInPicture = false;
 });
 
-// マウスアップイベント
-$(window).mouseup((e) => {
-    state.press = false;
-    setTimeout(() => (state.cursor = ''), 100);
+// キーダウンイベント
+$(window).keydown((e) => {
+    const tagName = $(':focus').prop('tagName');
+    if (tagName === 'INPUT' || tagName === 'TEXTAREA') return;
+    // p キー -> ピクチャーインピクチャー制御
+    if (e.keyCode === 80) {
+        state.allowPictureInPicture = true;
+        setTimeout(controlPictureInPicture, 10);
+    }
 });
