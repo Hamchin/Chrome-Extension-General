@@ -19,8 +19,7 @@ function sendNotices() {
         const heart = $(item).find('.activity-header').find('.icon-heart-filled');
         if ($(heart).length === 0) return;
         // 通知未送信チェック
-        const color = 'rgb(157, 204, 224)';
-        if ($(heart).css('color') === color) return;
+        if ($(heart).hasClass('already-send-notification')) return;
         // 非リプライチェック
         const reply = $(item).find('.tweet-body').find('.other-replies');
         if ($(reply).length > 0) return;
@@ -41,19 +40,29 @@ function sendNotices() {
         const message = {type: 'sendNotice', data: data};
         chrome.runtime.sendMessage(message, (status) => {
             // 成功時 -> マーキング
-            if (status === 200) $(heart).css('color', color);
+            if (status === 200) $(heart).addClass('already-send-notification');
         });
     });
 }
 
-// 通知送信 (1分毎)
-setInterval(sendNotices, 1000 * 60);
+// 通知送信 (毎分)
+setInterval(() => {
+    if ((new Date()).getSeconds() !== 0) return;
+    if ($('.stop-send-notifications').length > 0) return;
+    sendNotices();
+}, 1000);
 
-// クリックイベント
-$('body').on('click', (e) => {
+// マウスダウンイベント
+$('body').on('mousedown', (e) => {
     const classList = e.target.classList;
-    // ツイートリストの自動クリア
-    if (classList.contains('pull-left') && classList.contains('icon')) {
+    // カラムアイコンクリック時
+    if (classList.contains('column-type-icon')) {
+        // 通知送信停止/再開
+        if (classList.contains('icon-notifications')) {
+            classList.toggle('stop-send-notifications');
+            return;
+        }
+        // タイムラインのクリア
         const result = new Promise((resolve) => {
             const parentNode = e.target.parentNode.parentNode;
             resolve(parentNode);

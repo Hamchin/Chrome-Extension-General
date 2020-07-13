@@ -43,7 +43,7 @@ $(window).scroll((e) => {
 $(window).keydown((e) => {
     const tagName = $(':focus').prop('tagName');
     if (tagName === 'INPUT' || tagName === 'TEXTAREA') return;
-    // p キー -> ピクチャーインピクチャー制御
+    // <p>キーでピクチャーインピクチャー制御
     if (e.keyCode === 80) {
         state.allowPictureInPicture = true;
         setTimeout(controlPictureInPicture, 10);

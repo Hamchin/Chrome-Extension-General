@@ -28,6 +28,9 @@
       "js": [
         "lib/jquery.min.js",
         "scripts/tweetdeck/content.js"
+      ],
+      "css": [
+        "scripts/tweetdeck/style.css"
       ]
     },
     {

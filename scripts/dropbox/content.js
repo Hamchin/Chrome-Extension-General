@@ -86,19 +86,19 @@ function translate(sentences) {
     });
 }
 
-// ロード時
+// ロード
 window.onload = () => {
     // ローカルストレージの初期化
     localStorage.setItem('sentences', JSON.stringify([]));
 }
 
-// アンロード時
+// アンロード
 window.onunload = () => {
     // ローカルストレージのクリア
     localStorage.clear();
 }
 
-// マウスダウン時
+// マウスダウンイベント
 $('body').on('mousedown', (e) => {
     // PDF外の場合はスキップ
     const classList = e.target.parentNode.classList;
@@ -106,12 +106,12 @@ $('body').on('mousedown', (e) => {
     startTime = performance.now();
 });
 
-// マウスアップ時
+// マウスアップイベント
 $('body').on('mouseup', (e) => {
     // PDF外の場合はスキップ
     const classList = e.target.parentNode.classList;
     if (!classList.contains('_3ndj83M4eq')) return;
-    // マウスダウン〜マウスアップの時間が一定未満の場合はスキップ
+    // マウスダウンの時間が一定未満の場合はスキップ
     const endTime = performance.now();
     if (endTime - startTime < 100) return;
     // 選択中の文章を取得
@@ -127,22 +127,31 @@ $('body').on('mouseup', (e) => {
     translate(sentences);
 });
 
-// キーダウン時
+// キーダウンイベント
 $('body').on('keydown', (e) => {
-    // 何もフォーカスされていない場合
-    if ($(':focus').length === 0) {
-        // Enterキーでローカルストレージのセンテンスを翻訳
-        if (e.keyCode === 13) {
-            // ローカルストレージからセンテンスを取得
-            let sentences = JSON.parse(localStorage.getItem('sentences'));
-            // 複数のセンテンスを1つの文章へ変換
-            let text = sentences.join(' ');
-            text = convertText(text);
-            // 文章からセンテンスの配列へ変換
-            sentences = text.split('\n');
-            translate(sentences);
-            // ローカルストレージにてセンテンスの初期化
-            localStorage.setItem('sentences', JSON.stringify([]));
-        }
+    // フォーカスされている場合は中断
+    if ($(':focus').length > 0) return;
+    // Enterキーでローカルストレージのセンテンスを翻訳
+    if (e.keyCode === 13) {
+        // ローカルストレージからセンテンスを取得
+        let sentences = JSON.parse(localStorage.getItem('sentences'));
+        if (sentences === null) return;
+        // 複数のセンテンスを1つの文章へ変換
+        let text = sentences.join(' ');
+        text = convertText(text);
+        // 文章からセンテンスの配列へ変換
+        sentences = text.split('\n');
+        translate(sentences);
+        // ローカルストレージにてセンテンスの初期化
+        localStorage.setItem('sentences', JSON.stringify([]));
     }
 });
+
+// オブザーバー
+const observer = new MutationObserver(() => {
+    // サジェスト非表示
+    $('.sc-suggested-comments').hide();
+});
+const target = window.document;
+const config = {childList: true, subtree: true};
+observer.observe(target, config);

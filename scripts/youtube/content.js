@@ -17,11 +17,11 @@ function expandTitle() {
 // チャンネル紹介動画停止
 function stopChannelVideo() {
     if (state.onChannel === false) return;
-    $('.video-stream').each((i, video) => {
+    $('.video-stream').each((_, video) => {
         const videoElement = $(video).get(0);
-        // 既にチェック済みの場合
+        // 既にチェック済みの場合は中断
         if ($(video).data('checked') === state.timestamp) return;
-        // 動画の準備が完了していない場合
+        // 動画の準備が完了していない場合は中断
         if (videoElement.paused) return;
         // 動画の停止
         videoElement.pause();
@@ -47,13 +47,12 @@ function controlPictureInPicture() {
 
 // 強制スクロール防止
 function stopForceScroll(scrollTop) {
-    // ピクチャーインピクチャー中に画面トップまで戻った場合
+    // ピクチャーインピクチャー中に画面トップまで戻った場合は元のスクロール位置へ戻る
     if (scrollTop === 0 && state.cursor === 'pointer' && document.pictureInPictureElement) {
-        // 元のスクロール位置へ戻る
         $(this).scrollTop(state.scrollTop);
     }
+    // スクロール情報の保持
     else {
-        // スクロール情報の保持
         state.scrollTop = scrollTop;
     }
 }
@@ -107,6 +106,6 @@ $(window).mouseup((e) => {
 $(window).keydown((e) => {
     const tagName = $(':focus').prop('tagName');
     if (tagName === 'INPUT' || tagName === 'TEXTAREA') return;
-    // p キー -> ピクチャーインピクチャー制御
+    // <p>キーでピクチャーインピクチャー制御
     if (e.keyCode === 80) controlPictureInPicture();
 });
