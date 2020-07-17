@@ -16,6 +16,7 @@ function convertText(text) {
 function setStorage(inSentences) {
     // 以前のセンテンス
     let localSentences = JSON.parse(localStorage.getItem('sentences'));
+    if (localSentences === null) localSentences = [];
     // 以前のセンテンス + 今回のセンテンス
     let sentences = localSentences.concat(inSentences);
     // センテンスの最大数を指定数以下に制限
@@ -63,7 +64,7 @@ function translate(sentences) {
     if (sentences.length === 1) sentences.push('');
     // センテンスの数が一定以上の場合は処理を中断
     if (sentences.length > 20) {
-        alert("Overflow Error!!");
+        alert("Too many sentences.");
         return;
     }
     // それぞれのセンテンスを翻訳してリストへ格納
@@ -144,6 +145,16 @@ $('body').on('keydown', (e) => {
         translate(sentences);
         // ローカルストレージにてセンテンスの初期化
         localStorage.setItem('sentences', JSON.stringify([]));
+    }
+    // 左キーでページアップ
+    if (e.keyCode === 37) {
+        $('[data-test="page-up"]').click();
+        $(':focus').blur();
+    }
+    // 右キーでページダウン
+    if (e.keyCode === 39) {
+        $('[data-test="page-down"]').click();
+        $(':focus').blur();
     }
 });
 

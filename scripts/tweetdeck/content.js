@@ -47,10 +47,9 @@ function sendNotices() {
 
 // 通知送信 (毎分)
 setInterval(() => {
-    if ((new Date()).getSeconds() !== 0) return;
     if ($('.stop-send-notifications').length > 0) return;
     sendNotices();
-}, 1000);
+}, 1000 * 60);
 
 // マウスダウンイベント
 $('body').on('mousedown', (e) => {
