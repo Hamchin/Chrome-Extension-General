@@ -38,29 +38,26 @@ function sendNotices() {
         // 通知送信
         const data = {receiver, sender, tweet_id, timestamp};
         const message = {type: 'sendNotice', data: data};
-        chrome.runtime.sendMessage(message, (status) => {
-            // 成功時 -> マーキング
-            if (status === 200) $(heart).addClass('already-send-notification');
-        });
+        try {
+            chrome.runtime.sendMessage(message, (status) => {
+                // 成功時 -> マーキング
+                if (status === 200) $(heart).addClass('already-send-notification');
+            });
+        }
+        catch (e) {
+            console.log(e);
+        }
     });
 }
 
 // 通知送信 (毎分)
-setInterval(() => {
-    if ($('.stop-send-notifications').length > 0) return;
-    sendNotices();
-}, 1000 * 60);
+setInterval(sendNotices, 1000 * 60);
 
 // マウスダウンイベント
 $('body').on('mousedown', (e) => {
     const classList = e.target.classList;
     // カラムアイコンクリック時
     if (classList.contains('column-type-icon')) {
-        // 通知送信停止/再開
-        if (classList.contains('icon-notifications')) {
-            classList.toggle('stop-send-notifications');
-            return;
-        }
         // タイムラインのクリア
         const result = new Promise((resolve) => {
             const parentNode = e.target.parentNode.parentNode;

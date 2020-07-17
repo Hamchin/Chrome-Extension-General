@@ -1,5 +1,11 @@
+// 状態
+const state = {
+    enableTakeOver: false,
+    text: ""
+};
+
 // テキストの整形処理
-function convertText(text) {
+function getConvertedText(text) {
     text = text.replace(/-[ \n]/g, ''); // 単語の分裂を修正
     text = text.replace(/\n/g, ' '); // 改行を空白へ変換
     text = text.replace(/[ ]+/g, ' '); // 冗長な空白を削除
@@ -12,22 +18,8 @@ function convertText(text) {
     return text;
 }
 
-// 以前のセンテンス + 今回のセンテンス -> ローカルストレージへ保存
-function setStorage(inSentences) {
-    // 以前のセンテンス
-    let localSentences = JSON.parse(localStorage.getItem('sentences'));
-    if (localSentences === null) localSentences = [];
-    // 以前のセンテンス + 今回のセンテンス
-    let sentences = localSentences.concat(inSentences);
-    // センテンスの最大数を指定数以下に制限
-    const start = sentences.length - 20;
-    if (start > 0) sentences = sentences.slice(start);
-    // センテンスをローカルストレージへ保存
-    localStorage.setItem('sentences', JSON.stringify(sentences));
-}
-
 // 英語から日本語へ翻訳
-function getAjaxData(sentence) {
+function getTranslatedData(sentence) {
     let data = {
         text: sentence,     // 翻訳対象(英文)
         source: "en",       // 英語
@@ -39,7 +31,7 @@ function getAjaxData(sentence) {
         type: "GET",
         data: data
     };
-    return data;
+    return $.ajax(data);
 }
 
 // 翻訳結果をスレッドへ表示
@@ -70,8 +62,8 @@ function translate(sentences) {
     // それぞれのセンテンスを翻訳してリストへ格納
     let outputList = [];
     for(let i = 0; i < sentences.length; i++) {
-        const data = getAjaxData(sentences[i]);
-        outputList.push($.ajax(data));
+        const data = getTranslatedData(sentences[i]);
+        outputList.push(data);
     }
     // 翻訳処理が全て完了した時点で結果をスレッドへ表示
     $.when.apply($, outputList).done(function() {
@@ -85,18 +77,6 @@ function translate(sentences) {
             printResult(sentences[i], text);
         }
     });
-}
-
-// ロード
-window.onload = () => {
-    // ローカルストレージの初期化
-    localStorage.setItem('sentences', JSON.stringify([]));
-}
-
-// アンロード
-window.onunload = () => {
-    // ローカルストレージのクリア
-    localStorage.clear();
 }
 
 // マウスダウンイベント
@@ -116,15 +96,17 @@ $('body').on('mouseup', (e) => {
     const endTime = performance.now();
     if (endTime - startTime < 100) return;
     // 選択中の文章を取得
-    const selectedText = window.getSelection().toString();
-    const convertedText = convertText(selectedText);
+    let selectedText = window.getSelection().toString();
+    if (state.enableTakeOver) selectedText = state.text + ' ' + selectedText;
+    // 文章の整形
+    const convertedText = getConvertedText(selectedText);
+    if (state.enableTakeOver) state.text = convertedText;
     // 文章が空の場合はスキップ
     if (convertedText === '') return;
     // アノテーションボタンを非表示
     $('.sc-add-annotation-highlight-button').hide();
     // 文章からセンテンスの配列へ変換
     let sentences = convertedText.split('\n');
-    setStorage(sentences);
     translate(sentences);
 });
 
@@ -132,19 +114,17 @@ $('body').on('mouseup', (e) => {
 $('body').on('keydown', (e) => {
     // フォーカスされている場合は中断
     if ($(':focus').length > 0) return;
-    // Enterキーでローカルストレージのセンテンスを翻訳
+    // Enterキーでテキスト保持/解除
     if (e.keyCode === 13) {
-        // ローカルストレージからセンテンスを取得
-        let sentences = JSON.parse(localStorage.getItem('sentences'));
-        if (sentences === null) return;
-        // 複数のセンテンスを1つの文章へ変換
-        let text = sentences.join(' ');
-        text = convertText(text);
-        // 文章からセンテンスの配列へ変換
-        sentences = text.split('\n');
-        translate(sentences);
-        // ローカルストレージにてセンテンスの初期化
-        localStorage.setItem('sentences', JSON.stringify([]));
+        if (state.enableTakeOver) {
+            state.enableTakeOver = false;
+            alert("Disable translation by taking over text.");
+        }
+        else {
+            state.enableTakeOver = true;
+            alert("Enable translation by taking over text.");
+        }
+        state.text = "";
     }
     // 左キーでページアップ
     if (e.keyCode === 37) {
