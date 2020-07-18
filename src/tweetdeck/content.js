@@ -41,7 +41,8 @@ function sendNotices() {
         try {
             chrome.runtime.sendMessage(message, (status) => {
                 // 成功時 -> マーキング
-                if (status === 200) $(heart).addClass('already-send-notification');
+                if (status !== 200) return;
+                $(heart).addClass('already-send-notification');
             });
         }
         catch (e) {

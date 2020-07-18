@@ -1,23 +1,10 @@
+API_URL = "https://script.google.com/macros/s/AKfycbzzNETfBv_sIEe7WKO6t5jk0JIBLYwkxOMtNbjNs3uhruHjAMal/exec";
+
 // 状態
 const state = {
     enableTakeOver: false,
     text: ""
 };
-
-// テキストの整形処理
-function getConvertedText(text) {
-    text = text.replace(/-[ \n]/g, ''); // 単語の分裂を修正
-    text = text.replace(/\n/g, ' '); // 改行を空白へ変換
-    text = text.replace(/[ ]+/g, ' '); // 冗長な空白を削除
-    text = text.replace(/Fig\./g, 'Fig'); // Fig. -> Fig
-    text = text.replace(/Figs\./g, 'Figs'); // Figs. -> Figs
-    text = text.replace(/et al\./g, 'et al'); // et al. -> et al
-    text = text.replace(/e\.g\. /g, 'e.g., '); // e.g. -> e.g.,
-    text = text.replace(/i\.e\. /g, 'i.e., '); // i.e. -> i.e.,
-    text = text.replace(/([0-9]+)[ ]*\.[ ]*([0-9]+)/g, '$1.$2'); // 12 . 34 -> 12.34
-    text = text.replace(/\.[ ]+/g, '.\n'); // ピリオド後の空白を改行へ変換
-    return text;
-}
 
 // 英語から日本語へ翻訳
 function getTranslatedData(sentence) {
@@ -27,7 +14,7 @@ function getTranslatedData(sentence) {
         target: "ja"        // 日本語
     };
     data = {
-        url: "https://script.google.com/macros/s/AKfycbzzNETfBv_sIEe7WKO6t5jk0JIBLYwkxOMtNbjNs3uhruHjAMal/exec",
+        url: API_URL,
         dataType: "json",
         type: "GET",
         data: data
@@ -51,7 +38,7 @@ function printResult(source, target) {
     $('.sc-comment-stream-threads').append(parentContent);
 }
 
-// 文章の翻訳
+// 翻訳処理
 function translate(sentences) {
     // センテンスの数が1つの場合は空文字を追加
     if (sentences.length === 1) sentences.push('');
@@ -96,19 +83,17 @@ $('body').on('mouseup', (e) => {
     // マウスダウンの時間が一定未満の場合はスキップ
     const endTime = performance.now();
     if (endTime - startTime < 100) return;
-    // 選択中の文章を取得
-    let selectedText = window.getSelection().toString();
-    if (state.enableTakeOver) selectedText = state.text + ' ' + selectedText;
-    // 文章の整形
-    const convertedText = getConvertedText(selectedText);
-    if (state.enableTakeOver) state.text = convertedText;
-    // 文章が空の場合はスキップ
-    if (convertedText === '') return;
-    // アノテーションボタンを非表示
-    $('.sc-add-annotation-highlight-button').hide();
-    // 文章からセンテンスの配列へ変換
-    let sentences = convertedText.split('\n');
-    translate(sentences);
+    // 選択中のテキストを取得
+    let text = window.getSelection().toString();
+    if (state.enableTakeOver) text = state.text + ' ' + text;
+    // テキストを整形して翻訳
+    const message = {type: 'convertText', text: text};
+    chrome.runtime.sendMessage(message, (text) => {
+        if (state.enableTakeOver) state.text = text;
+        if (text === '') return;
+        const sentences = text.split('\n');
+        translate(sentences);
+    });
 });
 
 // キーダウンイベント
@@ -141,6 +126,8 @@ $('body').on('keydown', (e) => {
 
 // オブザーバー
 const observer = new MutationObserver(() => {
+    // アノテーションボタン非表示
+    $('.sc-add-annotation-highlight-button').hide();
     // サジェスト非表示
     $('.sc-suggested-comments').hide();
 });
