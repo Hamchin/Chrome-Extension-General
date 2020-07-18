@@ -10,6 +10,7 @@ function getConvertedText(text) {
     text = text.replace(/\n/g, ' '); // 改行を空白へ変換
     text = text.replace(/[ ]+/g, ' '); // 冗長な空白を削除
     text = text.replace(/Fig\./g, 'Fig'); // Fig. -> Fig
+    text = text.replace(/Figs\./g, 'Figs'); // Figs. -> Figs
     text = text.replace(/et al\./g, 'et al'); // et al. -> et al
     text = text.replace(/e\.g\. /g, 'e.g., '); // e.g. -> e.g.,
     text = text.replace(/i\.e\. /g, 'i.e., '); // i.e. -> i.e.,
