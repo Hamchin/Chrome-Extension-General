@@ -8,45 +8,46 @@ const state = {
 
 // 英語から日本語へ翻訳
 function getTranslatedData(sentence) {
-    let data = {
-        text: sentence,     // 翻訳対象(英文)
-        source: "en",       // 英語
-        target: "ja"        // 日本語
+    const data = {
+        text: sentence,
+        source: "en",
+        target: "ja"
     };
-    data = {
+    const request = {
         url: API_URL,
         dataType: "json",
         type: "GET",
         data: data
     };
-    return $.ajax(data);
+    return $.ajax(request);
 }
 
 // 翻訳結果をスレッドへ表示
-function printResult(source, target) {
-    // センテンスのCSS
-    const childStyle = 'font-size: 14px; margin: 10px;';
-    // 翻訳前(英語)の段落
-    const sourceContent = `<p style="${childStyle}">${source}</p>`;
-    // 翻訳後(日本語)の段落
-    const targetContent = `<p style="${childStyle}">${target}</p>`;
-    // コンテナのCSS
-    const parentStyle = 'border: 2px solid #AAAAAA; margin: 10px;';
-    // 英文＋和文を含むコンテナ
-    const parentContent = `<li style="${parentStyle}">${sourceContent}${targetContent}</li>`;
-    // コンテナをスレッドへ追加
-    $('.sc-comment-stream-threads').append(parentContent);
+function addResult(source, target) {
+    // 翻訳アイテム
+    const translateItem = $('<li>', { class: 'translate-item' });
+    $('<p>', { class: 'sentence', text: source }).appendTo(translateItem);
+    $('<p>', { class: 'sentence', text: target }).appendTo(translateItem);
+    // DeepL翻訳リンク
+    const footer = $('<div>', { class: 'sentence text-right' });
+    const url = `https://www.deepl.com/translator#en/ja/${source}`;
+    $('<a>', { href: url, target: '_blank', text: 'DeepL' }).appendTo(footer);
+    $(footer).appendTo(translateItem);
+    // スレッドへ追加
+    $('.sc-comment-stream-threads').append(translateItem);
 }
 
 // 翻訳処理
 function translate(sentences) {
     // センテンスの数が1つの場合は空文字を追加
     if (sentences.length === 1) sentences.push('');
-    // センテンスの数が一定以上の場合は処理を中断
+    // センテンスの数が一定以上の場合は中断
     if (sentences.length > 20) {
         alert("Too many sentences.");
         return;
     }
+    // スレッドの内容を空にする
+    $('.sc-comment-stream-threads').empty();
     // それぞれのセンテンスを翻訳してリストへ格納
     let outputList = [];
     for(let i = 0; i < sentences.length; i++) {
@@ -62,14 +63,14 @@ function translate(sentences) {
             if (arguments[i][0].code !== 200) continue;
             // センテンスの表示処理
             const text = arguments[i][0].text;
-            printResult(sentences[i], text);
+            addResult(sentences[i], text);
         }
     });
 }
 
 // マウスダウンイベント
 $('body').on('mousedown', (e) => {
-    // PDF外の場合はスキップ
+    // PDF外の場合は中断
     const classList = e.target.parentNode.classList;
     if (!classList.contains('_3ndj83M4eq')) return;
     startTime = performance.now();
@@ -77,10 +78,10 @@ $('body').on('mousedown', (e) => {
 
 // マウスアップイベント
 $('body').on('mouseup', (e) => {
-    // PDF外の場合はスキップ
+    // PDF外の場合は中断
     const classList = e.target.parentNode.classList;
     if (!classList.contains('_3ndj83M4eq')) return;
-    // マウスダウンの時間が一定未満の場合はスキップ
+    // マウスダウンの時間が一定未満の場合は中断
     const endTime = performance.now();
     if (endTime - startTime < 100) return;
     // 選択中のテキストを取得
@@ -104,11 +105,13 @@ $('body').on('keydown', (e) => {
     if (e.keyCode === 13) {
         if (state.enableTakeOver) {
             state.enableTakeOver = false;
-            alert("Disable translation by taking over text.");
+            $('.message').remove();
         }
         else {
             state.enableTakeOver = true;
-            alert("Enable translation by taking over text.");
+            const message = "Enable translation by taking over text.";
+            const element = $('<p>', { class: 'message', text: message });
+            $('.sc-comment-editor-coach-mark-container').append(element);
         }
         state.text = "";
     }

@@ -1,0 +1,19 @@
+.sentence {
+    font-size: 14px;
+    margin: 10px;
+}
+
+.translate-item {
+    border: 2px solid #AAAAAA;
+    margin: 10px;
+}
+
+.message {
+    border: thick double #AAAAAA;
+    margin: 10px;
+    padding: 10px;
+}
+
+.text-right {
+    text-align: right;
+}
