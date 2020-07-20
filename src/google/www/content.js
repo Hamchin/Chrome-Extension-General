@@ -1,3 +1,7 @@
+'use strict';
+
+const $ = require('jQuery');
+
 // オブザーバー
 const observer = new MutationObserver(() => {
     // 検索レコメンド削除

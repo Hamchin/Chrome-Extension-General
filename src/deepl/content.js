@@ -1,3 +1,7 @@
+'use strict';
+
+const $ = require('jQuery');
+
 // キーイベント
 $('body').on('keydown', (e) => {
     // Escキーでフォーカス解除

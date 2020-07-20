@@ -1,3 +1,7 @@
+'use strict';
+
+const $ = require('jQuery');
+
 // 状態
 const state = {
     url: '',
@@ -49,7 +53,7 @@ function controlPictureInPicture() {
 function stopForceScroll(scrollTop) {
     // ピクチャーインピクチャー中に画面トップまで戻った場合は元のスクロール位置へ戻る
     if (scrollTop === 0 && state.cursor === 'pointer' && document.pictureInPictureElement) {
-        $(this).scrollTop(state.scrollTop);
+        $(window).scrollTop(state.scrollTop);
     }
     // スクロール情報の保持
     else {
@@ -88,7 +92,7 @@ observer.observe(target, config);
 
 // スクロールイベント
 $(window).scroll((e) => {
-    const scrollTop = $(this).scrollTop();
+    const scrollTop = $(window).scrollTop();
     stopForceScroll(scrollTop);
 });
 

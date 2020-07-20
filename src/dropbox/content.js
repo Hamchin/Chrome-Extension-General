@@ -1,9 +1,14 @@
-API_URL = "https://script.google.com/macros/s/AKfycbzzNETfBv_sIEe7WKO6t5jk0JIBLYwkxOMtNbjNs3uhruHjAMal/exec";
+'use strict';
+
+const $ = require('jQuery');
+
+const API_URL = "https://script.google.com/macros/s/AKfycbzzNETfBv_sIEe7WKO6t5jk0JIBLYwkxOMtNbjNs3uhruHjAMal/exec";
 
 // 状態
 const state = {
     enableTakeOver: false,
-    text: ""
+    text: "",
+    mouseDownTime: 0
 };
 
 // 英語から日本語へ翻訳
@@ -73,7 +78,7 @@ $('body').on('mousedown', (e) => {
     // PDF外の場合は中断
     const classList = e.target.parentNode.classList;
     if (!classList.contains('_3ndj83M4eq')) return;
-    startTime = performance.now();
+    state.mouseDownTime = performance.now();
 });
 
 // マウスアップイベント
@@ -82,8 +87,8 @@ $('body').on('mouseup', (e) => {
     const classList = e.target.parentNode.classList;
     if (!classList.contains('_3ndj83M4eq')) return;
     // マウスダウンの時間が一定未満の場合は中断
-    const endTime = performance.now();
-    if (endTime - startTime < 100) return;
+    const mouseUpTime = performance.now();
+    if (mouseUpTime - state.mouseDownTime < 100) return;
     // 選択中のテキストを取得
     let text = window.getSelection().toString();
     if (state.enableTakeOver) text = state.text + ' ' + text;

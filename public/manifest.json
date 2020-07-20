@@ -16,7 +16,6 @@
   ],
   "background": {
     "scripts": [
-      "lib/jquery.min.js",
       "src/background.js"
     ],
     "persistent": false
@@ -27,7 +26,6 @@
         "https://tweetdeck.twitter.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/tweetdeck/content.js"
       ],
       "css": [
@@ -39,7 +37,6 @@
         "https://twitter.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/twitter/content.js"
       ]
     },
@@ -48,7 +45,6 @@
         "https://www.youtube.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/youtube/content.js"
       ]
     },
@@ -58,7 +54,6 @@
         "https://live2.nicovideo.jp/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/niconico/content.js"
       ]
     },
@@ -68,7 +63,6 @@
         "https://www.google.co.jp/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/google/www/content.js"
       ]
     },
@@ -77,7 +71,6 @@
         "https://drive.google.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/google/drive/content.js"
       ]
     },
@@ -86,7 +79,6 @@
         "https://colab.research.google.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/google/colab/content.js"
       ]
     },
@@ -95,7 +87,6 @@
         "https://accounts.google.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/google/oauth/content.js"
       ]
     },
@@ -105,7 +96,6 @@
         "https://translate.google.co.jp/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/google/translate/content.js"
       ]
     },
@@ -114,7 +104,6 @@
         "https://www.deepl.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/deepl/content.js"
       ]
     },
@@ -123,7 +112,6 @@
         "https://www.dropbox.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/dropbox/content.js"
       ],
       "css": [
@@ -135,7 +123,6 @@
         "https://app.slack.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/slack/content.js"
       ]
     },
@@ -144,7 +131,6 @@
         "http://jin115.com/*"
       ],
       "js": [
-        "lib/jquery.min.js",
         "src/blog/content.js"
       ]
     }

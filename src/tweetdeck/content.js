@@ -1,3 +1,7 @@
+'use strict';
+
+const $ = require('jQuery');
+
 // リンクの最終部分の抽出
 function getLastPart(link) {
     const parts = link.split('/');

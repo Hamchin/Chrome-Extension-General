@@ -1,3 +1,7 @@
+'use strict';
+
+const $ = require('jQuery');
+
 // 要素削除
 $('#side_left').remove();
 $('#side_right').remove();

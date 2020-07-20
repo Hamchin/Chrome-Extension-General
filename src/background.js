@@ -1,4 +1,8 @@
-API_URL = "http://0.0.0.0:2000/notice/create";
+'use strict';
+
+const $ = require('jQuery');
+
+const API_URL = "http://0.0.0.0:2000/notice/create";
 
 // 整形されたテキストを取得する
 function getFormattedText(text) {

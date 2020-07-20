@@ -1,3 +1,7 @@
+'use strict';
+
+const $ = require('jQuery');
+
 // キーイベント on 言語選択
 $('.tl-wrap').on('keydown', (e) => {
     const activeElement = document.activeElement;

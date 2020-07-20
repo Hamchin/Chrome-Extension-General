@@ -1,3 +1,7 @@
+'use strict';
+
+const $ = require('jQuery');
+
 // 状態
 const state = {
     url: '',
