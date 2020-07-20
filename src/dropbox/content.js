@@ -88,11 +88,9 @@ $('body').on('mouseup', (e) => {
     let text = window.getSelection().toString();
     if (state.enableTakeOver) text = state.text + ' ' + text;
     // テキストを整形して翻訳
-    const message = {type: 'convertText', text: text};
-    chrome.runtime.sendMessage(message, (text) => {
-        if (state.enableTakeOver) state.text = text;
-        if (text === '') return;
-        const sentences = text.split('\n');
+    const message = {type: 'getSentences', text: text};
+    chrome.runtime.sendMessage(message, (sentences) => {
+        if (state.enableTakeOver) state.text = sentences.join(' ');
         translate(sentences);
     });
 });

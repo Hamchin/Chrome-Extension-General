@@ -43,8 +43,9 @@ $('body').on('keydown', (e) => {
         // Shift + Enter でテキスト整形
         if (e.shiftKey) {
             const text = $(source).val();
-            const message = {type: 'convertText', text: text};
-            chrome.runtime.sendMessage(message, (text) => $(source).val(text));
+            const message = {type: 'getSentences', text: text};
+            const callback = (sentences) => $(source).val(sentences.join('\n\n'));
+            chrome.runtime.sendMessage(message, callback);
         }
         $(source).focus();
         return false;
