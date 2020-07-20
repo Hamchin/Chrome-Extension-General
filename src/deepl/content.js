@@ -1,6 +1,7 @@
 'use strict';
 
 const $ = require('jQuery');
+const formatText = require('../lib/formatText');
 
 // キーイベント
 $('body').on('keydown', (e) => {
@@ -19,9 +20,8 @@ $('body').on('keydown', (e) => {
         // Shift + Enter でテキスト整形
         if (e.shiftKey) {
             const text = $(source).val();
-            const message = {type: 'getSentences', text: text};
-            const callback = (sentences) => $(source).val(sentences.join('\n\n'));
-            chrome.runtime.sendMessage(message, callback);
+            const sentences = formatText(text);
+            $(source).val(sentences.join('\n\n'));
         }
         $(source).focus();
         return false;

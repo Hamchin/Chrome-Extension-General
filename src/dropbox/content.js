@@ -1,8 +1,7 @@
 'use strict';
 
 const $ = require('jQuery');
-
-const API_URL = "https://script.google.com/macros/s/AKfycbzzNETfBv_sIEe7WKO6t5jk0JIBLYwkxOMtNbjNs3uhruHjAMal/exec";
+const formatText = require('../lib/formatText');
 
 // 状態
 const state = {
@@ -19,7 +18,7 @@ function getTranslatedData(sentence) {
         target: "ja"
     };
     const request = {
-        url: API_URL,
+        url: process.env.GOOGLE_TRANSLATE_API_URL,
         dataType: "json",
         type: "GET",
         data: data
@@ -93,11 +92,9 @@ $('body').on('mouseup', (e) => {
     let text = window.getSelection().toString();
     if (state.enableTakeOver) text = state.text + ' ' + text;
     // テキストを整形して翻訳
-    const message = {type: 'getSentences', text: text};
-    chrome.runtime.sendMessage(message, (sentences) => {
-        if (state.enableTakeOver) state.text = sentences.join(' ');
-        translate(sentences);
-    });
+    const sentences = formatText(text);
+    if (state.enableTakeOver) state.text = sentences.join(' ');
+    translate(sentences);
 });
 
 // キーダウンイベント

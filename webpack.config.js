@@ -1,12 +1,13 @@
 const path = require('path');
 const glob = require('glob');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const src = 'src';
 const dist = 'dist';
 
 module.exports = {
-  entry: glob.sync('**/*.js', { cwd: src }).reduce((o, name) => (
+  entry: glob.sync('**/*.js', { cwd: src, ignore: 'lib/*' }).reduce((o, name) => (
     { ...o, [path.join(src, name)]: path.resolve(src, name) }
   ), {}),
   output: {
@@ -25,6 +26,7 @@ module.exports = {
           context: 'public'
         }
       ]
-    })
+    }),
+    new Dotenv()
   ]
 };
