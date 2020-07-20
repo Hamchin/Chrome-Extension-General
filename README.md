@@ -6,8 +6,8 @@
 
 ## TweetDeck
 
-- Save liked notifications to the database
-- Allow you to clear timelines with one click
+- Store liked notifications to the database
+- Clear timelines with one click
 
 ## Twitter
 
@@ -30,21 +30,21 @@
 ## Google Drive
 
 - Hide a pop-up when the upload is complete
-- Allow you to empty the trash with one click
+- Empty the trash with one click
 
 ## Google Colaboratory
 
-- Allow you to reboot the runtime with one click
+- Reboot the runtime with one click
 - Prevent the runtime from being disconnected
 
 ## Google OAuth
 
-- Click the button automatically
-- Close the tab when copied
+- Automatically click the approve button
+- Automatically copy the authorization code and close the tab
 
 ## Google Translate
 
-- Allow you to select languages with arrow keys
+- Select languages with arrow keys
 - Press <kbd>Enter</kbd> / <kbd>Esc</kbd> to focus / de-focus the text box
 - Format text with <kbd>Shift</kbd> + <kbd>Enter</kbd>
 
@@ -57,7 +57,7 @@
 ## Dropbox
 
 - Translate when selecting English text in PDF
-- Press <kbd>Enter</kbd> to translate the previously selected text
+- Press <kbd>Enter</kbd> to enable / disable translation by taking over text
 
 ## Slack
 

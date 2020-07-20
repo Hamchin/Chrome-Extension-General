@@ -1,21 +1,23 @@
 // オブザーバー
 const observer = new MutationObserver(() => {
-    // アップロードポップアップの自動非表示
+    // アップロードのポップアップ
     const popup = $('.a-Cd.Hb-ja-hc.a-Cd-Na');
     if ($(popup).length > 0) {
-        const content = $(popup)[0];
-        const label = $(content).attr('aria-label');
+        const label = $(popup).attr('aria-label');
         if (label.match("アップロード完了")) {
-            $('.a-Cd-Ea-oa').empty(); // アップロード履歴の削除
-            $(content).hide(); // ポップアップ非表示
+            // アップロード履歴の削除
+            $('.a-Cd-Ea-oa').empty();
+            // ポップアップ非表示
+            $(popup).hide();
         }
         else {
-            $(content).show(); // ポップアップ表示
+            // ポップアップ表示
+            $(popup).show();
         }
     }
-    // ゴミ箱の確認ポップアップの自動承認
+    // 自動でゴミ箱を空にする
     if ($('.lb-k').length > 0) {
-        const button = $('.h-De-Vb.h-De-Y')[0];
+        const button = $('.h-De-Vb.h-De-Y');
         if ($(button).text() == "ゴミ箱を空にする") $(button).click();
     }
 });

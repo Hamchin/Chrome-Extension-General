@@ -1,12 +1,11 @@
-// https://accounts.google.com/signin/oauth/*
-const submitButton = $('#submit_approve_access');
-if ($(submitButton).length > 0) {
-    $(submitButton).click();
+// 許可ボタンをクリックする
+if (location.pathname === "/signin/oauth/consent") {
+    $('#submit_approve_access').click();
 }
 
-// https://accounts.google.com/o/oauth2/*
-const copyButton = $('.U26fgb.mUbCce.fKz7Od.YYBxpf.NCTw7e');
-if ($(copyButton).length > 0) {
-    $(copyButton).click();
-    $(document).on('copy', () => window.close());
+// 認証コードをコピーしてタブを閉じる
+if (location.pathname === "/o/oauth2/approval/v2/approvalnativeapp") {
+    $('.qBHUIf').select();
+    document.execCommand('copy');
+    window.close();
 }

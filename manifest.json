@@ -11,7 +11,8 @@
   },
   "permissions": [
     "tabs",
-    "history"
+    "history",
+    "clipboardWrite"
   ],
   "background": {
     "scripts": [
@@ -73,7 +74,7 @@
     },
     {
       "matches": [
-        "https://drive.google.com/drive/*"
+        "https://drive.google.com/*"
       ],
       "js": [
         "lib/jquery.min.js",
@@ -82,7 +83,7 @@
     },
     {
       "matches": [
-        "https://colab.research.google.com/drive/*"
+        "https://colab.research.google.com/*"
       ],
       "js": [
         "lib/jquery.min.js",
@@ -91,8 +92,7 @@
     },
     {
       "matches": [
-        "https://accounts.google.com/signin/oauth/*",
-        "https://accounts.google.com/o/oauth2/*"
+        "https://accounts.google.com/*"
       ],
       "js": [
         "lib/jquery.min.js",
