@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "My Chrome Extension",
   "scripts": {
-    "watch": "webpack --watch",
-    "build": "webpack"
+    "watch": "webpack --watch --mode=development",
+    "build": "webpack --mode=production"
   },
   "dependencies": {
     "jquery": "^3.5.1"
