@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "My Chrome Extension",
   "scripts": {
-    "watch": "webpack --watch --mode=development",
-    "build": "webpack --mode=production"
+    "build": "webpack -p",
+    "watch": "webpack -d --watch"
   },
   "dependencies": {
     "copy-webpack-plugin": "^6.0.3",
