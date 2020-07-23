@@ -41,7 +41,7 @@ function sendNotices() {
         const timestamp = dataTime.substr(0, 10);
         // 通知送信
         const data = {receiver, sender, tweet_id, timestamp};
-        const message = {type: 'sendNotice', data: data};
+        const message = {type: 'SEND_NOTICE', data: data};
         try {
             chrome.runtime.sendMessage(message, (status) => {
                 // 成功時 -> マーキング
