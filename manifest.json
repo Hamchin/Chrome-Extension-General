@@ -16,6 +16,8 @@
   ],
   "background": {
     "scripts": [
+      "src/lib/jquery.min.js",
+      "src/lib/config.js",
       "src/background.js"
     ],
     "persistent": false
@@ -26,6 +28,7 @@
         "https://tweetdeck.twitter.com/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
         "src/tweetdeck/content.js"
       ],
       "css": [
@@ -37,6 +40,7 @@
         "https://twitter.com/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
         "src/twitter/content.js"
       ]
     },
@@ -45,7 +49,11 @@
         "https://www.youtube.com/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
         "src/youtube/content.js"
+      ],
+      "css": [
+        "src/youtube/style.css"
       ]
     },
     {
@@ -54,6 +62,7 @@
         "https://live2.nicovideo.jp/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
         "src/niconico/content.js"
       ]
     },
@@ -62,8 +71,8 @@
         "https://www.google.com/*",
         "https://www.google.co.jp/*"
       ],
-      "js": [
-        "src/google/www/content.js"
+      "css": [
+        "src/google/www/style.css"
       ]
     },
     {
@@ -71,6 +80,7 @@
         "https://drive.google.com/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
         "src/google/drive/content.js"
       ]
     },
@@ -79,6 +89,7 @@
         "https://colab.research.google.com/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
         "src/google/colab/content.js"
       ]
     },
@@ -87,6 +98,7 @@
         "https://accounts.google.com/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
         "src/google/oauth/content.js"
       ]
     },
@@ -96,6 +108,8 @@
         "https://translate.google.co.jp/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
+        "src/lib/translate.js",
         "src/google/translate/content.js"
       ]
     },
@@ -104,7 +118,12 @@
         "https://www.deepl.com/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
+        "src/lib/translate.js",
         "src/deepl/content.js"
+      ],
+      "css": [
+        "src/deepl/style.css"
       ]
     },
     {
@@ -112,6 +131,9 @@
         "https://www.dropbox.com/*"
       ],
       "js": [
+        "src/lib/jquery.min.js",
+        "src/lib/config.js",
+        "src/lib/translate.js",
         "src/dropbox/content.js"
       ],
       "css": [
@@ -122,16 +144,16 @@
       "matches": [
         "https://app.slack.com/*"
       ],
-      "js": [
-        "src/slack/content.js"
+      "css": [
+        "src/slack/style.css"
       ]
     },
     {
       "matches": [
         "http://jin115.com/*"
       ],
-      "js": [
-        "src/blog/content.js"
+      "css": [
+        "src/blog/style.css"
       ]
     }
   ],

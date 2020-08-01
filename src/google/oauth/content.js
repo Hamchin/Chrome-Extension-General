@@ -1,7 +1,3 @@
-'use strict';
-
-const $ = require('jQuery');
-
 // 許可ボタンをクリックする
 if (location.pathname === "/signin/oauth/consent") {
     $('#submit_approve_access').click();

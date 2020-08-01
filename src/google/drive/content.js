@@ -1,7 +1,3 @@
-'use strict';
-
-const $ = require('jQuery');
-
 // オブザーバー
 const observer = new MutationObserver(() => {
     // アップロードのポップアップ
@@ -25,6 +21,5 @@ const observer = new MutationObserver(() => {
         if ($(button).text() == "ゴミ箱を空にする") $(button).click();
     }
 });
-const target = window.document;
-const config = {childList: true, subtree: true};
-observer.observe(target, config);
+const options = { childList: true, subtree: true };
+observer.observe(document, options);

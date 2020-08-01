@@ -1,7 +1,3 @@
-'use strict';
-
-const $ = require('jQuery');
-
 // オブザーバー
 const observer = new MutationObserver(() => {
     // ダイアログ
@@ -19,6 +15,5 @@ const observer = new MutationObserver(() => {
         }
     };
 });
-const target = window.document;
-const config = {childList: true, subtree: true};
-observer.observe(target, config);
+const options = { childList: true, subtree: true };
+observer.observe(document, options);

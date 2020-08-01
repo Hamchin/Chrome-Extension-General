@@ -1,7 +1,3 @@
-'use strict';
-
-const $ = require('jQuery');
-
 // 状態
 const state = {
     url: '',
@@ -12,14 +8,8 @@ const state = {
     timestamp: 0
 };
 
-// タイトルスペース拡張
-function expandTitle() {
-    const titleStyle = {'max-height': '80px', '-webkit-line-clamp': '4'};
-    $('[id="video-title"]').css(titleStyle);
-}
-
 // チャンネル紹介動画停止
-function stopChannelVideo() {
+const stopChannelVideo = () => {
     if (state.onChannel === false) return;
     $('.video-stream').each((_, video) => {
         const videoElement = $(video).get(0);
@@ -32,10 +22,10 @@ function stopChannelVideo() {
         // チェック
         $(video).data('checked', state.timestamp);
     });
-}
+};
 
 // ピクチャーインピクチャー制御
-function controlPictureInPicture() {
+const controlPictureInPicture = () => {
     if (state.onVideo === false) return;
     // モード解除
     if (document.pictureInPictureElement) {
@@ -47,10 +37,10 @@ function controlPictureInPicture() {
         if (video === undefined) return;
         video.requestPictureInPicture().catch(() => {});
     }
-}
+};
 
 // 強制スクロール防止
-function stopForceScroll(scrollTop) {
+const stopForceScroll = (scrollTop) => {
     // ピクチャーインピクチャー中に画面トップまで戻った場合は元のスクロール位置へ戻る
     if (scrollTop === 0 && state.cursor === 'pointer' && document.pictureInPictureElement) {
         $(window).scrollTop(state.scrollTop);
@@ -59,12 +49,10 @@ function stopForceScroll(scrollTop) {
     else {
         state.scrollTop = scrollTop;
     }
-}
+};
 
 // オブザーバー
 const observer = new MutationObserver(() => {
-    // タイトルスペース拡張
-    expandTitle();
     // ページが遷移した場合
     if (state.url !== location.href) {
         state.url = location.href;
@@ -86,9 +74,8 @@ const observer = new MutationObserver(() => {
     // チャンネル紹介動画停止
     stopChannelVideo();
 });
-const target = window.document;
-const config = {childList: true, subtree: true};
-observer.observe(target, config);
+const options = { childList: true, subtree: true };
+observer.observe(document, options);
 
 // スクロールイベント
 $(window).scroll((e) => {

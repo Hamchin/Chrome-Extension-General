@@ -1,7 +1,3 @@
-'use strict';
-
-const $ = require('jQuery');
-
 // 状態
 const state = {
     url: '',
@@ -10,7 +6,7 @@ const state = {
 };
 
 // ピクチャーインピクチャー制御
-function controlPictureInPicture() {
+const controlPictureInPicture = () => {
     if (state.onVideo === false) return;
     if (state.allowPictureInPicture === false) return;
     // モード解除
@@ -23,7 +19,7 @@ function controlPictureInPicture() {
         if (video === undefined) return;
         video.requestPictureInPicture().catch(() => {});
     }
-}
+};
 
 // オブザーバー
 const observer = new MutationObserver(() => {
@@ -34,9 +30,8 @@ const observer = new MutationObserver(() => {
         state.onVideo = pathList.includes('watch');
     }
 });
-const target = window.document;
-const config = {childList: true, subtree: true};
-observer.observe(target, config);
+const options = { childList: true, subtree: true };
+observer.observe(document, options);
 
 // スクロールイベント
 $(window).scroll((e) => {

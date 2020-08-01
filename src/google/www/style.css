@@ -1,0 +1,7 @@
+[id^=ed_] {
+    display: none !important;
+}
+
+[id^=eob_] {
+    display: none !important;
+}

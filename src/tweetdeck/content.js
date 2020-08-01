@@ -1,15 +1,11 @@
-'use strict';
-
-const $ = require('jQuery');
-
 // リンクの最終部分の抽出
-function getLastPart(link) {
+const getLastPart = (link) => {
     const parts = link.split('/');
     return parts[parts.length - 1];
-}
+};
 
 // 通知送信
-function sendNotices() {
+const sendNotices = () => {
     // 自身のユーザーネーム取得
     const receiver = $('.js-account-summary').find('[rel="user"]').attr('data-user-name');
     // 通知カラム取得
@@ -53,7 +49,7 @@ function sendNotices() {
             console.log(e);
         }
     });
-}
+};
 
 // 通知送信 (毎分)
 setInterval(sendNotices, 1000 * 60);
@@ -97,14 +93,6 @@ $('body').on('mousedown', (e) => {
 
 // オブザーバー
 const observer = new MutationObserver(() => {
-    // バー非表示
-    $('.js-column-message.scroll-none').each((_, bar) => $(bar).hide());
-    // 自動クリアボタンのポインター化
-    $('.js-column-header.column-header').each((_, bar) => {
-        const icon = $(bar).find('.pull-left.icon');
-        $(icon).css('cursor', 'pointer');
-    });
 });
-const target = window.document;
-const config = {childList: true, subtree: true};
-observer.observe(target, config);
+const options = { childList: true, subtree: true };
+observer.observe(document, options);

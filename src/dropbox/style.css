@@ -1,3 +1,11 @@
+.sc-add-annotation-highlight-button {
+    display: none !important;
+}
+
+.sc-suggested-comments {
+    display: none !important;
+}
+
 .sentence {
     font-size: 14px;
     margin: 10px;

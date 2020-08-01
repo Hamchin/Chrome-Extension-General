@@ -1,13 +1,9 @@
-'use strict';
-
-const $ = require('jQuery');
-
 // メッセージイベント
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Twitterの通知を送信する
     if (message.type === 'SEND_NOTICE') {
         $.ajax({
-            url: process.env.TWITTER_NOTICE_API_URL,
+            url: TWITTER_NOTICE_API_URL,
             type: 'POST',
             dataType: 'json',
             contentType: 'application/json',

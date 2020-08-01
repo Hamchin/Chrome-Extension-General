@@ -1,7 +1,3 @@
-'use strict';
-
-const $ = require('jQuery');
-
 // 状態
 const state = {
     scrollTop: 0,

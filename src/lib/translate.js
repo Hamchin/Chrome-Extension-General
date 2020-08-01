@@ -13,5 +13,3 @@ const formatText = (text) => {
     text = text.replace(/\.[ ]+/g, '.\n'); // ピリオド後の空白を改行へ置換する
     return (text === '') ? [] : text.split('\n');
 };
-
-module.exports = formatText;

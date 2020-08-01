@@ -1,18 +1,13 @@
-'use strict';
-
-const $ = require('jQuery');
-const formatText = require('../../lib/formatText');
-
 // キーイベント on 言語選択
 $('.tl-wrap').on('keydown', (e) => {
     const activeElement = document.activeElement;
-    // 左または上でフォーカスの逆移動
-    if ([37, 38].includes(e.keyCode) && activeElement.previousSibling) {
+    // 左キーでフォーカスの逆移動
+    if (e.keyCode === 37 && activeElement.previousSibling) {
         activeElement.previousSibling.focus();
         return true;
     }
-    // 右または下でフォーカスの移動
-    if ([39, 40].includes(e.keyCode) && activeElement.nextSibling) {
+    // 右キーでフォーカスの移動
+    if (e.keyCode === 39 && activeElement.nextSibling) {
         activeElement.nextSibling.focus();
         return true;
     }

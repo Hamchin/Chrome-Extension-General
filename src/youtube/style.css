@@ -1,0 +1,4 @@
+#video-title {
+    max-height: 80px !important;
+    -webkit-line-clamp: 4 !important;
+}

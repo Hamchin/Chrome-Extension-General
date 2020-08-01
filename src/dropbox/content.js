@@ -1,8 +1,3 @@
-'use strict';
-
-const $ = require('jQuery');
-const formatText = require('../lib/formatText');
-
 // 状態
 const state = {
     enableTakeOver: false,
@@ -11,23 +6,23 @@ const state = {
 };
 
 // 英語から日本語へ翻訳
-function getTranslatedData(sentence) {
+const getTranslatedData = (sentence) => {
     const data = {
         text: sentence,
         source: "en",
         target: "ja"
     };
     const request = {
-        url: process.env.GOOGLE_TRANSLATE_API_URL,
+        url: GOOGLE_TRANSLATE_API_URL,
         dataType: "json",
         type: "GET",
         data: data
     };
     return $.ajax(request);
-}
+};
 
 // 翻訳結果をスレッドへ表示
-function addResult(source, target) {
+const addResult = (source, target) => {
     // 翻訳アイテム
     const translateItem = $('<li>', { class: 'translate-item' });
     $('<p>', { class: 'sentence', text: source }).appendTo(translateItem);
@@ -39,10 +34,10 @@ function addResult(source, target) {
     $(footer).appendTo(translateItem);
     // スレッドへ追加
     $('.sc-comment-stream-threads').append(translateItem);
-}
+};
 
 // 翻訳処理
-function translate(sentences) {
+const translate = (sentences) => {
     // センテンスの数が1つの場合は空文字を追加
     if (sentences.length === 1) sentences.push('');
     // センテンスの数が一定以上の場合は中断
@@ -70,7 +65,7 @@ function translate(sentences) {
             addResult(sentences[i], text);
         }
     });
-}
+};
 
 // マウスダウンイベント
 $('body').on('mousedown', (e) => {
@@ -126,14 +121,3 @@ $('body').on('keydown', (e) => {
         $(':focus').blur();
     }
 });
-
-// オブザーバー
-const observer = new MutationObserver(() => {
-    // アノテーションボタン非表示
-    $('.sc-add-annotation-highlight-button').hide();
-    // サジェスト非表示
-    $('.sc-suggested-comments').hide();
-});
-const target = window.document;
-const config = {childList: true, subtree: true};
-observer.observe(target, config);

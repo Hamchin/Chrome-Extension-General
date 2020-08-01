@@ -1,3 +1,11 @@
 .already-send-notification {
     color: #9DCCE0 !important;
 }
+
+.column-type-icon {
+    cursor: pointer !important;
+}
+
+.js-column-message {
+    display: none !important;
+}
