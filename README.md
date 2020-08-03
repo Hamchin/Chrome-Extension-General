@@ -7,7 +7,8 @@
 ## TweetDeck
 
 - Store liked notifications to the database
-- Clear timelines with one click
+- Clear tweets in the column with one click
+- Filter tweets in the modal / column
 
 ## Twitter
 
