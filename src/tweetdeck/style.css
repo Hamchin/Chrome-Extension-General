@@ -1,11 +1,23 @@
-.already-send-notification {
-    color: #9DCCE0 !important;
-}
-
 .column-type-icon {
     cursor: pointer !important;
 }
 
 .js-column-message {
+    display: none !important;
+}
+
+.send-completed .activity-header .icon-heart-filled {
+    color: #9DCCE0 !important;
+}
+
+.filter-enabled .column-panel .column-type-icon {
+    color: #1DA1F2 !important;
+}
+
+.hidden .item-box {
+    opacity: 0.25 !important;
+}
+
+.hidden .tweet-body {
     display: none !important;
 }

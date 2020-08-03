@@ -1,3 +1,7 @@
+// ========================================
+//  通知送信
+// ========================================
+
 // リンクの最終部分の抽出
 const getLastPart = (link) => {
     const parts = link.split('/');
@@ -9,21 +13,20 @@ const sendNotices = () => {
     // 自身のユーザーネーム取得
     const receiver = $('.js-account-summary').find('[rel="user"]').attr('data-user-name');
     // 通知カラム取得
-    const icon = $('.app-columns-container').find('.icon-notifications');
-    if ($(icon).length === 0) return;
-    const panel = $(icon).parent().parent();
+    const columns = $('.app-columns').find('.icon-notifications').closest('.column');
+    if ($(columns).length === 0) return;
     // 通知アイテム取得
-    const items = $(panel).find('.stream-item');
+    const items = $(columns).first().find('.stream-item');
     $(items).each((_, item) => {
-        // いいねチェック
+        // 送信済みの場合 -> スキップ
+        if ($(item).hasClass('send-completed')) return;
+        // いいね以外の場合 -> スキップ
         const heart = $(item).find('.activity-header').find('.icon-heart-filled');
         if ($(heart).length === 0) return;
-        // 通知未送信チェック
-        if ($(heart).hasClass('already-send-notification')) return;
-        // 非リプライチェック
+        // リプライの場合 -> スキップ
         const reply = $(item).find('.tweet-body').find('.other-replies');
         if ($(reply).length > 0) return;
-        // 自分自身のツイートチェック
+        // 自分以外のツイートの場合 -> スキップ
         const username = $(item).find('.account-link').find('.username').first().text();
         if (username !== '@' + receiver) return;
         // 相手のユーザーネーム取得
@@ -42,7 +45,7 @@ const sendNotices = () => {
             chrome.runtime.sendMessage(message, (status) => {
                 // 成功時 -> マーキング
                 if (status !== 200) return;
-                $(heart).addClass('already-send-notification');
+                $(item).addClass('send-completed');
             });
         }
         catch (e) {
@@ -54,45 +57,153 @@ const sendNotices = () => {
 // 通知送信 (毎分)
 setInterval(sendNotices, 1000 * 60);
 
+// ========================================
+//  オブザーバー
+// ========================================
+
+// タイムラインのクリア
+const clearTimeline = (e) => {
+    // カラムアイコンのクリック時
+    const icon = $(e.target).closest('.column-type-icon');
+    if ($(icon).length === 0) return;
+    const column = $(icon).closest('.column-panel');
+    const settings = $(column).find('.column-settings-link');
+    Promise.resolve()
+    .then(() => {
+        return new Promise((resolve) => {
+            // 設定ボタンクリック
+            if ($(settings).length === 0) return;
+            $(settings)[0].click();
+            resolve();
+        });
+    })
+    .then(() => {
+        return new Promise((resolve) => {
+            // クリアボタンクリック
+            const clear = $(column).find('.icon-clear-timeline');
+            if ($(clear).length === 0) return;
+            $(clear)[0].click();
+            resolve();
+        });
+    })
+    .then(() => {
+        return new Promise((resolve) => {
+            // 設定ボタンクリック
+            if ($(settings).length === 0) return;
+            $(settings)[0].click();
+            // オプション非表示
+            $(column).find('.column-options').hide();
+            resolve();
+        });
+    });
+};
+
+// オプション表示
+const showOption = (e) => {
+    // スライダーのクリック時
+    const sliders = $(e.target).closest('.icon-sliders');
+    if ($(sliders).length === 0) return;
+    const column = $(sliders).closest('.column-panel');
+    $(column).find('.column-options').show();
+};
+
+// モーダルツイートのフィルタリング設定
+const toggleFilterModalTweets = (e) => {
+    // モーダルのカラムアイコンのクリック時
+    const icon = $(e.target).closest('.column-type-icon');
+    if ($(icon).length === 0) return;
+    const modal = $(icon).closest('.open-modal');
+    if ($(modal).length === 0) return;
+    // フィルタリング無効化
+    if ($(modal).hasClass('filter-enabled')) {
+        $(modal).removeClass('filter-enabled');
+        $(modal).find('.stream-item').removeClass('hidden');
+        modalObserver.disconnect();
+    }
+    // フィルタリング有効化
+    else {
+        $(modal).addClass('filter-enabled');
+        const options = { childList: true, subtree: true };
+        modalObserver.observe(modal[0], options);
+        filterModalTweets(modal[0]);
+    }
+};
+
+// モーダルツイートのフィルタリング
+const filterModalTweets = (target) => {
+    $(target).find('.stream-item').each((_, item) => {
+        // リツイートおよびリプライの非表示
+        const isRetweet = $(item).find('.tweet-context').length > 0;
+        const isReply = $(item).find('.other-replies').length > 0;
+        if (isRetweet || isReply) $(item).addClass('hidden');
+    });
+};
+
+// カラムツイートのフィルタリング設定
+const toggleFilterColumnTweets = (e) => {
+    // カラムヘッダーのダブルクリック時
+    const header = $(e.target).closest('.column-header');
+    if ($(header).length === 0) return;
+    const column = $(header).closest('.column');
+    const columnId = $(column).attr('data-column');
+    if (columnId === undefined) return;
+    // フィルタリング無効化
+    if ($(column).hasClass('filter-enabled')) {
+        $(column).removeClass('filter-enabled');
+        $(column).find('.stream-item').removeClass('hidden');
+        columnObserver[columnId].disconnect();
+        delete columnObserver[columnId];
+    }
+    // フィルタリング有効化
+    else {
+        $(column).addClass('filter-enabled');
+        const options = { childList: true, subtree: true };
+        columnObserver[columnId] = createObserver(filterColumnTweets);
+        columnObserver[columnId].observe(column[0], options);
+        filterColumnTweets(column[0]);
+    }
+};
+
+// カラムツイートのフィルタリング
+const filterColumnTweets = (target) => {
+    $(target).find('.stream-item').each((_, item) => {
+        // メディアツイートの場合 -> スキップ
+        const isMedia = $(item).find('.media-preview').length > 0;
+        if (isMedia) return;
+        // いいねされていないツイートの非表示
+        const isNotLiked = $(item).find('.like-count').text() === '';
+        if (isNotLiked) $(item).addClass('hidden');
+        else $(item).removeClass('hidden');
+    });
+};
+
+// オブザーバー作成
+const createObserver = (callback) => {
+    return new MutationObserver((mutations) => {
+        const target = mutations[0].target;
+        const isContainer = target.classList.contains('chirp-container');
+        if (isContainer) callback(target);
+    });
+};
+
+// モーダルオブザーバー
+const modalObserver = createObserver(filterModalTweets);
+
+// カラムオブザーバー
+const columnObserver = {};
+
 // マウスダウンイベント
 $('body').on('mousedown', (e) => {
-    const classList = e.target.classList;
-    // カラムアイコンクリック時
-    if (classList.contains('column-type-icon')) {
-        // タイムラインのクリア
-        const result = new Promise((resolve) => {
-            const parentNode = e.target.parentNode.parentNode;
-            resolve(parentNode);
-        });
-        result.then((parentNode) => {
-            // 設定ボタンクリック
-            const settings = $(parentNode).find('.column-settings-link');
-            if ($(settings).length > 0) $(settings)[0].click();
-            return parentNode;
-        })
-        .then((parentNode) => {
-            // クリアボタンクリック
-            const clear = $(parentNode).find('[data-action="clear"]');
-            if ($(clear).length > 0) $(clear)[0].click();
-            return parentNode;
-        })
-        .then((parentNode) => {
-            // 設定ボタンクリック
-            const settings = $(parentNode).find('.column-settings-link');
-            if ($(settings).length > 0) $(settings)[0].click();
-            // オプション非表示
-            $(parentNode).find('.js-column-options-container').hide();
-        });
-    }
+    // タイムラインのクリア
+    clearTimeline(e);
     // オプション表示
-    if (classList.contains('icon-sliders')) {
-        const parentNode = e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
-        $(parentNode).find('.js-column-options-container').show();
-    }
+    showOption(e);
+    // モーダルツイートのフィルタリング設定
+    toggleFilterModalTweets(e);
 });
 
-// オブザーバー
-const observer = new MutationObserver(() => {
+// ダブルクリックイベント
+$('body').on('dblclick', (e) => {
+    // カラムツイートのフィルタリング設定
+    toggleFilterColumnTweets(e);
 });
-const options = { childList: true, subtree: true };
-observer.observe(document, options);
