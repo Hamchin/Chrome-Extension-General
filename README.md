@@ -3,6 +3,7 @@
 ## Background
 
 - Automatically delete unnecessary history when closing tabs
+- Automatically clear downloaded items
 
 ## TweetDeck
 
