@@ -1,102 +1,36 @@
 // 状態
-const state = {
-    url: '',
-    cursor: '',
-    onChannel: false,
-    onVideo: false,
-    scrollTop: 0,
-    timestamp: 0
-};
-
-// チャンネル紹介動画停止
-const stopChannelVideo = () => {
-    if (state.onChannel === false) return;
-    $('.video-stream').each((_, video) => {
-        const videoElement = $(video).get(0);
-        // 既にチェック済みの場合は中断
-        if ($(video).data('checked') === state.timestamp) return;
-        // 動画の準備が完了していない場合は中断
-        if (videoElement.paused) return;
-        // 動画の停止
-        videoElement.pause();
-        // チェック
-        $(video).data('checked', state.timestamp);
-    });
-};
-
-// ピクチャーインピクチャー制御
-const controlPictureInPicture = () => {
-    if (state.onVideo === false) return;
-    // モード解除
-    if (document.pictureInPictureElement) {
-        document.exitPictureInPicture().catch(() => {});
-    }
-    // モード移行
-    else {
-        const video = $('.video-stream').get(0);
-        if (video === undefined) return;
-        video.requestPictureInPicture().catch(() => {});
-    }
-};
-
-// 強制スクロール防止
-const stopForceScroll = (scrollTop) => {
-    // ピクチャーインピクチャー中に画面トップまで戻った場合は元のスクロール位置へ戻る
-    if (scrollTop === 0 && state.cursor === 'pointer' && document.pictureInPictureElement) {
-        $(window).scrollTop(state.scrollTop);
-    }
-    // スクロール情報の保持
-    else {
-        state.scrollTop = scrollTop;
-    }
-};
-
-// オブザーバー
-const observer = new MutationObserver(() => {
-    // ページが遷移した場合
-    if (state.url !== location.href) {
-        state.url = location.href;
-        const pathList = location.pathname.split('/');
-        // チャンネルページへ遷移したか否か
-        state.onChannel = (() => {
-            const keys = ['c', 'channel', 'user'];
-            const includeList = keys.map(key => pathList.includes(key));
-            return includeList.includes(true);
-        })();
-        // 動画ページへ遷移したか否か
-        state.onVideo = pathList.includes('watch');
-        // 状態リセット
-        state.cursor = '';
-        state.scrollTop = 0;
-        state.timestamp = Date.now();
-        document.exitPictureInPicture().catch(() => {});
-    }
-    // チャンネル紹介動画停止
-    stopChannelVideo();
-});
-const options = { childList: true, subtree: true };
-observer.observe(document, options);
-
-// スクロールイベント
-$(window).scroll((e) => {
-    const scrollTop = $(window).scrollTop();
-    stopForceScroll(scrollTop);
-});
+const state = { scrollTop: 0 };
 
 // マウスダウンイベント
-$(window).mousedown((e) => {
-    state.cursor = $(e.target).css('cursor');
+$(document).on('mousedown', () => {
+    // スクロール位置の保持
+    state.scrollTop = $(window).scrollTop();
 });
 
-// マウスアップイベント
-$(window).mouseup((e) => {
-    setTimeout(() => (state.cursor = ''), 100);
+// クリックイベント
+$(document).on('click', (e) => {
+    setTimeout(() => {
+        // PIP中に画面トップまで戻った場合 -> 元のスクロール位置へ戻る
+        if (!document.pictureInPictureElement) return;
+        if ($(window).scrollTop() !== 0) return;
+        if ($(e.target).css('cursor') !== 'pointer') return;
+        $(window).scrollTop(state.scrollTop);
+    }, 100);
 });
 
-// キーダウンイベント
-$(window).keydown((e) => {
-    const tagName = $(':focus').prop('tagName');
-    if (tagName === 'INPUT' || tagName === 'TEXTAREA') return;
-    // <p>キーでピクチャーインピクチャー制御
-    if (e.keyCode === 80) controlPictureInPicture();
+// タブ更新イベント
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.status !== 'complete') return;
+    const regex = RegExp('/(c|channel|user|)/');
+    const setMute = (type) => chrome.runtime.sendMessage({ type });
+    // チャンネルページの場合 -> ミュートオン
+    if (regex.test(location.pathname)) {
+        setMute('MUTE_ON');
+    }
+    // チャンネルページ以外の場合 -> ミュートオフ
+    else {
+        const video = $('ytd-channel-video-player-renderer').find('video');
+        $(video).each((_, video) => video.pause());
+        setMute('MUTE_OFF');
+    }
 });

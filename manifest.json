@@ -26,6 +26,17 @@
   "content_scripts": [
     {
       "matches": [
+        "https://www.youtube.com/*",
+        "https://www.nicovideo.jp/*",
+        "https://live2.nicovideo.jp/*"
+      ],
+      "js": [
+        "src/lib/jquery.min.js",
+        "src/video/content.js"
+      ]
+    },
+    {
+      "matches": [
         "https://tweetdeck.twitter.com/*"
       ],
       "js": [
@@ -59,16 +70,6 @@
     },
     {
       "matches": [
-        "https://www.nicovideo.jp/*",
-        "https://live2.nicovideo.jp/*"
-      ],
-      "js": [
-        "src/lib/jquery.min.js",
-        "src/niconico/content.js"
-      ]
-    },
-    {
-      "matches": [
         "https://www.google.com/*",
         "https://www.google.co.jp/*"
       ],
@@ -83,6 +84,9 @@
       "js": [
         "src/lib/jquery.min.js",
         "src/google/drive/content.js"
+      ],
+      "css": [
+        "src/google/drive/style.css"
       ]
     },
     {

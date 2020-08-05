@@ -15,6 +15,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         );
         return true;
     }
+    // タブのミュートをオンにする
+    if (message.type === 'MUTE_ON') {
+        chrome.tabs.update(sender.tab.id, { muted: true });
+        return true;
+    }
+    // タブのミュートをオフにする
+    if (message.type === 'MUTE_OFF') {
+        chrome.tabs.update(sender.tab.id, { muted: false });
+        return true;
+    }
+});
+
+// タブ更新イベント
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    // 更新情報をコンテンツスクリプトへ送信する
+    chrome.tabs.sendMessage(tabId, changeInfo);
 });
 
 // タブ削除イベント

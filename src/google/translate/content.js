@@ -1,46 +1,41 @@
 // キーイベント on 言語選択
-$('.tl-wrap').on('keydown', (e) => {
-    const activeElement = document.activeElement;
-    // 左キーでフォーカスの逆移動
-    if (e.keyCode === 37 && activeElement.previousSibling) {
-        activeElement.previousSibling.focus();
-        return true;
+$(document).on('keydown', '.tl-wrap', (e) => {
+    // 左キー -> フォーカスの逆移動
+    if (e.keyCode === 37) {
+        $(':focus').prev().focus();
     }
-    // 右キーでフォーカスの移動
-    if (e.keyCode === 39 && activeElement.nextSibling) {
-        activeElement.nextSibling.focus();
-        return true;
+    // 右キー -> フォーカスの移動
+    if (e.keyCode === 39) {
+        $(':focus').next().focus();
     }
-    return true;
 });
 
 // キーイベント on 全体
-$('body').on('keydown', (e) => {
-    // Escキーでフォーカス解除
+$(document).on('keydown', (e) => {
+    // Escキー -> フォーカス解除
     if (e.keyCode === 27) {
         $(':focus').blur();
         return true;
     }
-    // フォーカスされている場合
+    // フォーカスされている場合 -> キャンセル
     if ($(':focus').length > 0) {
         return true;
     }
-    const container = $('.sl-sugg-button-container')[1];
-    const btnList = $(container).children();
-    // 左キーで言語選択(左)へフォーカス
+    const btnList = $('.tl-wrap').find('.jfk-button');
+    // 左キー -> 言語選択(左)へフォーカス
     if (e.keyCode === 37) {
         $(btnList)[0].focus();
         return true;
     }
-    // 右キーで言語選択(右)へフォーカス
+    // 右キー -> 言語選択(右)へフォーカス
     if (e.keyCode === 39) {
         $(btnList)[1].focus();
         return true;
     }
-    // Enterキーでテキストエリアへフォーカス
+    // Enterキー -> テキストエリアへフォーカス
     if (e.keyCode === 13) {
         const source = $('#source');
-        // Shift + Enter でテキスト整形
+        // Shift + Enter -> テキスト整形
         if (e.shiftKey) {
             const text = $(source).val();
             const sentences = formatText(text);
@@ -49,5 +44,4 @@ $('body').on('keydown', (e) => {
         $(source).focus();
         return false;
     }
-    return true;
 });

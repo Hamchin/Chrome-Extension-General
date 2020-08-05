@@ -10,8 +10,10 @@ const getLastPart = (link) => {
 
 // 通知送信
 const sendNotices = () => {
+    if (chrome.app === undefined) return;
+    if (chrome.app.isInstalled === undefined) return;
     // 自身のユーザーネーム取得
-    const receiver = $('.js-account-summary').find('[rel="user"]').attr('data-user-name');
+    const receiver = $('.js-account-summary').find('[rel="user"]').data('user-name');
     // 通知カラム取得
     const columns = $('.app-columns').find('.icon-notifications').closest('.column');
     if ($(columns).length === 0) return;
@@ -36,21 +38,16 @@ const sendNotices = () => {
         const tweetLink = $(item).find('.tweet-header').find('.tweet-timestamp').find('a').attr('href');
         const tweet_id = getLastPart(tweetLink);
         // タイムスタンプ取得
-        const dataTime = $(item).find('.activity-header').find('.tweet-timestamp').attr('data-time');
-        const timestamp = dataTime.substr(0, 10);
+        const dataTime = $(item).find('.activity-header').find('.tweet-timestamp').data('time');
+        const timestamp = Math.floor(dataTime / 1000);
         // 通知送信
-        const data = {receiver, sender, tweet_id, timestamp};
-        const message = {type: 'SEND_NOTICE', data: data};
-        try {
-            chrome.runtime.sendMessage(message, (status) => {
-                // 成功時 -> マーキング
-                if (status !== 200) return;
-                $(item).addClass('send-completed');
-            });
-        }
-        catch (e) {
-            console.log(e);
-        }
+        const data = { receiver, sender, tweet_id, timestamp };
+        const message = { type: 'SEND_NOTICE', data: data };
+        chrome.runtime.sendMessage(message, (status) => {
+            // 成功時 -> マーキング
+            if (status !== 200) return;
+            $(item).addClass('send-completed');
+        });
     });
 };
 
@@ -58,7 +55,7 @@ const sendNotices = () => {
 setInterval(sendNotices, 1000 * 60);
 
 // ========================================
-//  オブザーバー
+//  DOM操作
 // ========================================
 
 // タイムラインのクリア
@@ -145,7 +142,7 @@ const toggleFilterColumnTweets = (e) => {
     const header = $(e.target).closest('.column-header');
     if ($(header).length === 0) return;
     const column = $(header).closest('.column');
-    const columnId = $(column).attr('data-column');
+    const columnId = $(column).data('column');
     if (columnId === undefined) return;
     // フィルタリング無効化
     if ($(column).hasClass('filter-enabled')) {
@@ -168,11 +165,11 @@ const toggleFilterColumnTweets = (e) => {
 const filterColumnTweets = (target) => {
     $(target).find('.stream-item').each((_, item) => {
         // メディアツイートの場合 -> スキップ
-        const isMedia = $(item).find('.media-preview').length > 0;
-        if (isMedia) return;
+        const media = $(item).find('.tweet-body').children('.media-preview');
+        if ($(media).length > 0) return;
         // いいねされていないツイートの非表示
-        const isNotLiked = $(item).find('.like-count').text() === '';
-        if (isNotLiked) $(item).addClass('hidden');
+        const likeCount = $(item).find('.like-count').text();
+        if (likeCount === '') $(item).addClass('hidden');
         else $(item).removeClass('hidden');
     });
 };
@@ -186,14 +183,14 @@ const createObserver = (callback) => {
     });
 };
 
-// モーダルオブザーバー
+// モーダル監視
 const modalObserver = createObserver(filterModalTweets);
 
-// カラムオブザーバー
+// カラム監視
 const columnObserver = {};
 
 // マウスダウンイベント
-$('body').on('mousedown', (e) => {
+$(document).on('mousedown', (e) => {
     // タイムラインのクリア
     clearTimeline(e);
     // オプション表示
@@ -203,7 +200,7 @@ $('body').on('mousedown', (e) => {
 });
 
 // ダブルクリックイベント
-$('body').on('dblclick', (e) => {
+$(document).on('dblclick', (e) => {
     // カラムツイートのフィルタリング設定
     toggleFilterColumnTweets(e);
 });

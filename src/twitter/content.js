@@ -1,34 +1,16 @@
 // 状態
-const state = {
-    scrollTop: 0,
-    clicked: false,
-    cursor: ''
-};
+const state = { scrollTop: 0 };
 
-// スクロールイベント
-$(window).scroll((e) => {
-    const scrollTop = $(window).scrollTop();
-    // クリック時に画面トップまで戻った場合 -> 元のスクロール位置へ戻る
-    if (scrollTop === 0 && state.clicked && state.cursor !== 'pointer') {
-        $(window).scrollTop(state.scrollTop);
-        return;
-    }
+// マウスダウンイベント
+$(document).on('mousedown', () => {
     // スクロール位置の保持
-    state.scrollTop = scrollTop;
+    state.scrollTop = $(window).scrollTop();
 });
 
 // クリックイベント
-$(window).click((e) => {
-    state.clicked = true;
-    setTimeout(() => (state.clicked = false), 1);
-});
-
-// マウスダウンイベント
-$(window).mousedown((e) => {
-    state.cursor = $(e.target).css('cursor');
-});
-
-// マウスアップイベント
-$(window).mouseup((e) => {
-    setTimeout(() => (state.pointer = false), 1);
+$(document).on('click', (e) => {
+    // 画面トップまで戻った場合 -> 元のスクロール位置へ戻る
+    if ($(window).scrollTop() !== 0) return;
+    if ($(e.target).css('cursor') === 'pointer') return;
+    $(window).scrollTop(state.scrollTop);
 });

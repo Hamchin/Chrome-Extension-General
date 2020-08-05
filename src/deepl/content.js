@@ -1,18 +1,18 @@
-// キーイベント
-$('body').on('keydown', (e) => {
-    // Escキーでフォーカス解除
+// キーダウンイベント
+$(document).on('keydown', (e) => {
+    // Escキー -> フォーカス解除
     if (e.keyCode === 27) {
         $(':focus').blur();
         return true;
     }
-    // フォーカスされている場合
+    // フォーカスされている場合 -> キャンセル
     if ($(':focus').length > 0) {
         return true;
     }
-    // Enterキーでテキストエリアへフォーカス
+    // Enterキー -> テキストエリアへフォーカス
     if (e.keyCode === 13) {
         const source = $('.lmt__source_textarea');
-        // Shift + Enter でテキスト整形
+        // Shift + Enter -> テキスト整形
         if (e.shiftKey) {
             const text = $(source).val();
             const sentences = formatText(text);
@@ -25,8 +25,7 @@ $('body').on('keydown', (e) => {
 });
 
 // クリックイベント on コピーボタン
-$('.lmt__target_toolbar__copy').click(() => {
+$(document).on('click', '.lmt__target_toolbar__copy', () => {
     // テキストエリアへフォーカス
-    const source = $('.lmt__source_textarea');
-    $(source).focus();
+    $('.lmt__source_textarea').focus();
 });

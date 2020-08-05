@@ -5,6 +5,10 @@
 - Automatically delete unnecessary history when closing tabs
 - Automatically clear downloaded items
 
+## Video Sharing Website
+
+- Press <kbd>p</kbd> to Picture-in-Picture
+
 ## TweetDeck
 
 - Store liked notifications to the database
@@ -17,13 +21,8 @@
 
 ## YouTube
 
-- Press <kbd>p</kbd> to Picture-in-Picture
 - Prevent the channel video from being played
 - Extend the space of the video title
-
-## Niconico
-
-- Press <kbd>p</kbd> to Picture-in-Picture
 
 ## Google Search
 
@@ -31,8 +30,8 @@
 
 ## Google Drive
 
-- Hide a pop-up when the upload is complete
 - Empty the trash with one click
+- Simplify the upload pop-up
 
 ## Google Colaboratory
 
