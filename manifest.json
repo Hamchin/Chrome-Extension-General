@@ -28,7 +28,8 @@
       "matches": [
         "https://www.youtube.com/*",
         "https://www.nicovideo.jp/*",
-        "https://live2.nicovideo.jp/*"
+        "https://live2.nicovideo.jp/*",
+        "https://abema.tv/*"
       ],
       "js": [
         "src/lib/jquery.min.js",
