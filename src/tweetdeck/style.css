@@ -10,17 +10,8 @@
     color: #9DCCE0 !important;
 }
 
-.filter-enabled .mdl .column-type-icon {
+.filter-enabled .column-type-icon {
     color: #1DA1F2 !important;
-}
-
-.app-columns .filter-enabled .column-content {
-    max-height: 0 !important;
-}
-
-.filter-content {
-    height: 100% !important;
-    overflow-y: auto !important;
 }
 
 .hidden .item-box {

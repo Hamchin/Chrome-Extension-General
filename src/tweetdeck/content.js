@@ -84,17 +84,73 @@ const clearColumnTweets = (column) => {
     }));
 };
 
+// カラムツイートのフィルタリング
+const filterColumnTweets = (target) => {
+    $(target).find('.stream-item').each((_, item) => {
+        // いいね数ゼロ -> 非表示
+        const likeCount = parseInt($(item).find('.like-count').text() || 0);
+        if (likeCount === 0) $(item).addClass('hidden');
+        else $(item).removeClass('hidden');
+        // メディアツイートの場合 -> 表示
+        const media = $(item).find('.tweet-body').children('.media-preview');
+        if ($(media).length > 0) $(item).removeClass('hidden');
+        // いいね済み -> 非表示
+        const heart = $(item).find('.tweet-footer').find('.icon-heart-filled');
+        if ($(heart).length > 0) $(item).addClass('hidden');
+        // リツイート -> 非表示
+        const isRetweet = $(item).find('.tweet-context').length > 0;
+        if (isRetweet) $(item).addClass('hidden');
+        // リプライ -> 非表示
+        const isReply = $(item).find('.other-replies').length > 0;
+        if (isReply) $(item).addClass('hidden');
+    });
+};
+
+// カラム用オブザーバーの作成
+const createColumnObserver = () => {
+    return new MutationObserver((mutations) => {
+        const target = mutations[0].target;
+        if (!target.classList.contains('chirp-container')) return;
+        filterColumnTweets(target);
+    });
+};
+
+// カラム用オブザーバー
+const columnObserver = {};
+
+// カラムツイートのフィルタリング設定
+const toggleFilterColumnTweets = (column) => {
+    const columnId = $(column).data('column');
+    // フィルタリング無効化
+    if ($(column).hasClass('filter-enabled')) {
+        $(column).removeClass('filter-enabled');
+        $(column).find('.stream-item').removeClass('hidden');
+        columnObserver[columnId].disconnect();
+        delete columnObserver[columnId];
+    }
+    // フィルタリング有効化
+    else {
+        $(column).addClass('filter-enabled');
+        const options = { childList: true, subtree: true };
+        columnObserver[columnId] = createColumnObserver();
+        columnObserver[columnId].observe(column.get(0), options);
+        filterColumnTweets(column.get(0));
+    }
+};
+
 // ========================================
 //  モーダルツイート
 // ========================================
 
 // モーダルツイートのフィルタリング
-const filterModalTweets = (container) => {
-    $(container).find('.stream-item').each((_, item) => {
-        // リツイートおよびリプライの非表示
+const filterModalTweets = (target) => {
+    $(target).find('.stream-item').each((_, item) => {
+        // リツイート -> 非表示
         const isRetweet = $(item).find('.tweet-context').length > 0;
+        if (isRetweet) $(item).addClass('hidden');
+        // リプライ -> 非表示
         const isReply = $(item).find('.other-replies').length > 0;
-        if (isRetweet || isReply) $(item).addClass('hidden');
+        if (isReply) $(item).addClass('hidden');
     });
 };
 
@@ -134,11 +190,6 @@ $(document).on('click', '.column-type-icon', (e) => {
         const column = $(e.target).closest('.column');
         clearColumnTweets(column);
     }
-    // モーダルツイートのフィルタリング設定
-    const modal = $(e.target).closest('.open-modal');
-    if (modal.length > 0) {
-        toggleFilterModalTweets(modal);
-    }
 });
 
 // マウスダウンイベント on 設定ボタン
@@ -148,44 +199,17 @@ $(document).on('mousedown', '.column-settings-link', (e) => {
     $(column).find('.column-options').show();
 });
 
-// ダブルクリックイベント on カラムヘッダー
-$(document).on('dblclick', '.column-header', async (e) => {
-    // カラムツイートのフィルタリング
-    if ($(e.target).css('cursor') === 'pointer') return;
-    const column = $(e.target).closest('.column');
-    const content =  $(column).find('.column-content');
-    const scroller = $(column).find('.column-scroller');
-    // フィルタリング無効化
-    if ($(column).hasClass('filter-enabled')) {
-        $(column).removeClass('filter-enabled');
-        $(column).find('.filter-content').remove();
+// ダブルクリックイベント on ヘッダー
+$(document).on('dblclick', '.js-column-header', (e) => {
+    // カラムツイートのフィルタリング設定
+    const columns = $(e.target).closest('.app-columns');
+    if (columns.length > 0) {
+        const column = $(e.target).closest('.column');
+        toggleFilterColumnTweets(column);
     }
-    // フィルタリング有効化
-    else {
-        $(column).addClass('filter-enabled');
-        const filterContent = $('<div>', { class: 'filter-content' });
-        $(content).after(filterContent);
-        $(filterContent).css('opacity', 0.25);
-        // 大量のカラムツイートを取得する
-        for (let i = 0; i < 100; i++) {
-            await new Promise((resolve) => {
-                // スクロール -> ツイートをロードする
-                $(scroller).scrollTop($(scroller).scrollTop() + 10000);
-                $(scroller).scrollTop($(scroller).scrollTop() - 10);
-                // ツイートをコンテンツへ追加する
-                $(content).find('.stream-item').each((_, item) => {
-                    if ($(item).hasClass('checked')) return;
-                    $(filterContent).append($(item).clone(true));
-                    $(item).addClass('checked');
-                });
-                setTimeout(resolve, 100);
-            });
-        }
-        const items = $(filterContent).find('.stream-item');
-        // いいね済みのツイートを除外する
-        const getHeart = (item) => $(item).find('.tweet-footer').find('.icon-heart-filled');
-        $(items).filter((_, item) => $(getHeart(item)).length > 0).remove();
-        $(filterContent).css('opacity', '');
-        $(column).find('.column-header').click();
+    // モーダルツイートのフィルタリング設定
+    const modal = $(e.target).closest('.open-modal');
+    if (modal.length > 0) {
+        toggleFilterModalTweets(modal);
     }
 });
