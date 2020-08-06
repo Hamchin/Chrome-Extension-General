@@ -29,7 +29,8 @@
         "https://www.youtube.com/*",
         "https://www.nicovideo.jp/*",
         "https://live2.nicovideo.jp/*",
-        "https://abema.tv/*"
+        "https://abema.tv/*",
+        "https://live.line.me/*"
       ],
       "js": [
         "src/lib/jquery.min.js",
