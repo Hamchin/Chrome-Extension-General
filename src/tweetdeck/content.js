@@ -110,8 +110,9 @@ const filterColumnTweets = (target) => {
 const createColumnObserver = () => {
     return new MutationObserver((mutations) => {
         const target = mutations[0].target;
-        if (!target.classList.contains('chirp-container')) return;
-        filterColumnTweets(target);
+        const container = $(target).closest('.chirp-container');
+        if ($(container).length === 0) return;
+        filterColumnTweets(container);
     });
 };
 
