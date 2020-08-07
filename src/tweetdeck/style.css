@@ -18,14 +18,14 @@
     opacity: 0.25 !important;
 }
 
-.hidden .tweet-context {
+.mdl .hidden .tweet-context {
     display: none !important;
 }
 
-.hidden .tweet-body {
+.mdl .hidden .tweet-body {
     display: none !important;
 }
 
-.hidden .js-show-this-thread {
+.mdl .hidden .js-show-this-thread {
     display: none !important;
 }
