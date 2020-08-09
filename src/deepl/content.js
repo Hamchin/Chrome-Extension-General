@@ -15,7 +15,7 @@ $(document).on('keydown', (e) => {
         // Shift + Enter -> テキスト整形
         if (e.shiftKey) {
             const text = $(source).val();
-            const sentences = formatText(text);
+            const sentences = splitText(text);
             $(source).val(sentences.join('\n\n'));
         }
         $(source).focus();

@@ -1,22 +1,17 @@
 // 状態
 const state = {
+    timestamp: 0,
     enableTakeOver: false,
-    text: '',
-    mouseDownTime: 0
+    text: ''
 };
 
 // 英語から日本語へ翻訳する
-const getTranslatedData = (sentence) => {
-    const data = {
-        text: sentence,
-        source: 'en',
-        target: 'ja'
-    };
+const getTranslatedData = (text) => {
     const request = {
-        url: GOOGLE_TRANSLATE_API_URL,
+        url: DEEPL_TRANSLATE_API_URL,
         dataType: 'json',
         type: 'GET',
-        data: data
+        data: { text }
     };
     return $.ajax(request);
 };
@@ -27,62 +22,56 @@ const addResult = (source, target) => {
     const translateItem = $('<li>', { class: 'translate-item' });
     $('<p>', { class: 'sentence', text: source }).appendTo(translateItem);
     $('<p>', { class: 'sentence', text: target }).appendTo(translateItem);
-    // DeepL翻訳リンク
-    const footer = $('<div>', { class: 'sentence text-right' });
-    const url = `https://www.deepl.com/translator#en/ja/${source}`;
-    $('<a>', { href: url, target: '_blank', text: 'DeepL' }).appendTo(footer);
-    $(footer).appendTo(translateItem);
     // スレッドへ追加する
     $('.sc-comment-stream-threads').append(translateItem);
 };
 
 // 翻訳処理
 const translate = (sentences) => {
-    // センテンスの数が1つの場合 -> 空文字を追加する
-    if (sentences.length === 1) sentences.push('');
-    // センテンスの数が一定以上の場合 -> キャンセル
-    if (sentences.length > 20) {
+    // 文の数が上限以上の場合 -> キャンセル
+    if (sentences.length > 40) {
         alert('Too many sentences.');
         return;
     }
     // スレッドの内容を空にする
     $('.sc-comment-stream-threads').empty();
-    // それぞれのセンテンスを翻訳してリストへ格納する
-    let outputList = [];
-    for(let i = 0; i < sentences.length; i++) {
-        const data = getTranslatedData(sentences[i]);
-        outputList.push(data);
-    }
-    // 翻訳処理が全て完了した時点 -> 結果をスレッドへ表示する
-    $.when.apply($, outputList).done(function() {
-        // スレッドの内容を空にする
-        $('.sc-comment-stream-threads').empty();
-        for(let i = 0; i < arguments.length; i++) {
-            // 翻訳に失敗したセンテンス -> スキップ
-            if (arguments[i][0].code !== 200) continue;
-            // 表示処理
-            const text = arguments[i][0].text;
-            addResult(sentences[i], text);
+    // タイムスタンプを記録する
+    state.timestamp = Date.now();
+    const timestamp = state.timestamp;
+    // それぞれの文を翻訳してリストへ格納する
+    const results = [];
+    sentences.forEach((sentence) => {
+        const data = getTranslatedData(sentence);
+        results.push(data);
+    });
+    // 翻訳処理が全て完了した時点
+    $.when.apply($, results).done((...dataList) => {
+        if (timestamp !== state.timestamp) return;
+        // 文の数が1つの場合 -> 配列へ変換する
+        if (sentences.length === 1) {
+            dataList = [dataList];
         }
+        // それぞれの結果をスレッドへ表示する
+        dataList.forEach((data) => {
+            if (data[0].statusCode !== 200) return;
+            const body = JSON.parse(data[0].body);
+            addResult(body.source, body.target);
+        });
     });
 };
 
-// マウスダウンイベント on PDF
-$(document).on('mousedown', '.pdf-viewer', () => {
-    state.mouseDownTime = performance.now();
-});
-
 // マウスアップイベント on PDF
-$(document).on('mouseup', '.pdf-viewer', () => {
-    // マウスダウンの時間が一定未満の場合 -> キャンセル
-    const mouseUpTime = performance.now();
-    if (mouseUpTime - state.mouseDownTime < 100) return;
+$(document).on('mouseup', '.pdf-viewer', async () => {
+    await new Promise(resolve => setTimeout(resolve, 1));
     // 選択中のテキストを取得する
     let text = window.getSelection().toString();
+    if (text === '') return;
     if (state.enableTakeOver) text = state.text + ' ' + text;
-    // テキストを整形して翻訳する
-    const sentences = formatText(text);
-    if (state.enableTakeOver) state.text = sentences.join(' ');
+    // テキストを整形する
+    text = formatText(text);
+    if (state.enableTakeOver) state.text = text;
+    // テキストを分割して翻訳する
+    const sentences = splitText(text);
     translate(sentences);
 });
 
