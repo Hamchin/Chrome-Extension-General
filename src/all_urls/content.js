@@ -107,5 +107,6 @@ $(document).on('click', '.ext-trans-btn', () => {
             $('<p>', { class: 'ext-trans-text', text: target }).appendTo(item);
             $(item).appendTo(modal);
         });
+        $(modal).scrollTop(0);
     });
 });
