@@ -15,6 +15,9 @@
     "downloads",
     "clipboardWrite"
   ],
+  "web_accessible_resources": [
+    "icons/DeepL.svg"
+  ],
   "background": {
     "scripts": [
       "src/lib/jquery.min.js",
@@ -24,6 +27,20 @@
     "persistent": false
   },
   "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/lib/jquery.min.js",
+        "src/lib/config.js",
+        "src/lib/translate.js",
+        "src/all_urls/content.js"
+      ],
+      "css": [
+        "src/all_urls/style.css"
+      ]
+    },
     {
       "matches": [
         "https://www.youtube.com/*",

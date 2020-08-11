@@ -7,7 +7,13 @@ const formatText = (text) => {
     // 空白文字を単一の空白へ置換する
     text = text.replace(/\s+/g, ' ');
     // 小数点前後の空白を削除する
-    text = text.replace(/(\d)\s*\.\s*(\d)/g, '$1.$2');
+    text = text.replace(/(?<=\d)\s*\.\s*(?=\d)/g, '.');
+    // ピリオド間の空白を削除する
+    text = text.replace(/(?<=\.)\s+(?=\.)/g, '');
+    // コンマ前の空白を削除する
+    text = text.replace(/\s+(?=,)/g, '');
+    // et al. -> et al
+    text = text.replace(/(et al)\./g, '$1');
     return text;
 };
 

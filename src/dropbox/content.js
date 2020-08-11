@@ -36,26 +36,24 @@ const translate = (sentences) => {
     // スレッドの内容を空にする
     $('.sc-comment-stream-threads').empty();
     // タイムスタンプを記録する
-    state.timestamp = Date.now();
-    const timestamp = state.timestamp;
-    // それぞれの文を翻訳してリストへ格納する
+    const timestamp = Date.now();
+    state.timestamp = timestamp;
+    // 各文を翻訳してリストへ格納する
     const results = [];
     sentences.forEach((sentence) => {
         const data = getTranslatedData(sentence);
         results.push(data);
     });
-    // 翻訳処理が全て完了した時点
+    // 翻訳が全て完了した時点
     $.when.apply($, results).done((...dataList) => {
         if (timestamp !== state.timestamp) return;
-        // 文の数が1つの場合 -> 配列へ変換する
-        if (sentences.length === 1) {
-            dataList = [dataList];
-        }
-        // それぞれの結果をスレッドへ表示する
+        // 文が1個の場合 -> 配列へ変換する
+        if (sentences.length === 1) dataList = [dataList];
+        // 各結果をスレッドへ表示する
         dataList.forEach((data) => {
             if (data[0].statusCode !== 200) return;
-            const body = JSON.parse(data[0].body);
-            addResult(body.source, body.target);
+            const { source, target } = JSON.parse(data[0].body);
+            addResult(source, target);
         });
     });
 };
@@ -94,15 +92,5 @@ $(document).on('keydown', (e) => {
             $('.sc-comment-editor-coach-mark-container').append(element);
         }
         state.text = '';
-    }
-    // 左キー -> ページアップ
-    if (e.keyCode === 37) {
-        $('[data-test="page-up"]').click();
-        $(':focus').blur();
-    }
-    // 右キー -> ページダウン
-    if (e.keyCode === 39) {
-        $('[data-test="page-down"]').click();
-        $(':focus').blur();
     }
 });

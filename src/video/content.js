@@ -14,7 +14,7 @@ const controlPictureInPicture = () => {
 
 // キーダウンイベント
 $(document).on('keydown', (e) => {
-    // フォーカスされている場合 -> キャンセル
+    // フォームにフォーカスされている場合 -> キャンセル
     const tagName = $(':focus').prop('tagName');
     if (tagName === 'INPUT' || tagName === 'TEXTAREA') return;
     // Pキー -> ピクチャーインピクチャー制御

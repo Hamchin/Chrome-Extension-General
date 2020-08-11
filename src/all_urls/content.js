@@ -1,0 +1,108 @@
+// ロード
+$(document).ready(() => {
+    // 翻訳ボタン
+    const button = $('<button>', { class: 'ext-trans-btn ext-hidden' });
+    const icon = $('<div>', { class: 'ext-trans-icon' });
+    const iconUrl = chrome.extension.getURL('icons/DeepL.svg');
+    $(icon).css('background-image', `url(${iconUrl})`);
+    $(icon).appendTo(button);
+    $(button).appendTo('body');
+    // 翻訳モーダル
+    const modal = $('<div>', { class: 'ext-trans-modal ext-hidden' });
+    $(modal).appendTo('body');
+});
+
+// マウスアップイベント
+$(document).on('mouseup', async () => {
+    await new Promise(resolve => setTimeout(resolve, 5));
+    // フォームにフォーカスされている場合 -> キャンセル
+    const tagName = $(':focus').prop('tagName');
+    if (tagName === 'INPUT' || tagName === 'TEXTAREA') return;
+    // 選択中のテキストを取得する
+    const selection = window.getSelection();
+    const text = selection.toString();
+    if (text.match(/[a-zA-Z]/g) === null) return;
+    // 翻訳ボタン
+    const button = $('.ext-trans-btn');
+    const GTButton = document.getElementById('gtx-trans');
+    // Google翻訳ボタンが存在する場合 -> 隣にボタンを設置する
+    if (GTButton !== null) {
+        const GTRect = GTButton.getBoundingClientRect();
+        $(button).css('top', window.pageYOffset + GTRect.y);
+        $(button).css('left', window.pageXOffset + GTRect.x + GTRect.width);
+    }
+    // Google翻訳ボタンが存在しない場合 -> 最後尾にボタンを設置する
+    else {
+        const selectionRects = selection.getRangeAt(0).getClientRects();
+        const lastRect = selectionRects[selectionRects.length - 1];
+        $(button).css('top', window.pageYOffset + lastRect.y + lastRect.height);
+        $(button).css('left', window.pageXOffset + lastRect.x + lastRect.width);
+    }
+    $(button).removeClass('ext-hidden');
+});
+
+// マウスダウンイベント
+$(document).on('mousedown', (e) => {
+    // 翻訳ボタンが存在する場合
+    const button = $('.ext-trans-btn');
+    if ($(button).hasClass('ext-hidden') === false) {
+        // ボタンをクリックした場合 -> テキストを保持する
+        if ($(e.target).closest(button).length > 0) {
+            const text = window.getSelection().toString();
+            $(button).data('text', text);
+        }
+        // ボタン外をクリックした場合 -> ボタンの非表示
+        else {
+            $(button).addClass('ext-hidden');
+            $(button).data('text', '');
+        }
+    }
+    // 翻訳モーダルが存在する場合
+    const modal = $('.ext-trans-modal');
+    if ($(modal).hasClass('ext-hidden') === false) {
+        // モーダル外をクリックした場合 -> モーダルの非表示
+        if ($(e.target).closest(modal).length === 0) {
+            $(modal).addClass('ext-hidden');
+            $(modal).empty();
+        }
+    }
+});
+
+// クリックイベント on 翻訳ボタン
+$(document).on('click', '.ext-trans-btn', () => {
+    const button = $('.ext-trans-btn');
+    setTimeout(() => $(button).addClass('ext-hidden'), 5);
+    const text = $(button).data('text');
+    if (text === undefined) return;
+    // テキストを分割する
+    const sentences = splitText(text);
+    const results = [];
+    // 各文を翻訳する
+    sentences.forEach((sentence) => {
+        const data = $.ajax({
+            url: DEEPL_TRANSLATE_API_URL,
+            dataType: 'json',
+            type: 'GET',
+            data: { text: sentence }
+        });
+        results.push(data);
+    });
+    // 翻訳が全て完了した時点
+    $.when.apply($, results).done((...dataList) => {
+        // 翻訳モーダル
+        const modal = $('.ext-trans-modal');
+        $(modal).empty();
+        $(modal).removeClass('ext-hidden');
+        // 文が1個の場合 -> 配列へ変換する
+        if (sentences.length === 1) dataList = [dataList];
+        // 各結果を表示する
+        dataList.forEach((data) => {
+            if (data[0].statusCode !== 200) return;
+            const { source, target } = JSON.parse(data[0].body);
+            const item = $('<div>', { class: 'ext-trans-item' });
+            $('<p>', { class: 'ext-trans-text', text: source }).appendTo(item);
+            $('<p>', { class: 'ext-trans-text', text: target }).appendTo(item);
+            $(item).appendTo(modal);
+        });
+    });
+});
