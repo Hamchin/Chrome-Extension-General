@@ -5,6 +5,10 @@
 - Automatically delete unnecessary history when closing tabs
 - Automatically clear downloaded items
 
+## All URLs
+
+- Select text and click the button to translate English into Japanese
+
 ## Video Sharing Website
 
 - Press <kbd>p</kbd> to Picture-in-Picture
@@ -57,7 +61,7 @@
 
 ## Dropbox
 
-- Translate when selecting English text in PDF
+- Select text in PDF to translate English into Japanese
 - Press <kbd>Enter</kbd> to enable / disable translation by taking over text
 
 ## Slack
