@@ -49,7 +49,7 @@
     z-index: 10000 !important;
 }
 
-.ext-trans-text {
+.ext-trans-source, .ext-trans-target {
     color: #252525 !important;
     font-size: 16px !important;
     margin: 8px !important;

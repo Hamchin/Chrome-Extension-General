@@ -27,12 +27,12 @@ $(document).on('mouseup', async () => {
     if (text.match(/[\u3040-\u31FF\u3400-\u9FFF]/g) !== null) return;
     // 翻訳ボタン
     const button = $('.ext-trans-btn');
-    const GTButton = document.getElementById('gtx-trans');
+    const GButton = document.getElementById('gtx-trans');
     // Google翻訳ボタンが存在する場合 -> 隣にボタンを設置する
-    if (GTButton !== null) {
-        const GTRect = GTButton.getBoundingClientRect();
-        $(button).css('top', window.pageYOffset + GTRect.y);
-        $(button).css('left', window.pageXOffset + GTRect.x + GTRect.width);
+    if (GButton !== null) {
+        const GBRect = GButton.getBoundingClientRect();
+        $(button).css('top', window.pageYOffset + GBRect.y);
+        $(button).css('left', window.pageXOffset + GBRect.x + GBRect.width);
     }
     // Google翻訳ボタンが存在しない場合 -> 最後尾にボタンを設置する
     else {
@@ -73,14 +73,43 @@ $(document).on('mousedown', (e) => {
 
 // クリックイベント on 翻訳ボタン
 $(document).on('click', '.ext-trans-btn', async () => {
+    // 翻訳ボタン
     const button = $('.ext-trans-btn');
-    setTimeout(() => $(button).addClass('ext-hidden'), 5);
-    const text = $(button).data('text');
-    if (text === undefined) return;
+    setTimeout(() => $(button).addClass('ext-hidden'), 10);
+    // 翻訳モーダル
+    const modal = $('.ext-trans-modal');
+    $(modal).empty();
+    // タイムスタンプを記録する
+    const timestamp = Date.now();
+    $(modal).data('timestamp', timestamp);
     // テキストを分割する
-    const sentences = splitText(text);
-    // 各文を翻訳する
-    const promises = sentences.map(async (sentence) => {
+    const text = $(button).data('text') || '';
+    const sentences = splitText(formatText(text));
+    // 各文をGoogle翻訳する
+    const GPromises = sentences.map(async (sentence) => {
+        return await $.ajax({
+            url: GOOGLE_TRANSLATE_API_URL,
+            dataType: 'json',
+            type: 'GET',
+            data: { text: sentence }
+        });
+    });
+    const GResponses = await Promise.all(GPromises);
+    // チェック
+    if (timestamp !== $(modal).data('timestamp')) return;
+    $(modal).removeClass('ext-hidden');
+    // 各結果を表示する
+    GResponses.forEach((response, i) => {
+        const source = sentences[i];
+        const target = (response.code === 200) ? response.text : '';
+        const item = $('<div>', { class: 'ext-trans-item' });
+        $('<p>', { class: 'ext-trans-source', text: source }).appendTo(item);
+        $('<p>', { class: 'ext-trans-target', text: target }).appendTo(item);
+        $(item).appendTo(modal);
+    });
+    $(modal).scrollTop(0);
+    // 各文をDeepL翻訳する
+    const DPromises = sentences.map(async (sentence) => {
         return await $.ajax({
             url: DEEPL_TRANSLATE_API_URL,
             dataType: 'json',
@@ -88,19 +117,16 @@ $(document).on('click', '.ext-trans-btn', async () => {
             data: { text: sentence }
         });
     });
-    const responses = await Promise.all(promises);
-    // 翻訳モーダル
-    const modal = $('.ext-trans-modal');
-    $(modal).empty();
-    $(modal).removeClass('ext-hidden');
-    // 各結果を表示する
-    responses.forEach((response, i) => {
+    const DResponses = await Promise.all(DPromises);
+    // チェック
+    if ($(modal).hasClass('ext-hidden')) return;
+    if (timestamp !== $(modal).data('timestamp')) return;
+    // 各結果を更新する
+    DResponses.forEach((response, i) => {
         if (response.code !== 200) return;
         const [source, target] = [sentences[i], response.text];
-        const item = $('<div>', { class: 'ext-trans-item' });
-        $('<p>', { class: 'ext-trans-text', text: source }).appendTo(item);
-        $('<p>', { class: 'ext-trans-text', text: target }).appendTo(item);
-        $(item).appendTo(modal);
+        const item = $('.ext-trans-item')[i];
+        $(item).find('.ext-trans-source').text(source);
+        $(item).find('.ext-trans-target').text(target);
     });
-    $(modal).scrollTop(0);
 });

@@ -6,13 +6,13 @@
     display: none !important;
 }
 
-.sentence {
-    font-size: 14px !important;
+.trans-item {
+    border: 2px solid #AAAAAA !important;
     margin: 10px !important;
 }
 
-.trans-item {
-    border: 2px solid #AAAAAA !important;
+.trans-source, .trans-target {
+    font-size: 14px !important;
     margin: 10px !important;
 }
 

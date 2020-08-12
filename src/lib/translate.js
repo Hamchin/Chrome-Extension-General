@@ -39,7 +39,6 @@ const splitText = (text) => {
     ];
     const lookbehind = words.map(word => `(?<!${word})`).join('');
     const regex = RegExp(`${lookbehind}(?<=\\.|\\?|\\!)\\s`, 'g');
-    text = formatText(text);
     text = text.replace(regex, '\n');
     return (text === '') ? [] : text.split('\n');
 };

@@ -5,40 +5,6 @@ const state = {
     text: ''
 };
 
-// 翻訳処理
-const translate = async (sentences) => {
-    // 文の数が上限以上の場合 -> キャンセル
-    if (sentences.length > 40) {
-        alert('Too many sentences.');
-        return;
-    }
-    // スレッドの内容を空にする
-    $('.sc-comment-stream-threads').empty();
-    // タイムスタンプを記録する
-    const timestamp = Date.now();
-    state.timestamp = timestamp;
-    // 各文を翻訳する
-    const promises = sentences.map(async (sentence) => {
-        return await $.ajax({
-            url: DEEPL_TRANSLATE_API_URL,
-            dataType: 'json',
-            type: 'GET',
-            data: { text: sentence }
-        });
-    });
-    const responses = await Promise.all(promises);
-    if (timestamp !== state.timestamp) return;
-    // 各結果を表示する
-    responses.forEach((response, i) => {
-        if (response.code !== 200) return;
-        const [source, target] = [sentences[i], response.text];
-        const translateItem = $('<li>', { class: 'trans-item' });
-        $('<p>', { class: 'sentence', text: source }).appendTo(translateItem);
-        $('<p>', { class: 'sentence', text: target }).appendTo(translateItem);
-        $('.sc-comment-stream-threads').append(translateItem);
-    });
-};
-
 // マウスアップイベント on PDF
 $(document).on('mouseup', '.pdf-viewer', async () => {
     await new Promise(resolve => setTimeout(resolve, 1));
@@ -46,12 +12,56 @@ $(document).on('mouseup', '.pdf-viewer', async () => {
     let text = window.getSelection().toString();
     if (text === '') return;
     if (state.enableTakeOver) text = state.text + ' ' + text;
-    // テキストを整形する
+    // テキストを分割する
     text = formatText(text);
     if (state.enableTakeOver) state.text = text;
-    // テキストを分割して翻訳する
     const sentences = splitText(text);
-    translate(sentences);
+    // 文の数が上限以上の場合 -> キャンセル
+    if (sentences.length > 40) return alert('Too many sentences.');
+    // スレッドの内容を空にする
+    $('.sc-comment-stream-threads').empty();
+    // タイムスタンプを記録する
+    const timestamp = Date.now();
+    state.timestamp = timestamp;
+    // 各文をGoogle翻訳する
+    const GPromises = sentences.map(async (sentence) => {
+        return await $.ajax({
+            url: GOOGLE_TRANSLATE_API_URL,
+            dataType: 'json',
+            type: 'GET',
+            data: { text: sentence }
+        });
+    });
+    const GResponses = await Promise.all(GPromises);
+    if (timestamp !== state.timestamp) return;
+    // 各結果を表示する
+    GResponses.forEach((response, i) => {
+        const source = sentences[i];
+        const target = (response.code === 200) ? response.text : '';
+        const item = $('<li>', { class: 'trans-item' });
+        $('<p>', { class: 'trans-source', text: source }).appendTo(item);
+        $('<p>', { class: 'trans-target', text: target }).appendTo(item);
+        $('.sc-comment-stream-threads').append(item);
+    });
+    // 各文をDeepL翻訳する
+    const DPromises = sentences.map(async (sentence) => {
+        return await $.ajax({
+            url: DEEPL_TRANSLATE_API_URL,
+            dataType: 'json',
+            type: 'GET',
+            data: { text: sentence }
+        });
+    });
+    const DResponses = await Promise.all(DPromises);
+    if (timestamp !== state.timestamp) return;
+    // 各結果を表示する
+    DResponses.forEach((response, i) => {
+        if (response.code !== 200) return;
+        const [source, target] = [sentences[i], response.text];
+        const item = $('.trans-item')[i];
+        $(item).find('.trans-source').text(source);
+        $(item).find('.trans-target').text(target);
+    });
 });
 
 // キーダウンイベント
