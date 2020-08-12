@@ -72,41 +72,35 @@ $(document).on('mousedown', (e) => {
 });
 
 // クリックイベント on 翻訳ボタン
-$(document).on('click', '.ext-trans-btn', () => {
+$(document).on('click', '.ext-trans-btn', async () => {
     const button = $('.ext-trans-btn');
     setTimeout(() => $(button).addClass('ext-hidden'), 5);
     const text = $(button).data('text');
     if (text === undefined) return;
     // テキストを分割する
     const sentences = splitText(text);
-    const results = [];
     // 各文を翻訳する
-    sentences.forEach((sentence) => {
-        const data = $.ajax({
+    const promises = sentences.map(async (sentence) => {
+        return await $.ajax({
             url: DEEPL_TRANSLATE_API_URL,
             dataType: 'json',
             type: 'GET',
             data: { text: sentence }
         });
-        results.push(data);
     });
-    // 翻訳が全て完了した時点
-    $.when.apply($, results).done((...dataList) => {
-        // 翻訳モーダル
-        const modal = $('.ext-trans-modal');
-        $(modal).empty();
-        $(modal).removeClass('ext-hidden');
-        // 文が1個の場合 -> 配列へ変換する
-        if (sentences.length === 1) dataList = [dataList];
-        // 各結果を表示する
-        dataList.forEach((data) => {
-            if (data[0].statusCode !== 200) return;
-            const { source, target } = JSON.parse(data[0].body);
-            const item = $('<div>', { class: 'ext-trans-item' });
-            $('<p>', { class: 'ext-trans-text', text: source }).appendTo(item);
-            $('<p>', { class: 'ext-trans-text', text: target }).appendTo(item);
-            $(item).appendTo(modal);
-        });
-        $(modal).scrollTop(0);
+    const responses = await Promise.all(promises);
+    // 翻訳モーダル
+    const modal = $('.ext-trans-modal');
+    $(modal).empty();
+    $(modal).removeClass('ext-hidden');
+    // 各結果を表示する
+    responses.forEach((response) => {
+        if (response.statusCode !== 200) return;
+        const { source, target } = JSON.parse(response.body);
+        const item = $('<div>', { class: 'ext-trans-item' });
+        $('<p>', { class: 'ext-trans-text', text: source }).appendTo(item);
+        $('<p>', { class: 'ext-trans-text', text: target }).appendTo(item);
+        $(item).appendTo(modal);
     });
+    $(modal).scrollTop(0);
 });

@@ -5,17 +5,6 @@ const state = {
     text: ''
 };
 
-// 英語から日本語へ翻訳する
-const getTranslatedData = (text) => {
-    const request = {
-        url: DEEPL_TRANSLATE_API_URL,
-        dataType: 'json',
-        type: 'GET',
-        data: { text }
-    };
-    return $.ajax(request);
-};
-
 // 翻訳結果をスレッドへ表示する
 const addResult = (source, target) => {
     // 翻訳アイテム
@@ -27,7 +16,7 @@ const addResult = (source, target) => {
 };
 
 // 翻訳処理
-const translate = (sentences) => {
+const translate = async (sentences) => {
     // 文の数が上限以上の場合 -> キャンセル
     if (sentences.length > 40) {
         alert('Too many sentences.');
@@ -38,23 +27,22 @@ const translate = (sentences) => {
     // タイムスタンプを記録する
     const timestamp = Date.now();
     state.timestamp = timestamp;
-    // 各文を翻訳してリストへ格納する
-    const results = [];
-    sentences.forEach((sentence) => {
-        const data = getTranslatedData(sentence);
-        results.push(data);
-    });
-    // 翻訳が全て完了した時点
-    $.when.apply($, results).done((...dataList) => {
-        if (timestamp !== state.timestamp) return;
-        // 文が1個の場合 -> 配列へ変換する
-        if (sentences.length === 1) dataList = [dataList];
-        // 各結果をスレッドへ表示する
-        dataList.forEach((data) => {
-            if (data[0].statusCode !== 200) return;
-            const { source, target } = JSON.parse(data[0].body);
-            addResult(source, target);
+    // 各文を翻訳する
+    const promises = sentences.map(async (sentence) => {
+        return await $.ajax({
+            url: DEEPL_TRANSLATE_API_URL,
+            dataType: 'json',
+            type: 'GET',
+            data: { text: sentence }
         });
+    });
+    const responses = await Promise.all(promises);
+    if (timestamp !== state.timestamp) return;
+    // 各結果を表示する
+    responses.forEach((response) => {
+        if (response.statusCode !== 200) return;
+        const { source, target } = JSON.parse(response.body);
+        addResult(source, target);
     });
 };
 
