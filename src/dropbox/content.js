@@ -5,16 +5,6 @@ const state = {
     text: ''
 };
 
-// 翻訳結果をスレッドへ表示する
-const addResult = (source, target) => {
-    // 翻訳アイテム
-    const translateItem = $('<li>', { class: 'translate-item' });
-    $('<p>', { class: 'sentence', text: source }).appendTo(translateItem);
-    $('<p>', { class: 'sentence', text: target }).appendTo(translateItem);
-    // スレッドへ追加する
-    $('.sc-comment-stream-threads').append(translateItem);
-};
-
 // 翻訳処理
 const translate = async (sentences) => {
     // 文の数が上限以上の場合 -> キャンセル
@@ -39,10 +29,13 @@ const translate = async (sentences) => {
     const responses = await Promise.all(promises);
     if (timestamp !== state.timestamp) return;
     // 各結果を表示する
-    responses.forEach((response) => {
-        if (response.statusCode !== 200) return;
-        const { source, target } = JSON.parse(response.body);
-        addResult(source, target);
+    responses.forEach((response, i) => {
+        if (response.code !== 200) return;
+        const [source, target] = [sentences[i], response.text];
+        const translateItem = $('<li>', { class: 'translate-item' });
+        $('<p>', { class: 'sentence', text: source }).appendTo(translateItem);
+        $('<p>', { class: 'sentence', text: target }).appendTo(translateItem);
+        $('.sc-comment-stream-threads').append(translateItem);
     });
 };
 

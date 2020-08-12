@@ -94,9 +94,9 @@ $(document).on('click', '.ext-trans-btn', async () => {
     $(modal).empty();
     $(modal).removeClass('ext-hidden');
     // 各結果を表示する
-    responses.forEach((response) => {
-        if (response.statusCode !== 200) return;
-        const { source, target } = JSON.parse(response.body);
+    responses.forEach((response, i) => {
+        if (response.code !== 200) return;
+        const [source, target] = [sentences[i], response.text];
         const item = $('<div>', { class: 'ext-trans-item' });
         $('<p>', { class: 'ext-trans-text', text: source }).appendTo(item);
         $('<p>', { class: 'ext-trans-text', text: target }).appendTo(item);
