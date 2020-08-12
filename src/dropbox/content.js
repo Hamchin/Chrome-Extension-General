@@ -32,7 +32,7 @@ const translate = async (sentences) => {
     responses.forEach((response, i) => {
         if (response.code !== 200) return;
         const [source, target] = [sentences[i], response.text];
-        const translateItem = $('<li>', { class: 'translate-item' });
+        const translateItem = $('<li>', { class: 'trans-item' });
         $('<p>', { class: 'sentence', text: source }).appendTo(translateItem);
         $('<p>', { class: 'sentence', text: target }).appendTo(translateItem);
         $('.sc-comment-stream-threads').append(translateItem);
@@ -63,13 +63,13 @@ $(document).on('keydown', (e) => {
         // テキストの引き継ぎを無効化する
         if (state.enableTakeOver) {
             state.enableTakeOver = false;
-            $('.message').remove();
+            $('.label').remove();
         }
         // テキストの引き継ぎを有効化する
         else {
             state.enableTakeOver = true;
             const message = 'Enable translation by taking over text.';
-            const element = $('<p>', { class: 'message', text: message });
+            const element = $('<p>', { class: 'label', text: message });
             $('.sc-comment-editor-coach-mark-container').append(element);
         }
         state.text = '';

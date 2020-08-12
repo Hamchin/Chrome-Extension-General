@@ -19,11 +19,11 @@ $(document).on('mouseenter', '.a-Cd', () => {
     const text = $('.a-Cd').attr('aria-label');
     if (text.match(/アップロード完了/)) return;
     // アップロード履歴の表示
-    $('.a-Cd-oa').addClass('display');
+    $('.a-Cd-oa').addClass('visible');
 });
 
 // マウスアウトイベント on アップロードポップアップ
 $(document).on('mouseleave', '.a-Cd', () => {
     // アップロード履歴の非表示
-    $('.a-Cd-oa').removeClass('display');
+    $('.a-Cd-oa').removeClass('visible');
 });

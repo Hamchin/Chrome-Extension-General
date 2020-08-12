@@ -7,17 +7,17 @@
 }
 
 .sentence {
-    font-size: 14px;
-    margin: 10px;
+    font-size: 14px !important;
+    margin: 10px !important;
 }
 
-.translate-item {
-    border: 2px solid #AAAAAA;
-    margin: 10px;
+.trans-item {
+    border: 2px solid #AAAAAA !important;
+    margin: 10px !important;
 }
 
-.message {
-    border: thick double #AAAAAA;
-    margin: 10px;
-    padding: 10px;
+.label {
+    border: thick double #AAAAAA !important;
+    margin: 10px !important;
+    padding: 10px !important;
 }
