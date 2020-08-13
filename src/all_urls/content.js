@@ -73,6 +73,8 @@ $(document).on('mousedown', (e) => {
 
 // クリックイベント on 翻訳ボタン
 $(document).on('click', '.ext-trans-btn', async () => {
+    if (chrome.app === undefined) return;
+    if (chrome.app.isInstalled === undefined) return;
     // 翻訳ボタン
     const button = $('.ext-trans-btn');
     setTimeout(() => $(button).addClass('ext-hidden'), 10);
@@ -87,11 +89,10 @@ $(document).on('click', '.ext-trans-btn', async () => {
     const sentences = splitText(formatText(text));
     // 各文をGoogle翻訳する
     const GPromises = sentences.map(async (sentence) => {
-        return await $.ajax({
-            url: GOOGLE_TRANSLATE_API_URL,
-            dataType: 'json',
-            type: 'GET',
-            data: { text: sentence }
+        return await new Promise((resolve) => {
+            const data = { text: sentence };
+            const message = { type: 'GOOGLE_TRANSLATE', data: data };
+            chrome.runtime.sendMessage(message, data => resolve(data));
         });
     });
     const GResponses = await Promise.all(GPromises);
@@ -99,9 +100,9 @@ $(document).on('click', '.ext-trans-btn', async () => {
     if (timestamp !== $(modal).data('timestamp')) return;
     $(modal).removeClass('ext-hidden');
     // 各結果を表示する
-    GResponses.forEach((response, i) => {
+    GResponses.forEach((res, i) => {
         const source = sentences[i];
-        const target = (response.code === 200) ? response.text : '';
+        const target = (res && res.code === 200) ? res.text : '';
         const item = $('<div>', { class: 'ext-trans-item' });
         $('<p>', { class: 'ext-trans-source', text: source }).appendTo(item);
         $('<p>', { class: 'ext-trans-target', text: target }).appendTo(item);
@@ -110,11 +111,10 @@ $(document).on('click', '.ext-trans-btn', async () => {
     $(modal).scrollTop(0);
     // 各文をDeepL翻訳する
     const DPromises = sentences.map(async (sentence) => {
-        return await $.ajax({
-            url: DEEPL_TRANSLATE_API_URL,
-            dataType: 'json',
-            type: 'GET',
-            data: { text: sentence }
+        return await new Promise((resolve) => {
+            const data = { text: sentence };
+            const message = { type: 'DEEPL_TRANSLATE', data: data };
+            chrome.runtime.sendMessage(message, data => resolve(data));
         });
     });
     const DResponses = await Promise.all(DPromises);
@@ -122,9 +122,9 @@ $(document).on('click', '.ext-trans-btn', async () => {
     if ($(modal).hasClass('ext-hidden')) return;
     if (timestamp !== $(modal).data('timestamp')) return;
     // 各結果を更新する
-    DResponses.forEach((response, i) => {
-        if (response.code !== 200) return;
-        const [source, target] = [sentences[i], response.text];
+    DResponses.forEach((res, i) => {
+        const source = sentences[i];
+        const target = (res && res.code === 200) ? res.text : '';
         const item = $('.ext-trans-item')[i];
         $(item).find('.ext-trans-source').text(source);
         $(item).find('.ext-trans-target').text(target);

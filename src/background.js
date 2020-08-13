@@ -15,6 +15,34 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         );
         return true;
     }
+    // テキストをGoogle翻訳する
+    if (message.type === 'GOOGLE_TRANSLATE') {
+        $.ajax({
+            url: GOOGLE_TRANSLATE_API_URL,
+            type: 'GET',
+            dataType: 'json',
+            data: message.data
+        })
+        .then(
+            data => sendResponse(data),
+            _ => sendResponse(null)
+        );
+        return true;
+    }
+    // テキストをDeepL翻訳する
+    if (message.type === 'DEEPL_TRANSLATE') {
+        $.ajax({
+            url: DEEPL_TRANSLATE_API_URL,
+            type: 'GET',
+            dataType: 'json',
+            data: message.data
+        })
+        .then(
+            data => sendResponse(data),
+            _ => sendResponse(null)
+        );
+        return true;
+    }
 });
 
 // タブ更新イベント

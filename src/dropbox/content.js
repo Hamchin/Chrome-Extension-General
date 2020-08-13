@@ -7,6 +7,8 @@ const state = {
 
 // マウスアップイベント on PDF
 $(document).on('mouseup', '.pdf-viewer', async () => {
+    if (chrome.app === undefined) return;
+    if (chrome.app.isInstalled === undefined) return;
     await new Promise(resolve => setTimeout(resolve, 1));
     // 選択中のテキストを取得する
     let text = window.getSelection().toString();
@@ -25,19 +27,18 @@ $(document).on('mouseup', '.pdf-viewer', async () => {
     state.timestamp = timestamp;
     // 各文をGoogle翻訳する
     const GPromises = sentences.map(async (sentence) => {
-        return await $.ajax({
-            url: GOOGLE_TRANSLATE_API_URL,
-            dataType: 'json',
-            type: 'GET',
-            data: { text: sentence }
+        return await new Promise((resolve) => {
+            const data = { text: sentence };
+            const message = { type: 'GOOGLE_TRANSLATE', data: data };
+            chrome.runtime.sendMessage(message, data => resolve(data));
         });
     });
     const GResponses = await Promise.all(GPromises);
     if (timestamp !== state.timestamp) return;
     // 各結果を表示する
-    GResponses.forEach((response, i) => {
+    GResponses.forEach((res, i) => {
         const source = sentences[i];
-        const target = (response.code === 200) ? response.text : '';
+        const target = (res && res.code === 200) ? res.text : '';
         const item = $('<li>', { class: 'trans-item' });
         $('<p>', { class: 'trans-source', text: source }).appendTo(item);
         $('<p>', { class: 'trans-target', text: target }).appendTo(item);
@@ -45,19 +46,18 @@ $(document).on('mouseup', '.pdf-viewer', async () => {
     });
     // 各文をDeepL翻訳する
     const DPromises = sentences.map(async (sentence) => {
-        return await $.ajax({
-            url: DEEPL_TRANSLATE_API_URL,
-            dataType: 'json',
-            type: 'GET',
-            data: { text: sentence }
+        return await new Promise((resolve) => {
+            const data = { text: sentence };
+            const message = { type: 'DEEPL_TRANSLATE', data: data };
+            chrome.runtime.sendMessage(message, data => resolve(data));
         });
     });
     const DResponses = await Promise.all(DPromises);
     if (timestamp !== state.timestamp) return;
     // 各結果を表示する
-    DResponses.forEach((response, i) => {
-        if (response.code !== 200) return;
-        const [source, target] = [sentences[i], response.text];
+    DResponses.forEach((res, i) => {
+        const source = sentences[i];
+        const target = (res && res.code === 200) ? res.text : '';
         const item = $('.trans-item')[i];
         $(item).find('.trans-source').text(source);
         $(item).find('.trans-target').text(target);
