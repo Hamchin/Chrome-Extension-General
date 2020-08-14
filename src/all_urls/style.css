@@ -32,6 +32,7 @@
     position: fixed !important;
     background-color: #FFFFFF !important;
     box-sizing: border-box !important;
+    box-shadow: 0 0 10px #AAAAAA !important;
     max-height: calc(100% - 20px) !important;
     width: 400px !important;
     top: 10px !important;
@@ -50,8 +51,9 @@
 }
 
 .ext-trans-source, .ext-trans-target {
-    color: #252525 !important;
+    font-family: sans-serif !important;
     font-size: 16px !important;
+    color: #252525 !important;
     margin: 8px !important;
     z-index: 10000 !important;
 }

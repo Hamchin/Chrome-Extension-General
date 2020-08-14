@@ -12,33 +12,23 @@ const formatText = (text) => {
     text = text.replace(/(?<=\.)\s+(?=\.)/g, '');
     // コンマ前の空白を削除する
     text = text.replace(/\s+(?=,)/g, '');
-    // et al. -> et al
-    text = text.replace(/(et al)\./g, '$1');
     return text;
 };
 
 // テキストを分割する
 const splitText = (text) => {
-    const words = [
-        'Mr\\.',
-        'Ms\\.',
-        'Mrs\\.',
-        'Dr\\.',
-        'Prof\\.',
-        'Jr\\.',
-        'Sr\\.',
-        'Inc\\.',
-        'Ltd\\.',
-        'Co\\.',
-        'Fig\\.',
-        'Figs\\.',
-        'et al\\.',
-        'e\\.g\\.',
-        'i\\.e\\.',
-        'cf\\.'
-    ];
-    const lookbehind = words.map(word => `(?<!${word})`).join('');
-    const regex = RegExp(`${lookbehind}(?<=\\.|\\?|\\!)\\s`, 'g');
-    text = text.replace(regex, '\n');
+    text = text.replace(/(?<!\w\.\w\.)(?<![A-Z]\.)(?<![A-Z]\w\.)(?<![A-Z]\w\w\.)(?<![A-Z]\w\w\w\.)(?<=\.|\?|\!)\s+(?=[A-Z])/g, '\n');
     return (text === '') ? [] : text.split('\n');
+};
+
+// 複数のテキストを翻訳する
+const translateTexts = async (texts, type, callback) => {
+    const promises = texts.map(async (text) => {
+        return await new Promise((resolve) => {
+            const message = { type: type, data: { text } };
+            chrome.runtime.sendMessage(message, data => resolve(data));
+        });
+    });
+    const responses = await Promise.all(promises);
+    callback(responses);
 };

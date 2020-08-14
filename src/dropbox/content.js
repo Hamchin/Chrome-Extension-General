@@ -17,51 +17,39 @@ $(document).on('mouseup', '.pdf-viewer', async () => {
     // テキストを分割する
     text = formatText(text);
     if (state.enableTakeOver) state.text = text;
-    const sentences = splitText(text);
-    // 文の数が上限以上の場合 -> キャンセル
-    if (sentences.length > 40) return alert('Too many sentences.');
-    // スレッドの内容を空にする
-    $('.sc-comment-stream-threads').empty();
+    const texts = splitText(text);
+    // テキストの数が上限以上の場合 -> キャンセル
+    if (texts.length > 40) return alert('Too many sentences.');
     // タイムスタンプを記録する
     const timestamp = Date.now();
     state.timestamp = timestamp;
-    // 各文をGoogle翻訳する
-    const GPromises = sentences.map(async (sentence) => {
-        return await new Promise((resolve) => {
-            const data = { text: sentence };
-            const message = { type: 'GOOGLE_TRANSLATE', data: data };
-            chrome.runtime.sendMessage(message, data => resolve(data));
-        });
-    });
-    const GResponses = await Promise.all(GPromises);
-    if (timestamp !== state.timestamp) return;
-    // 各結果を表示する
-    GResponses.forEach((res, i) => {
-        const source = sentences[i];
-        const target = (res && res.code === 200) ? res.text : '';
+    // テンプレートを表示する
+    const container = $('.sc-comment-stream-threads');
+    $(container).empty();
+    texts.forEach((text) => {
         const item = $('<li>', { class: 'trans-item' });
-        $('<p>', { class: 'trans-source', text: source }).appendTo(item);
-        $('<p>', { class: 'trans-target', text: target }).appendTo(item);
-        $('.sc-comment-stream-threads').append(item);
+        $('<p>', { class: 'trans-source', text: text }).appendTo(item);
+        $('<p>', { class: 'trans-target', text: '' }).appendTo(item);
+        $(item).appendTo(container);
     });
-    // 各文をDeepL翻訳する
-    const DPromises = sentences.map(async (sentence) => {
-        return await new Promise((resolve) => {
-            const data = { text: sentence };
-            const message = { type: 'DEEPL_TRANSLATE', data: data };
-            chrome.runtime.sendMessage(message, data => resolve(data));
+    $(container).scrollTop(0);
+    // コールバック
+    const callback = (responses) => {
+        // チェック
+        if (timestamp !== state.timestamp) return;
+        // 各結果を表示する
+        responses.forEach((response, i) => {
+            if (response === null) return;
+            const { source, target } = response;
+            const item = $('.trans-item')[i];
+            $(item).find('.trans-source').text(source);
+            $(item).find('.trans-target').text(target);
         });
-    });
-    const DResponses = await Promise.all(DPromises);
-    if (timestamp !== state.timestamp) return;
-    // 各結果を表示する
-    DResponses.forEach((res, i) => {
-        const source = sentences[i];
-        const target = (res && res.code === 200) ? res.text : '';
-        const item = $('.trans-item')[i];
-        $(item).find('.trans-source').text(source);
-        $(item).find('.trans-target').text(target);
-    });
+    };
+    // 各テキストをGoogle翻訳する
+    translateTexts(texts, 'GOOGLE_TRANSLATE', callback);
+    // 各テキストをDeepL翻訳する
+    translateTexts(texts, 'DEEPL_TRANSLATE', callback);
 });
 
 // キーダウンイベント
