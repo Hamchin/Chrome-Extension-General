@@ -1,6 +1,5 @@
 // 状態
-const initialState = { scrollTop: 0, count: 0 };
-let state = {};
+const state = { scrollTop: 0 };
 
 // マウスダウンイベント
 $(document).on('mousedown', () => {
@@ -9,20 +8,19 @@ $(document).on('mousedown', () => {
 });
 
 // クリックイベント
-$(document).on('click', () => {
-    setTimeout(() => {
-        // PIP中に画面トップまで戻った場合 -> 元のスクロール位置へ戻る
-        if (!document.pictureInPictureElement) return;
-        if ($(window).scrollTop() !== 0) return;
-        $(window).scrollTop(state.scrollTop);
-    }, 100);
+$(document).on('click', async () => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    // PIP中に画面トップまで戻った場合 -> 元のスクロール位置へ戻る
+    if (document.pictureInPictureElement === null) return;
+    if ($(window).scrollTop() !== 0) return;
+    $(window).scrollTop(state.scrollTop);
 });
 
 // チャンネル動画停止用オブザーバー
 const videoStopObserver = new MutationObserver(() => {
-    // 検知回数が上限に達した場合 -> 検知終了
-    state.count += 1;
-    if (state.count === 40) videoStopObserver.disconnect();
+    // チャンネル登録済みの場合 -> キャンセル
+    const subscribed = $('app-header').find('[subscribed]');
+    if (subscribed.length > 0) videoStopObserver.disconnect();
     // 動画が存在しない場合 -> キャンセル
     const video = $('ytd-channel-video-player-renderer').find('video');
     if ($(video).length === 0) return;
@@ -38,12 +36,15 @@ const videoStopObserver = new MutationObserver(() => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // 初期化
     if (message.status !== 'complete') return;
-    state = { ...initialState };
     videoStopObserver.disconnect();
     document.exitPictureInPicture().catch(() => {});
     // チャンネルページ以外の場合 -> キャンセル
-    const regex = RegExp('/(c|channel|user|)/');
-    if (!regex.test(location.pathname)) return;
+    const pathList = location.pathname.split('/').filter(path => path !== '');
+    if (pathList.length === 0) return;
+    const channelPaths = ['c', 'channel', 'user'];
+    if (channelPaths.includes(pathList[0]) === false) return;
+    const lastPath = pathList.slice(-1)[0];
+    if (pathList.length !== 2 && lastPath !== 'featured') return;
     // チャンネル動画を停止する
     const options = { childList: true, subtree: true };
     videoStopObserver.observe(document, options);

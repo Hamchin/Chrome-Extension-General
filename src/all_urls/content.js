@@ -90,6 +90,7 @@ $(document).on('click', '.ext-trans-btn', async () => {
     $(modal).removeClass('ext-hidden');
     texts.forEach((text) => {
         const item = $('<div>', { class: 'ext-trans-item' });
+        $('<div>', { class: 'ext-load' }).appendTo(item);
         $('<p>', { class: 'ext-trans-source', text: text }).appendTo(item);
         $('<p>', { class: 'ext-trans-target', text: '' }).appendTo(item);
         $(item).appendTo(modal);
@@ -112,5 +113,8 @@ $(document).on('click', '.ext-trans-btn', async () => {
     // 各テキストをGoogle翻訳する
     translateTexts(texts, 'GOOGLE_TRANSLATE', callback);
     // 各テキストをDeepL翻訳する
-    translateTexts(texts, 'DEEPL_TRANSLATE', callback);
+    translateTexts(texts, 'DEEPL_TRANSLATE', (responses) => {
+        callback(responses);
+        $('.ext-trans-item').find('.ext-load').remove();
+    });
 });

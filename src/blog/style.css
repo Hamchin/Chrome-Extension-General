@@ -2,6 +2,14 @@ table {
     display: none !important;
 }
 
+#logo {
+    display: none !important;
+}
+
+#header-top-banner-rss {
+    display: none !important;
+}
+
 #side_left {
     display: none !important;
 }

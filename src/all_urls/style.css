@@ -4,9 +4,8 @@
 
 .ext-trans-btn {
     position: absolute !important;
-    background-color: #FFFFFF !important;
     box-sizing: border-box !important;
-    cursor: pointer !important;
+    background-color: #FFFFFF !important;
     height: 27px !important;
     width: 27px !important;
     min-height: 27px !important;
@@ -16,6 +15,7 @@
     padding: 2px !important;
     border: 1px solid #CCCCCC !important;
     border-radius: 5px !important;
+    cursor: pointer !important;
     z-index: 10000 !important;
 }
 
@@ -30,8 +30,8 @@
 
 .ext-trans-modal {
     position: fixed !important;
-    background-color: #FFFFFF !important;
     box-sizing: border-box !important;
+    background-color: #FFFFFF !important;
     box-shadow: 0 0 10px #AAAAAA !important;
     max-height: calc(100% - 20px) !important;
     width: 400px !important;
@@ -44,9 +44,10 @@
 }
 
 .ext-trans-item {
+    position: relative;
+    margin: 8px !important;
     border: 2px solid #CCCCCC !important;
     border-radius: 5px !important;
-    margin: 8px !important;
     z-index: 10000 !important;
 }
 
@@ -56,4 +57,39 @@
     color: #252525 !important;
     margin: 8px !important;
     z-index: 10000 !important;
+}
+
+.ext-load {
+    position: absolute;
+    box-sizing: content-box;
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+    top: 8px;
+    right: 8px;
+    animation: ext-cycle 1s infinite linear;
+}
+
+.ext-load:after {
+    content: '';
+    box-sizing: border-box;
+    display: block;
+    height: 2em;
+    width: 2em;
+    transform-origin: 0 0;
+    transform: translateZ(0) scale(0.5);
+    backface-visibility: hidden;
+    border: 0.3em solid #252525;
+    border-radius: 50%;
+    border-left-color: transparent;
+}
+
+@keyframes ext-cycle {
+    0% {
+        animation-timing-function: cubic-bezier(0.3333, 0.3333, 0.6667, 0.6667);
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
