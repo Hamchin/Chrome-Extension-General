@@ -9,10 +9,6 @@
 
 - Select text and click the button to translate English into Japanese
 
-## Video Sharing Website
-
-- Press <kbd>p</kbd> to Picture-in-Picture
-
 ## TweetDeck
 
 - Store liked notifications to the database

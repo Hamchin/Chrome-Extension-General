@@ -32,10 +32,12 @@ const videoStopObserver = new MutationObserver(() => {
     videoStopObserver.disconnect();
 });
 
-// タブ更新イベント
+// メッセージイベント
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // タブ更新以外の場合 -> キャンセル
+    if (message.type !== 'UPDATED') return;
+    if (message.data.status !== 'complete') return;
     // 初期化
-    if (message.status !== 'complete') return;
     videoStopObserver.disconnect();
     document.exitPictureInPicture().catch(() => {});
     // チャンネルページ以外の場合 -> キャンセル

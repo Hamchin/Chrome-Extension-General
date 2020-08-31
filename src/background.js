@@ -47,8 +47,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // タブ更新イベント
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    // 更新情報をコンテンツスクリプトへ送信する
-    chrome.tabs.sendMessage(tabId, changeInfo);
+    // 更新情報を送信する
+    const message = { type: 'UPDATED', data: changeInfo };
+    chrome.tabs.sendMessage(tabId, message);
 });
 
 // タブ削除イベント

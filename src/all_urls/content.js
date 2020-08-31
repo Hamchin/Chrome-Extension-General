@@ -25,22 +25,12 @@ $(document).on('mouseup', async () => {
     if (text.match(/[\u0041-\u005A\u0061-\u007A]/g) === null) return;
     // 日本語が含まれている場合 -> キャンセル
     if (text.match(/[\u3040-\u31FF\u3400-\u9FFF]/g) !== null) return;
-    // 翻訳ボタン
+    // 翻訳ボタンを設置する
     const button = $('.ext-trans-btn');
-    const GButton = document.getElementById('gtx-trans');
-    // Google翻訳ボタンが存在する場合 -> 隣にボタンを設置する
-    if (GButton !== null) {
-        const GBRect = GButton.getBoundingClientRect();
-        $(button).css('top', window.pageYOffset + GBRect.y);
-        $(button).css('left', window.pageXOffset + GBRect.x + GBRect.width);
-    }
-    // Google翻訳ボタンが存在しない場合 -> 最後尾にボタンを設置する
-    else {
-        const selectionRects = selection.getRangeAt(0).getClientRects();
-        const lastRect = selectionRects[selectionRects.length - 1];
-        $(button).css('top', window.pageYOffset + lastRect.y + lastRect.height);
-        $(button).css('left', window.pageXOffset + lastRect.x + lastRect.width);
-    }
+    const selectionRects = selection.getRangeAt(0).getClientRects();
+    const lastRect = selectionRects[selectionRects.length - 1];
+    $(button).css('top', window.pageYOffset + lastRect.y + lastRect.height);
+    $(button).css('left', window.pageXOffset + lastRect.x + lastRect.width);
     $(button).removeClass('ext-hidden');
 });
 
