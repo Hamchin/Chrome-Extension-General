@@ -54,7 +54,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // タブ削除イベント
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-    // 不要な履歴を削除する
+    // パターンにマッチする履歴を削除する
     chrome.history.search({text: '', maxResults: 100}, (items) => {
         const history = items.map(item => item.url);
         const targets = history.filter(url => url.match(/[\?#@]/));
