@@ -13,6 +13,7 @@
     "tabs",
     "history",
     "downloads",
+    "contextMenus",
     "clipboardWrite"
   ],
   "web_accessible_resources": [
@@ -20,7 +21,6 @@
   ],
   "background": {
     "scripts": [
-      "src/lib/jquery.min.js",
       "src/lib/config.js",
       "src/background.js"
     ],
@@ -33,7 +33,6 @@
       ],
       "js": [
         "src/lib/jquery.min.js",
-        "src/lib/config.js",
         "src/lib/translate.js",
         "src/all_urls/content.js"
       ],
@@ -47,6 +46,8 @@
       ],
       "js": [
         "src/lib/jquery.min.js",
+        "src/lib/config.js",
+        "src/tweetdeck/component.js",
         "src/tweetdeck/content.js"
       ],
       "css": [
@@ -143,7 +144,6 @@
       ],
       "js": [
         "src/lib/jquery.min.js",
-        "src/lib/config.js",
         "src/lib/translate.js",
         "src/dropbox/content.js"
       ],

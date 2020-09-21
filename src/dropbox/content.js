@@ -5,7 +5,7 @@ const state = {
     text: ''
 };
 
-// マウスアップイベント on PDF
+// マウスアップイベント: PDF
 $(document).on('mouseup', '.pdf-viewer', async () => {
     if (chrome.app === undefined) return;
     if (chrome.app.isInstalled === undefined) return;

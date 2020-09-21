@@ -13,8 +13,7 @@ $(document).ready(() => {
 });
 
 // マウスアップイベント
-$(document).on('mouseup', async () => {
-    await new Promise(resolve => setTimeout(resolve, 5));
+$(document).on('mouseup', () => {
     // フォームにフォーカスされている場合 -> キャンセル
     const tagName = $(':focus').prop('tagName');
     if (tagName === 'INPUT' || tagName === 'TEXTAREA') return;
@@ -28,6 +27,7 @@ $(document).on('mouseup', async () => {
     // 翻訳ボタンを設置する
     const button = $('.ext-trans-btn');
     const selectionRects = selection.getRangeAt(0).getClientRects();
+    if (selectionRects.length === 0) return;
     const lastRect = selectionRects[selectionRects.length - 1];
     $(button).css('top', window.pageYOffset + lastRect.y + lastRect.height);
     $(button).css('left', window.pageXOffset + lastRect.x + lastRect.width);
@@ -61,13 +61,13 @@ $(document).on('mousedown', (e) => {
     }
 });
 
-// クリックイベント on 翻訳ボタン
-$(document).on('click', '.ext-trans-btn', async () => {
+// クリックイベント: 翻訳ボタン
+$(document).on('click', '.ext-trans-btn', () => {
     if (chrome.app === undefined) return;
     if (chrome.app.isInstalled === undefined) return;
     // 翻訳ボタン
     const button = $('.ext-trans-btn');
-    setTimeout(() => $(button).addClass('ext-hidden'), 10);
+    setTimeout(() => $(button).addClass('ext-hidden'), 1);
     // タイムスタンプを記録する
     const modal = $('.ext-trans-modal');
     const timestamp = Date.now();

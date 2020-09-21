@@ -24,7 +24,7 @@ $(document).on('keydown', (e) => {
     return true;
 });
 
-// クリックイベント on コピーボタン
+// クリックイベント: コピーボタン
 $(document).on('click', '.lmt__target_toolbar__copy', () => {
     // テキストエリアへフォーカス
     $('.lmt__source_textarea').focus();

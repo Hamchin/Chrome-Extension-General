@@ -2,22 +2,20 @@
 //  通知送信
 // ========================================
 
-// リンクの最終部分の抽出
+// リンクの最終部分を抽出する
 const getLastPart = (link) => {
     const parts = link.split('/');
     return parts[parts.length - 1];
 };
 
-// 通知送信
+// 通知を送信する
 const sendNotices = () => {
-    if (chrome.app === undefined) return;
-    if (chrome.app.isInstalled === undefined) return;
-    // 自身のユーザーネーム取得
+    // 自身のユーザーネーム
     const receiverName = $('.js-account-summary').find('[rel="user"]').data('user-name');
-    // 通知カラム取得
+    // 通知カラム
     const columns = $('.app-columns').find('.icon-notifications').closest('.column');
     if ($(columns).length === 0) return;
-    // 通知アイテム取得
+    // 通知アイテム
     const items = $(columns).first().find('.stream-item');
     $(items).each((_, item) => {
         // 送信済みの場合 -> スキップ
@@ -31,75 +29,87 @@ const sendNotices = () => {
         // 自分以外のツイートの場合 -> スキップ
         const username = $(item).find('.account-link').find('.username').first().text();
         if (username !== '@' + receiverName) return;
-        // 相手のユーザーネーム取得
+        // 相手のユーザーネーム
         const userLink = $(item).find('.activity-header').find('.account-link').attr('href');
         const senderName = getLastPart(userLink);
-        // ツイートID取得
+        // ツイートID
         const tweetLink = $(item).find('.tweet-header').find('.tweet-timestamp').find('a').attr('href');
         const tweetId = getLastPart(tweetLink);
-        // タイムスタンプ取得
+        // タイムスタンプ
         const dataTime = $(item).find('.activity-header').find('.tweet-timestamp').data('time');
         const timestamp = Math.floor(dataTime / 1000);
-        // 通知送信
-        const data = {
+        // 通知を送信する
+        const body = {
             receiver_name: receiverName,
             sender_name: senderName,
             tweet_id: tweetId,
             timestamp: timestamp
         };
-        const message = { type: 'SEND_NOTICE', data: data };
-        chrome.runtime.sendMessage(message, (status) => {
-            // 成功時 -> マーキング
-            if (status !== 200) return;
-            $(item).addClass('done');
-        });
+        const request = {
+            method: 'POST',
+            body: JSON.stringify(body)
+        };
+        fetch(TWITTER_NOTICE_API_URL + '/notice/update', request)
+            .then(response => response.ok ? $(item).addClass('done') : null);
     });
 };
 
-// 通知送信 (毎分)
+// 毎分通知を送信する
 setInterval(sendNotices, 1000 * 60);
 
 // ========================================
 //  カラムツイート
 // ========================================
 
-// カラムツイートのクリア
+// カラムツイートをクリアする
 const clearColumnTweets = (column) => {
     const settingLink = $(column).find('.column-settings-link');
     Promise.resolve()
     .then(() => new Promise((resolve) => {
-        // 設定ボタンのクリック
+        // 設定ボタンをクリックする
         if ($(settingLink).length === 0) return;
         $(settingLink).get(0).click();
         resolve();
     }))
     .then(() => new Promise((resolve) => {
-        // クリアボタンのクリック
+        // クリアボタンをクリックする
         const clearButton = $(column).find('.icon-clear-timeline');
         if ($(clearButton).length === 0) return;
         $(clearButton).get(0).click();
         resolve();
     }))
     .then(() => new Promise(() => {
-        // 設定ボタンのクリック
+        // 設定ボタンをクリックする
         if ($(settingLink).length === 0) return;
         $(settingLink).get(0).click();
-        // 設定パネルの非表示
+        // 設定パネルを非表示にする
         $(column).find('.column-options').hide();
     }));
 };
+
+// クリックイベント: カラムアイコン
+$(document).on('click', '.app-columns .column-type-icon', (e) => {
+    const column = $(e.target).closest('.column');
+    clearColumnTweets(column);
+});
+
+// マウスダウンイベント: 設定ボタン
+$(document).on('mousedown', '.column-settings-link', (e) => {
+    const column = $(e.target).closest('.column');
+    $(column).find('.column-options').show();
+});
 
 // ========================================
 //  モーダルツイート
 // ========================================
 
-// モーダルツイートのフィルタリング
+// モーダルツイートをフィルタリングする
 const filterModalTweets = (target) => {
     $(target).find('.stream-item').each((_, item) => {
-        // リツイート -> 非表示
+        // リツイートを非表示にする
         const isRetweet = $(item).find('.tweet-context').length > 0;
         if (isRetweet) $(item).addClass('hidden');
-        // リプライ -> 非表示
+        // リプライを非表示にする
         const isReply = $(item).find('.other-replies').length > 0;
         if (isReply) $(item).addClass('hidden');
     });
@@ -112,15 +122,15 @@ const modalObserver = new MutationObserver((mutations) => {
     filterModalTweets(target);
 });
 
-// モーダルツイートのフィルタリング設定
+// モーダルツイートのフィルタリング設定を切り替える
 const toggleFilterModalTweets = (modal) => {
-    // フィルタリング無効化
+    // フィルタリングを無効化する
     if ($(modal).hasClass('filter-enabled')) {
         $(modal).removeClass('filter-enabled');
         $(modal).find('.stream-item').removeClass('hidden');
         modalObserver.disconnect();
     }
-    // フィルタリング有効化
+    // フィルタリングを有効化する
     else {
         $(modal).addClass('filter-enabled');
         const options = { childList: true, subtree: true };
@@ -129,30 +139,110 @@ const toggleFilterModalTweets = (modal) => {
     }
 };
 
-// ========================================
-//  イベント
-// ========================================
-
-// クリックイベント on カラムアイコン
-$(document).on('click', '.column-type-icon', (e) => {
-    // カラムツイートのクリア
-    const columns = $(e.target).closest('.app-columns');
-    if (columns.length > 0) {
-        const column = $(e.target).closest('.column');
-        clearColumnTweets(column);
-    }
-});
-
-// マウスダウンイベント on 設定ボタン
-$(document).on('mousedown', '.column-settings-link', (e) => {
-    // 設定パネルの表示
-    const column = $(e.target).closest('.column');
-    $(column).find('.column-options').show();
-});
-
-// ダブルクリックイベント on ヘッダー
-$(document).on('dblclick', '.js-column-header', (e) => {
-    // モーダルツイートのフィルタリング設定
+// ダブルクリックイベント: ヘッダー
+$(document).on('dblclick', '.open-modal .column-header-temp', (e) => {
     const modal = $(e.target).closest('.open-modal');
-    if (modal.length > 0) toggleFilterModalTweets(modal);
+    toggleFilterModalTweets(modal);
 });
+
+// ========================================
+//  カスタムタイムライン
+// ========================================
+
+// ツイートを取得する
+const getTweets = (listName, userName, callback) => {
+    const url = new URL(TWITTER_API_URL + '/lists/statuses');
+    const body = {
+        access_token: TWITTER_ACCESS_TOKEN,
+        access_secret: TWITTER_ACCESS_SECRET,
+        slug: listName,
+        owner_screen_name: userName,
+        trim_user: false
+    };
+    const request = {
+        method: 'POST',
+        body: JSON.stringify(body)
+    };
+    fetch(url.toString(), request)
+        .then(response => response.ok ? response.json() : [])
+        .then(tweets => callback(tweets));
+};
+
+// ツイートをいいねする
+const likeTweet = (tweetId, callback) => {
+    const url = new URL(TWITTER_API_URL + '/favorites/create');
+    const body = {
+        access_token: TWITTER_ACCESS_TOKEN,
+        access_secret: TWITTER_ACCESS_SECRET,
+        tweet_id: tweetId
+    };
+    const request = {
+        method: 'POST',
+        body: JSON.stringify(body)
+    };
+    fetch(url.toString(), request)
+        .then(response => response.ok ? response.json() : null)
+        .then(tweet => tweet ? callback(tweet) : alert('Like Failed.'));
+};
+
+// タイムラインをカスタマイズする
+const customizeTimeline = (column) => {
+    const listName = $(column).find('.column-heading').text();
+    const userName = $(column).find('.attribution').text().replace('@', '');
+    const content = $(column).find('.column-content');
+    const container = $('<div>', { class: 'chirp-container scroll-styled-v' });
+    getTweets(listName, userName, (tweets) => {
+        tweets.forEach((tweet) => {
+            if (tweet.favorited) return;
+            if (tweet.favorite_count === 0) return;
+            const item = getTweetItem(tweet).replace(/\n\s+/g, '');
+            $(container).append(item);
+        });
+        $(content).empty();
+        $(content).append(container);
+    });
+};
+
+// クリックイベント: ツイートアイテム
+$(document).on('click', '.ext-column .stream-item', (e) => {
+    const targetIs = (selector) => $(e.target).closest(selector).length > 0;
+    if (targetIs('.account-link')) return;
+    if (targetIs('.tweet-timestamp')) return;
+    if (targetIs('.media-item')) return;
+    if (targetIs('.media-image')) return;
+    if (targetIs('.tweet-reply-item')) return;
+    if (targetIs('.tweet-retweet-item')) return;
+    const tweetItem = $(e.target).closest('.stream-item');
+    const tweetId = $(tweetItem).data('tweet-id');
+    likeTweet(tweetId, (tweet) => {
+        const favoriteItem = $(tweetItem).find('.tweet-favorite-item');
+        $(tweetItem).addClass('is-favorite');
+        $(favoriteItem).find('.icon').removeClass('icon-favorite');
+        $(favoriteItem).find('.icon').addClass('icon-heart-filled');
+        $(favoriteItem).find('.tweet-action').addClass('anim anim-slower anim-bounce-in');
+        $(favoriteItem).find('.like-count').text(tweet.favorite_count);
+    });
+});
+
+// クリックイベント: ヘッダー
+$(document).on('click', '.ext-column .column-header', (e) => {
+    const column = $(e.target).closest('.column');
+    const container = $(column).find('.chirp-container');
+    $(container).scrollTop(0);
+});
+
+// ダブルクリックイベント: リストアイコン
+$(document).on('dblclick', '.app-columns .icon-list', (e) => {
+    const column = $(e.target).closest('.column');
+    $(column).addClass('ext-column');
+    customizeTimeline(column);
+});
+
+// 毎分カスタムタイムラインを更新する
+setInterval(() => {
+    $('.ext-column').each((_, column) => {
+        const container = $(column).find('.chirp-container');
+        if ($(container).scrollTop() > 0) return;
+        customizeTimeline(column);
+    });
+}, 1000 * 60);

@@ -5,7 +5,7 @@ const dialogObserver = new MutationObserver(() => {
     dialogObserver.disconnect();
 });
 
-// マウスダウンイベント on [ゴミ箱を空にする]ボタン
+// マウスダウンイベント: [ゴミ箱を空にする]ボタン
 $(document).on('mousedown', '.h-v-x', (e) => {
     const text = e.target.textContent;
     if (text !== 'ゴミ箱を空にする') return;
@@ -13,7 +13,7 @@ $(document).on('mousedown', '.h-v-x', (e) => {
     dialogObserver.observe(document, options);
 });
 
-// マウスインイベント on アップロードポップアップ
+// マウスインイベント: アップロードポップアップ
 $(document).on('mouseenter', '.a-Cd', () => {
     // アップロード完了の場合 -> キャンセル
     const text = $('.a-Cd').attr('aria-label');
@@ -22,7 +22,7 @@ $(document).on('mouseenter', '.a-Cd', () => {
     $('.a-Cd-oa').addClass('visible');
 });
 
-// マウスアウトイベント on アップロードポップアップ
+// マウスアウトイベント: アップロードポップアップ
 $(document).on('mouseleave', '.a-Cd', () => {
     // アップロード履歴の非表示
     $('.a-Cd-oa').removeClass('visible');

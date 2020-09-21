@@ -1,9 +1,9 @@
-.column-type-icon {
-    cursor: pointer !important;
-}
-
 .js-column-message {
     display: none !important;
+}
+
+.app-columns .column-type-icon {
+    cursor: pointer !important;
 }
 
 .done .activity-header .icon-heart-filled {
@@ -14,7 +14,7 @@
     color: #1DA1F2 !important;
 }
 
-.hidden .item-box {
+.mdl .hidden .item-box {
     opacity: 0.25 !important;
 }
 
@@ -28,4 +28,17 @@
 
 .mdl .hidden .js-show-this-thread {
     display: none !important;
+}
+
+.ext-column .column-header {
+    cursor: pointer !important;
+}
+
+.ext-column .column-type-icon {
+    color: #1DA1F2 !important;
+}
+
+.ext-column .chirp-container {
+    height: 100% !important;
+    overflow-y: scroll !important;
 }

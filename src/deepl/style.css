@@ -5,3 +5,7 @@
 .lmt__stickyMenubar_whiteBackground {
     display: none !important;
 }
+
+.dl_app_popup {
+    display: none !important;
+}

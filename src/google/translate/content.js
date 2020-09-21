@@ -1,4 +1,4 @@
-// キーイベント on 言語選択
+// キーイベント: 言語選択
 $(document).on('keydown', '.tl-wrap', (e) => {
     // 左キー -> フォーカスの逆移動
     if (e.keyCode === 37) {
@@ -10,7 +10,7 @@ $(document).on('keydown', '.tl-wrap', (e) => {
     }
 });
 
-// キーイベント on 全体
+// キーイベント: 全体
 $(document).on('keydown', (e) => {
     // Escキー -> フォーカス解除
     if (e.keyCode === 27) {
