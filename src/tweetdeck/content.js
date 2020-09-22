@@ -149,6 +149,9 @@ $(document).on('dblclick', '.open-modal .column-header-temp', (e) => {
 //  カスタムタイムライン
 // ========================================
 
+// 既読済みツイートの連想配列
+const readTweetMap = new Map();
+
 // ツイートを取得する
 const getTweets = (listName, userName, callback) => {
     const url = new URL(TWITTER_API_URL + '/lists/statuses');
@@ -157,7 +160,10 @@ const getTweets = (listName, userName, callback) => {
         access_secret: TWITTER_ACCESS_SECRET,
         slug: listName,
         owner_screen_name: userName,
-        trim_user: false
+        exclude_replies: true,
+        exclude_retweets: true,
+        trim_user: false,
+        count: 400
     };
     const request = {
         method: 'POST',
@@ -187,14 +193,17 @@ const likeTweet = (tweetId, callback) => {
 
 // タイムラインをカスタマイズする
 const customizeTimeline = (column) => {
+    const columnId = $(column).data('column');
     const listName = $(column).find('.column-heading').text();
     const userName = $(column).find('.attribution').text().replace('@', '');
     const content = $(column).find('.column-content');
     const container = $('<div>', { class: 'chirp-container scroll-styled-v' });
+    const readTweetIds = readTweetMap.has(columnId) ? readTweetMap.get(columnId) : [];
     getTweets(listName, userName, (tweets) => {
         tweets.forEach((tweet) => {
             if (tweet.favorited) return;
             if (tweet.favorite_count === 0) return;
+            if (readTweetIds.includes(tweet.id_str)) return;
             const item = getTweetItem(tweet).replace(/\n\s+/g, '');
             $(container).append(item);
         });
@@ -227,8 +236,12 @@ $(document).on('click', '.ext-column .stream-item', (e) => {
 // クリックイベント: ヘッダー
 $(document).on('click', '.ext-column .column-header', (e) => {
     const column = $(e.target).closest('.column');
-    const container = $(column).find('.chirp-container');
-    $(container).scrollTop(0);
+    const columnId = $(column).data('column');
+    const getTweetId = (_, item) => String($(item).data('tweet-id'));
+    const tweetIds = $(column).find('.stream-item').map(getTweetId).get();
+    const readTweetIds = readTweetMap.has(columnId) ? readTweetMap.get(columnId) : [];
+    readTweetMap.set(columnId, readTweetIds.concat(tweetIds).slice(-100));
+    $(column).find('.chirp-container').empty();
 });
 
 // ダブルクリックイベント: リストアイコン
