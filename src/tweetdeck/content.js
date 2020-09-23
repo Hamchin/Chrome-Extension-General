@@ -169,8 +169,9 @@ const getListTweets = async (listName, userName) => {
         method: 'POST',
         body: JSON.stringify(body)
     };
-    const response = await fetch(url.toString(), request);
-    const tweets = response.ok ? await response.json() : [];
+    const tweets = await fetch(url.toString(), request)
+        .then(response => response.ok ? response.json() : [])
+        .catch(_ => []);
     return tweets;
 };
 
@@ -187,8 +188,9 @@ const getTweet = async (tweetId) => {
         method: 'POST',
         body: JSON.stringify(body)
     };
-    const response = await fetch(url.toString(), request);
-    const tweet = response.ok ? await response.json() : null;
+    const tweet = await fetch(url.toString(), request)
+        .then(response => response.ok ? response.json() : null)
+        .catch(_ => null);
     return tweet;
 };
 
@@ -205,8 +207,9 @@ const likeTweet = async (tweetId) => {
         method: 'POST',
         body: JSON.stringify(body)
     };
-    const response = await fetch(url.toString(), request);
-    const tweet = response.ok ? await response.json() : null;
+    const tweet = await fetch(url.toString(), request)
+        .then(response => response.ok ? response.json() : null)
+        .catch(_ => null);
     return tweet;
 };
 
