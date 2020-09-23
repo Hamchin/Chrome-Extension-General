@@ -231,6 +231,9 @@ const customizeTimeline = async (column) => {
     });
     $(content).empty();
     $(content).append(container);
+    const tweetIds = tweets.map(tweet => tweet.id_str);
+    const isIncluded = (tweetId) => tweetIds.includes(tweetId);
+    readTweetMap.set(columnId, readTweetIds.filter(isIncluded));
 };
 
 // クリックイベント: ツイートアイテム
@@ -257,7 +260,7 @@ $(document).on('click', '.ext-column .column-header', (e) => {
     const getTweetId = (_, item) => String($(item).data('tweet-id'));
     const tweetIds = $(column).find('.stream-item').map(getTweetId).get();
     const readTweetIds = readTweetMap.has(columnId) ? readTweetMap.get(columnId) : [];
-    readTweetMap.set(columnId, readTweetIds.concat(tweetIds).slice(-100));
+    readTweetMap.set(columnId, readTweetIds.concat(tweetIds));
     $(column).find('.chirp-container').empty();
 });
 
