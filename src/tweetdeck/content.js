@@ -152,8 +152,8 @@ $(document).on('dblclick', '.open-modal .column-header-temp', (e) => {
 // 既読済みツイートの連想配列
 const readTweetMap = new Map();
 
-// ツイートを取得する
-const getTweets = (listName, userName, callback) => {
+// リストのタイムラインを取得する
+const getListTweets = async (listName, userName) => {
     const url = new URL(TWITTER_API_URL + '/lists/statuses');
     const body = {
         access_token: TWITTER_ACCESS_TOKEN,
@@ -169,51 +169,69 @@ const getTweets = (listName, userName, callback) => {
         method: 'POST',
         body: JSON.stringify(body)
     };
-    fetch(url.toString(), request)
-        .then(response => response.ok ? response.json() : [])
-        .then(tweets => callback(tweets));
+    const response = await fetch(url.toString(), request);
+    const tweets = response.ok ? await response.json() : [];
+    return tweets;
 };
 
-// ツイートをいいねする
-const likeTweet = (tweetId, callback) => {
-    const url = new URL(TWITTER_API_URL + '/favorites/create');
+// ツイートを個別に取得する
+const getTweet = async (tweetId) => {
+    const url = new URL(TWITTER_API_URL + '/statuses/show');
     const body = {
         access_token: TWITTER_ACCESS_TOKEN,
         access_secret: TWITTER_ACCESS_SECRET,
-        tweet_id: tweetId
+        tweet_id: tweetId,
+        trim_user: false
     };
     const request = {
         method: 'POST',
         body: JSON.stringify(body)
     };
-    fetch(url.toString(), request)
-        .then(response => response.ok ? response.json() : null)
-        .then(tweet => tweet ? callback(tweet) : alert('Like Failed.'));
+    const response = await fetch(url.toString(), request);
+    const tweet = response.ok ? await response.json() : null;
+    return tweet;
+};
+
+// ツイートにいいねを付ける
+const likeTweet = async (tweetId) => {
+    const url = new URL(TWITTER_API_URL + '/favorites/create');
+    const body = {
+        access_token: TWITTER_ACCESS_TOKEN,
+        access_secret: TWITTER_ACCESS_SECRET,
+        tweet_id: tweetId,
+        trim_user: false
+    };
+    const request = {
+        method: 'POST',
+        body: JSON.stringify(body)
+    };
+    const response = await fetch(url.toString(), request);
+    const tweet = response.ok ? await response.json() : null;
+    return tweet;
 };
 
 // タイムラインをカスタマイズする
-const customizeTimeline = (column) => {
+const customizeTimeline = async (column) => {
     const columnId = $(column).data('column');
     const listName = $(column).find('.column-heading').text();
     const userName = $(column).find('.attribution').text().replace('@', '');
     const content = $(column).find('.column-content');
     const container = $('<div>', { class: 'chirp-container scroll-styled-v' });
     const readTweetIds = readTweetMap.has(columnId) ? readTweetMap.get(columnId) : [];
-    getTweets(listName, userName, (tweets) => {
-        tweets.forEach((tweet) => {
-            if (tweet.favorited) return;
-            if (tweet.favorite_count === 0) return;
-            if (readTweetIds.includes(tweet.id_str)) return;
-            const item = getTweetItem(tweet).replace(/\n\s+/g, '');
-            $(container).append(item);
-        });
-        $(content).empty();
-        $(content).append(container);
+    const tweets = await getListTweets(listName, userName);
+    tweets.forEach((tweet) => {
+        if (tweet.favorited) return;
+        if (tweet.favorite_count === 0) return;
+        if (readTweetIds.includes(tweet.id_str)) return;
+        const tweetItem = getTweetItem(tweet);
+        $(container).append(tweetItem);
     });
+    $(content).empty();
+    $(content).append(container);
 };
 
 // クリックイベント: ツイートアイテム
-$(document).on('click', '.ext-column .stream-item', (e) => {
+$(document).on('click', '.ext-column .stream-item', async (e) => {
     const targetIs = (selector) => $(e.target).closest(selector).length > 0;
     if (targetIs('.account-link')) return;
     if (targetIs('.tweet-timestamp')) return;
@@ -223,14 +241,10 @@ $(document).on('click', '.ext-column .stream-item', (e) => {
     if (targetIs('.tweet-retweet-item')) return;
     const tweetItem = $(e.target).closest('.stream-item');
     const tweetId = $(tweetItem).data('tweet-id');
-    likeTweet(tweetId, (tweet) => {
-        const favoriteItem = $(tweetItem).find('.tweet-favorite-item');
-        $(tweetItem).addClass('is-favorite');
-        $(favoriteItem).find('.icon').removeClass('icon-favorite');
-        $(favoriteItem).find('.icon').addClass('icon-heart-filled');
-        $(favoriteItem).find('.tweet-action').addClass('anim anim-slower anim-bounce-in');
-        $(favoriteItem).find('.like-count').text(tweet.favorite_count);
-    });
+    const tweet = await likeTweet(tweetId) || await getTweet(tweetId);
+    if (tweet === null) return;
+    const newTweetItem = getTweetItem(tweet);
+    $(tweetItem).replaceWith(newTweetItem);
 });
 
 // クリックイベント: ヘッダー

@@ -104,9 +104,10 @@ const getReplyItem = () => {
 
 // アイテム: リツイート
 const getRetweetItem = (tweet) => {
+    const anim = tweet.retweeted ? 'anim anim-slower anim-bounce-in' : '';
     return (`
         <li class="tweet-retweet-item pull-left margin-r--10">
-            <a class="tweet-action position-rel">
+            <a class="tweet-action position-rel ${anim}">
                 <i class="icon icon-retweet icon-retweet-toggle txt-center pull-left"></i>
                 <span class="pull-right icon-retweet-toggle margin-l--3 margin-t--1 txt-size--12 retweet-count">${tweet.retweet_count}</span>
             </a>
@@ -117,9 +118,10 @@ const getRetweetItem = (tweet) => {
 // アイテム: いいね
 const getFavoriteItem = (tweet) => {
     const icon = tweet.favorited ? 'icon-heart-filled' : 'icon-favorite';
+    const anim = tweet.favorited ? 'anim anim-slower anim-bounce-in' : '';
     return (`
         <li class="tweet-favorite-item pull-left margin-r--10">
-            <a class="tweet-action position-rel">
+            <a class="tweet-action position-rel ${anim}">
                 <i class="icon ${icon} icon-favorite-toggle txt-center pull-left"></i>
                 <span class="pull-right icon-favorite-toggle margin-l--2 margin-t--1 txt-size--12 like-count">${tweet.favorite_count}</span>
             </a>
@@ -145,7 +147,7 @@ const getTweetItem = (tweet) => {
     const classList = ['stream-item', 'is-actionable'];
     if (tweet.favorited) classList.push('is-favorite');
     if (tweet.retweeted) classList.push('is-retweet');
-    return (`
+    const tweetItem = (`
         <article class="${classList.join(' ')}" data-tweet-id="${tweet.id_str}">
             <div class="item-box">
                 <div class="tweet">
@@ -156,4 +158,5 @@ const getTweetItem = (tweet) => {
             </div>
         </article>
     `);
+    return tweetItem.replace(/\n\s+/g, '');
 };
