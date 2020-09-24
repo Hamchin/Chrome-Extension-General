@@ -81,7 +81,7 @@
         "https://www.google.co.jp/*"
       ],
       "css": [
-        "src/google/www/style.css"
+        "src/google/search/style.css"
       ]
     },
     {
@@ -167,6 +167,5 @@
         "src/blog/style.css"
       ]
     }
-  ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  ]
 }
