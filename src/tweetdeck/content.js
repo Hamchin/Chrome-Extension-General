@@ -253,8 +253,8 @@ $(document).on('click', '.ext-column .stream-item', async (e) => {
     $(tweetItem).replaceWith(newTweetItem);
 });
 
-// クリックイベント: ヘッダー
-$(document).on('click', '.ext-column .column-header', (e) => {
+// クリックイベント: カラムアイコン
+$(document).on('click', '.ext-column .column-type-icon', (e) => {
     const column = $(e.target).closest('.column');
     const columnId = $(column).data('column');
     const getTweetId = (_, item) => String($(item).data('tweet-id'));

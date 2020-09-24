@@ -13,7 +13,8 @@ $(document).ready(() => {
 });
 
 // マウスアップイベント
-$(document).on('mouseup', () => {
+$(document).on('mouseup', async () => {
+    await new Promise(resolve => setTimeout(resolve, 1));
     // フォームにフォーカスされている場合 -> キャンセル
     const tagName = $(':focus').prop('tagName');
     if (tagName === 'INPUT' || tagName === 'TEXTAREA') return;
