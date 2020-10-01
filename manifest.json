@@ -1,59 +1,26 @@
 {
-  "name": "My Chrome Extension",
+  "name": "My Extension",
   "version": "1.0.0",
   "manifest_version": 2,
   "description": "",
   "icons": {
-    "16": "icons/icon16.png",
-    "32": "icons/icon32.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "img/icon16.png",
+    "48": "img/icon48.png",
+    "128": "img/icon128.png"
   },
   "permissions": [
     "tabs",
     "history",
     "downloads",
-    "contextMenus",
     "clipboardWrite"
-  ],
-  "web_accessible_resources": [
-    "icons/DeepL.svg"
   ],
   "background": {
     "scripts": [
-      "src/lib/config.js",
       "src/background.js"
     ],
     "persistent": false
   },
   "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "src/lib/jquery.min.js",
-        "src/lib/translate.js",
-        "src/all_urls/content.js"
-      ],
-      "css": [
-        "src/all_urls/style.css"
-      ]
-    },
-    {
-      "matches": [
-        "https://tweetdeck.twitter.com/*"
-      ],
-      "js": [
-        "src/lib/jquery.min.js",
-        "src/lib/config.js",
-        "src/tweetdeck/component.js",
-        "src/tweetdeck/content.js"
-      ],
-      "css": [
-        "src/tweetdeck/style.css"
-      ]
-    },
     {
       "matches": [
         "https://twitter.com/*"
@@ -112,43 +79,6 @@
       "js": [
         "src/lib/jquery.min.js",
         "src/google/oauth/content.js"
-      ]
-    },
-    {
-      "matches": [
-        "https://translate.google.com/*",
-        "https://translate.google.co.jp/*"
-      ],
-      "js": [
-        "src/lib/jquery.min.js",
-        "src/lib/translate.js",
-        "src/google/translate/content.js"
-      ]
-    },
-    {
-      "matches": [
-        "https://www.deepl.com/*"
-      ],
-      "js": [
-        "src/lib/jquery.min.js",
-        "src/lib/translate.js",
-        "src/deepl/content.js"
-      ],
-      "css": [
-        "src/deepl/style.css"
-      ]
-    },
-    {
-      "matches": [
-        "https://www.dropbox.com/*"
-      ],
-      "js": [
-        "src/lib/jquery.min.js",
-        "src/lib/translate.js",
-        "src/dropbox/content.js"
-      ],
-      "css": [
-        "src/dropbox/style.css"
       ]
     },
     {
