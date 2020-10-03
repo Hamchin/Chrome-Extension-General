@@ -18,9 +18,6 @@ $(document).on('click', async () => {
 
 // チャンネル動画停止用オブザーバー
 const videoStopObserver = new MutationObserver(() => {
-    // チャンネル登録済みの場合 -> キャンセル
-    const subscribed = $('app-header').find('[subscribed]');
-    if (subscribed.length > 0) videoStopObserver.disconnect();
     // 動画が存在しない場合 -> キャンセル
     const video = $('ytd-channel-video-player-renderer').find('video');
     if ($(video).length === 0) return;
@@ -45,8 +42,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (pathList.length === 0) return;
     const channelPaths = ['c', 'channel', 'user'];
     if (channelPaths.includes(pathList[0]) === false) return;
-    const lastPath = pathList.slice(-1)[0];
-    if (pathList.length !== 2 && lastPath !== 'featured') return;
     // チャンネル動画を停止する
     const options = { childList: true, subtree: true };
     videoStopObserver.observe(document, options);
