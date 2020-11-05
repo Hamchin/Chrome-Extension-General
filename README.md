@@ -35,8 +35,8 @@
 
 ## Slack
 
-- Remove an obtrusive elements.
+- Remove distracting elements.
 
 ## Blog
 
-- Remove an obtrusive elements.
+- Remove distracting elements.
