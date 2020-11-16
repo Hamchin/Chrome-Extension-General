@@ -2,3 +2,7 @@
     max-height: 80px !important;
     -webkit-line-clamp: 4 !important;
 }
+
+yt-live-chat-viewer-engagement-message-renderer {
+    display: none !important;
+}

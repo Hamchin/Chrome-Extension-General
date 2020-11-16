@@ -40,7 +40,8 @@
       ],
       "css": [
         "src/youtube/style.css"
-      ]
+      ],
+      "all_frames": true
     },
     {
       "matches": [

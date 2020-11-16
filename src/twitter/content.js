@@ -1,7 +1,7 @@
 // 状態
 const state = { scrollTop: 0 };
 
-// マウスダウンイベント
+// マウスダウンイベント: ドキュメント
 $(document).on('mousedown', () => {
     // スクロール位置を保持する
     state.scrollTop = $(window).scrollTop();

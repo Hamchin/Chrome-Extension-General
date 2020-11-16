@@ -1,19 +1,36 @@
 // 状態
 const state = { scrollTop: 0 };
 
-// マウスダウンイベント
-$(document).on('mousedown', () => {
+// マウスダウンイベント: シンプルリンク
+$(document).on('mousedown', '.yt-simple-endpoint', () => {
     // スクロール位置を保持する
     state.scrollTop = $(window).scrollTop();
 });
 
-// クリックイベント
-$(document).on('click', async () => {
+// クリックイベント: シンプルリンク
+$(document).on('click', '.yt-simple-endpoint', async () => {
     await new Promise(resolve => setTimeout(resolve, 100));
     // PIP中に画面トップまで戻った場合 -> 元のスクロール位置へ戻る
     if (document.pictureInPictureElement === null) return;
     if ($(window).scrollTop() !== 0) return;
     $(window).scrollTop(state.scrollTop);
+});
+
+// ダブルクリックイベント: ドキュメント
+$(document).on('dblclick', () => {
+    const button = $('#show-hide-button').find('paper-button');
+    Promise.resolve()
+    .then(() => new Promise((resolve) => {
+        // チャット非表示ボタンをクリックする
+        if ($(button).length === 0) return;
+        $(button).get(0).click();
+        resolve();
+    }))
+    .then(() => new Promise(() => {
+        // チャット表示ボタンをクリックする
+        if ($(button).length === 0) return;
+        $(button).get(0).click();
+    }));
 });
 
 // チャンネル動画停止用オブザーバー
