@@ -6,3 +6,11 @@
 yt-live-chat-viewer-engagement-message-renderer {
     display: none !important;
 }
+
+.filter-enabled #contents.ytd-section-list-renderer {
+    margin-bottom: 200vh !important;
+}
+
+.filter-enabled .hidden {
+    display: none !important;
+}

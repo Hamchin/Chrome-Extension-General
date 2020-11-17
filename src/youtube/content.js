@@ -16,21 +16,42 @@ $(document).on('click', '.yt-simple-endpoint', async () => {
     $(window).scrollTop(state.scrollTop);
 });
 
-// ダブルクリックイベント: ドキュメント
-$(document).on('dblclick', () => {
-    const button = $('#show-hide-button').find('paper-button');
-    Promise.resolve()
-    .then(() => new Promise((resolve) => {
-        // チャット非表示ボタンをクリックする
-        if ($(button).length === 0) return;
-        $(button).get(0).click();
-        resolve();
-    }))
-    .then(() => new Promise(() => {
-        // チャット表示ボタンをクリックする
-        if ($(button).length === 0) return;
-        $(button).get(0).click();
-    }));
+// ダブルクリックイベント: ヘッダー
+$(document).on('dblclick', '#masthead-container', () => {
+    // 動画ページの場合
+    if (location.pathname === '/watch') {
+        const button = $('#show-hide-button').find('paper-button');
+        Promise.resolve()
+        .then(() => new Promise((resolve) => {
+            // チャット非表示ボタンをクリックする
+            if ($(button).length === 0) return;
+            $(button).get(0).click();
+            resolve();
+        }))
+        .then(() => new Promise(() => {
+            // チャット表示ボタンをクリックする
+            if ($(button).length === 0) return;
+            $(button).get(0).click();
+        }));
+    }
+    // 登録チャンネルページの場合
+    if (location.pathname === '/feed/subscriptions') {
+        // 画面トップまで戻る
+        $(window).scrollTop(0);
+        // フィルタリングを切り替える
+        $('ytd-section-list-renderer').toggleClass('filter-enabled');
+        // 動画アイテム
+        $('ytd-grid-video-renderer').each((_, item) => {
+            // 配信中の場合 -> キャンセル
+            const badge = $(item).find('.badge-style-type-live-now');
+            if ($(badge).length > 0) return;
+            // 配信予約の場合 -> キャンセル
+            const reminder = $(item).find('ytd-toggle-button-renderer');
+            if ($(reminder).length > 0) return;
+            // アイテムを非表示にする
+            $(item).addClass('hidden');
+        });
+    }
 });
 
 // チャンネル動画停止用オブザーバー
@@ -54,12 +75,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // 初期化
     videoStopObserver.disconnect();
     document.exitPictureInPicture().catch(() => {});
-    // チャンネルページ以外の場合 -> キャンセル
+    $('.filter-enabled').removeClass('filter-enabled');
+    // パスが存在しない場合 -> キャンセル
     const pathList = location.pathname.split('/').filter(path => path !== '');
     if (pathList.length === 0) return;
+    // チャンネルページの場合
     const channelPaths = ['c', 'channel', 'user'];
-    if (channelPaths.includes(pathList[0]) === false) return;
-    // チャンネル動画を停止する
-    const options = { childList: true, subtree: true };
-    videoStopObserver.observe(document, options);
+    if (channelPaths.includes(pathList[0])) {
+        // チャンネル動画を停止する
+        const options = { childList: true, subtree: true };
+        videoStopObserver.observe(document, options);
+    }
 });
