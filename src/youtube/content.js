@@ -25,13 +25,13 @@ $(document).on('dblclick', '#masthead-container', () => {
         .then(() => new Promise((resolve) => {
             // チャット非表示ボタンをクリックする
             if ($(button).length === 0) return;
-            $(button).get(0).click();
+            $(button).click();
             resolve();
         }))
         .then(() => new Promise(() => {
             // チャット表示ボタンをクリックする
             if ($(button).length === 0) return;
-            $(button).get(0).click();
+            $(button).click();
         }));
     }
     // 登録チャンネルページの場合
@@ -67,6 +67,22 @@ const videoStopObserver = new MutationObserver(() => {
     videoStopObserver.disconnect();
 });
 
+// ミュートを解除する
+const unmute = () => {
+    const button = $('.ytp-mute-button');
+    if ($(button).length === 0) return;
+    const isMuted = $(button).attr('aria-label').includes('ミュート解除');
+    if (isMuted) $(button).click();
+};
+
+// ライブチャットフローを有効化する
+const enableLiveChatFlow = () => {
+    const button = $('.ylcf-control-button');
+    if ($(button).length === 0) return;
+    const isDisabled = $(button).attr('aria-pressed') === 'false';
+    if (isDisabled) $(button).click();
+};
+
 // メッセージイベント
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // タブ更新以外の場合 -> キャンセル
@@ -84,5 +100,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // チャンネル動画を停止する
         const options = { childList: true, subtree: true };
         videoStopObserver.observe(document, options);
+    }
+    // 動画ページの場合
+    if (pathList[0] === 'watch') {
+        // ミュートを解除する
+        unmute();
+        // ライブチャットフローを有効化する
+        enableLiveChatFlow();
     }
 });
