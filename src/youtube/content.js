@@ -75,7 +75,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // 初期化
     videoStopObserver.disconnect();
     document.exitPictureInPicture().catch(() => {});
-    $('.filter-enabled').removeClass('filter-enabled');
     // パスが存在しない場合 -> キャンセル
     const pathList = location.pathname.split('/').filter(path => path !== '');
     if (pathList.length === 0) return;
