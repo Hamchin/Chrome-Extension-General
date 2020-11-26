@@ -54,6 +54,31 @@ $(document).on('dblclick', '#masthead-container', () => {
     }
 });
 
+// キーダウンイベント: ドキュメント
+$(document).on('keydown', (e) => {
+    // ライブチャットフローの表示を切り替える
+    if (e.key === '=') {
+        // コントロールボタンをクリックする
+        const button = $('.ylcf-control-button');
+        if ($(button).length === 0) return;
+        $(button).click();
+        $(button).data('timestamp', performance.now());
+        // プレーヤーのバーを表示する
+        const player = $('.html5-video-player');
+        $(player).removeClass('ytp-autohide');
+        // プレーヤーのバーを数秒後に非表示にする
+        setTimeout(() => {
+            const before = $(button).data('timestamp');
+            const after = performance.now();
+            if (after - before < 2000) return;
+            $(player).addClass('ytp-autohide');
+        }, 2000);
+    }
+});
+
+// キーダウンイベント: テキストエリア
+$(document).on('keydown', 'input, textarea', (e) => e.stopPropagation());
+
 // チャンネル動画停止用オブザーバー
 const videoStopObserver = new MutationObserver(() => {
     // 動画が存在しない場合 -> キャンセル
@@ -67,22 +92,6 @@ const videoStopObserver = new MutationObserver(() => {
     videoStopObserver.disconnect();
 });
 
-// ミュートを解除する
-const unmute = () => {
-    const button = $('.ytp-mute-button');
-    if ($(button).length === 0) return;
-    const isMuted = $(button).attr('aria-label').includes('ミュート解除');
-    if (isMuted) $(button).click();
-};
-
-// ライブチャットフローを有効化する
-const enableLiveChatFlow = () => {
-    const button = $('.ylcf-control-button');
-    if ($(button).length === 0) return;
-    const isDisabled = $(button).attr('aria-pressed') === 'false';
-    if (isDisabled) $(button).click();
-};
-
 // メッセージイベント
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // タブ更新以外の場合 -> キャンセル
@@ -94,18 +103,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // パスが存在しない場合 -> キャンセル
     const pathList = location.pathname.split('/').filter(path => path !== '');
     if (pathList.length === 0) return;
-    // チャンネルページの場合
+    // チャンネルページの場合 -> チャンネル動画を停止する
     const channelPaths = ['c', 'channel', 'user'];
     if (channelPaths.includes(pathList[0])) {
-        // チャンネル動画を停止する
         const options = { childList: true, subtree: true };
         videoStopObserver.observe(document, options);
-    }
-    // 動画ページの場合
-    if (pathList[0] === 'watch') {
-        // ミュートを解除する
-        unmute();
-        // ライブチャットフローを有効化する
-        enableLiveChatFlow();
     }
 });

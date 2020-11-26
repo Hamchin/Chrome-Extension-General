@@ -13,8 +13,7 @@
 
 - Prevent the channel video from being played.
 - Extend the space of the video title.
-- Unmute when the video page is accessed.
-- Enable [Live Chat Flow](https://github.com/fiahfy/youtube-live-chat-flow) when the video page is accessed.
+- Press <kbd>=</kbd> to toggle the display of [Live Chat Flow](https://github.com/fiahfy/youtube-live-chat-flow).
 - Double-click the header on the video page to reboot the live chat.
 - Double-click the header on the subscription page to show only broadcast information.
 
