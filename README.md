@@ -5,17 +5,18 @@
 - Automatically delete unnecessary history when closing tabs.
 - Automatically clear downloaded items.
 
-## Twitter
-
-- Prevent an accidental return to the top of the page.
-
 ## YouTube
 
 - Prevent the channel video from being played.
 - Extend the space of the video title.
 - Press <kbd>=</kbd> to toggle the display of [Live Chat Flow](https://github.com/fiahfy/youtube-live-chat-flow).
+- Click the button to switch the display of the live chat.
 - Double-click the header on the video page to reboot the live chat.
 - Double-click the header on the subscription page to show only broadcast information.
+
+## Twitter
+
+- Prevent an accidental return to the top of the page.
 
 ## Google Search
 

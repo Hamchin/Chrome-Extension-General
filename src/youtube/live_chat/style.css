@@ -1,0 +1,34 @@
+yt-live-chat-viewer-engagement-message-renderer {
+    display: none !important;
+}
+
+.chat-switch-btn {
+    height: 40px;
+    width: 40px;
+    padding: 8px;
+}
+
+.chat-switch-btn svg {
+    height: 100%;
+    width: 100%;
+}
+
+.chat-switch-btn[type="default"] {
+    color: var(--yt-spec-icon-inactive);
+}
+
+.chat-switch-btn[type="member"] {
+    color: var(--yt-live-chat-sponsor-color);
+}
+
+.chat-switch-btn[type="hidden"] {
+    color: #D00000;
+}
+
+.yt-live-chat-item-list-renderer[type="member"] yt-live-chat-text-message-renderer[author-type=""] {
+    display: none;
+}
+
+.yt-live-chat-item-list-renderer[type="hidden"] yt-live-chat-text-message-renderer {
+    display: none;
+}

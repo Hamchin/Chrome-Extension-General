@@ -23,15 +23,6 @@
   "content_scripts": [
     {
       "matches": [
-        "https://twitter.com/*"
-      ],
-      "js": [
-        "src/lib/jquery.min.js",
-        "src/twitter/content.js"
-      ]
-    },
-    {
-      "matches": [
         "https://www.youtube.com/*"
       ],
       "js": [
@@ -40,8 +31,29 @@
       ],
       "css": [
         "src/youtube/style.css"
+      ]
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/live_chat*"
+      ],
+      "js": [
+        "src/lib/jquery.min.js",
+        "src/youtube/live_chat/content.js"
+      ],
+      "css": [
+        "src/youtube/live_chat/style.css"
       ],
       "all_frames": true
+    },
+    {
+      "matches": [
+        "https://twitter.com/*"
+      ],
+      "js": [
+        "src/lib/jquery.min.js",
+        "src/twitter/content.js"
+      ]
     },
     {
       "matches": [
