@@ -18,7 +18,7 @@ $(document).on('click', '.yt-simple-endpoint', async () => {
 
 // 動画フィルターボタンを追加する
 const addVideoFilterButton = () => {
-    $('.video-filter-btn').remove();
+    if ($('.video-filter-btn').length > 0) return;
     const menu = $('#title-container #menu');
     if ($(menu).length === 0) return;
     const icon = $('<yt-icon>');
@@ -29,8 +29,8 @@ const addVideoFilterButton = () => {
 };
 
 // クリックイベント: 動画フィルターボタン
-$(document).on('click', '.video-filter-btn', () => {
-    const button = $('.video-filter-btn');
+$(document).on('click', '.video-filter-btn', (e) => {
+    const button = $(e.target).closest('.video-filter-btn');
     const type = $(button).attr('type') === 'disabled' ? 'enabled' : 'disabled';
     $(button).attr('type', type);
     // フィルターが有効の場合 -> 配信情報のみ表示する
@@ -84,7 +84,7 @@ $(document).on('keydown', 'input, textarea, .input-content', (e) => e.stopPropag
 // チャンネル動画停止用オブザーバー
 const videoStopObserver = new MutationObserver(() => {
     // 動画が存在しない場合 -> キャンセル
-    const video = $('ytd-channel-video-player-renderer').find('video');
+    const video = $('ytd-channel-video-player-renderer video');
     if ($(video).length === 0) return;
     // 動画の準備が未完了の場合 -> キャンセル
     const videoElement = $(video).get(0);
@@ -110,14 +110,16 @@ const initialize = () => {
     if (location.pathname === '/feed/subscriptions') {
         $('ytd-section-list-renderer').removeClass('video-filter-enabled');
         $('ytd-grid-video-renderer').removeClass('hidden');
+        $('.video-filter-btn').remove();
         addVideoFilterButton();
+        setTimeout(addVideoFilterButton, 1000);
     }
 };
 
 // チャットを更新する
 const reloadChat = () => {
     if (location.pathname !== '/watch') return;
-    const button = $('#show-hide-button').find('paper-button');
+    const button = $('#show-hide-button paper-button');
     Promise.resolve()
     .then(() => new Promise((resolve) => {
         // チャット非表示ボタンをクリックする
