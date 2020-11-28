@@ -9,10 +9,10 @@
 
 - Prevent the channel video from being played.
 - Extend the space of the video title.
-- Press <kbd>=</kbd> to toggle the display of [Live Chat Flow](https://github.com/fiahfy/youtube-live-chat-flow).
-- Click the button to switch the display of the live chat.
-- Double-click the header on the video page to reboot the live chat.
-- Double-click the header on the subscription page to show only broadcast information.
+- Press <kbd>=</kbd> on the video page to switch the display of [Live Chat Flow](https://github.com/fiahfy/youtube-live-chat-flow).
+- Click the button on the live chat frame to filter the display of the live chat.
+- Click the button on the live chat frame to reload the live chat.
+- Click the button on the subscription page to show only broadcast information.
 
 ## Twitter
 
