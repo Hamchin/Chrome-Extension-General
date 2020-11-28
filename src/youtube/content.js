@@ -16,31 +16,26 @@ $(document).on('click', '.yt-simple-endpoint', async () => {
     $(window).scrollTop(state.scrollTop);
 });
 
-// ダブルクリックイベント: ヘッダー
-$(document).on('dblclick', '#masthead-container', () => {
-    // 動画ページの場合
-    if (location.pathname === '/watch') {
-        const button = $('#show-hide-button').find('paper-button');
-        Promise.resolve()
-        .then(() => new Promise((resolve) => {
-            // チャット非表示ボタンをクリックする
-            if ($(button).length === 0) return;
-            $(button).click();
-            resolve();
-        }))
-        .then(() => new Promise(() => {
-            // チャット表示ボタンをクリックする
-            if ($(button).length === 0) return;
-            $(button).click();
-        }));
-    }
-    // 登録チャンネルページの場合
-    if (location.pathname === '/feed/subscriptions') {
-        // 画面トップまで戻る
-        $(window).scrollTop(0);
-        // フィルタリングを切り替える
-        $('ytd-section-list-renderer').toggleClass('filter-enabled');
-        // 動画アイテム
+// 動画フィルターボタンを追加する
+const addVideoFilterButton = () => {
+    $('.video-filter-btn').remove();
+    const menu = $('#title-container #menu');
+    if ($(menu).length === 0) return;
+    const icon = $('<yt-icon>');
+    const iconButton = $('<yt-icon-button>', { class: 'video-filter-btn', title: 'Filter Videos', type: 'disabled' });
+    $(iconButton).append(icon);
+    $(menu).first().before(iconButton);
+    $(icon).html('<svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"></path></svg>');
+};
+
+// クリックイベント: 動画フィルターボタン
+$(document).on('click', '.video-filter-btn', () => {
+    const button = $('.video-filter-btn');
+    const type = $(button).attr('type') === 'disabled' ? 'enabled' : 'disabled';
+    $(button).attr('type', type);
+    // フィルターが有効の場合 -> 配信情報のみ表示する
+    if (type === 'enabled') {
+        $('ytd-section-list-renderer').addClass('video-filter-enabled');
         $('ytd-grid-video-renderer').each((_, item) => {
             // 配信中の場合 -> キャンセル
             const badge = $(item).find('.badge-style-type-live-now');
@@ -51,6 +46,11 @@ $(document).on('dblclick', '#masthead-container', () => {
             // アイテムを非表示にする
             $(item).addClass('hidden');
         });
+    }
+    // フィルターが無効の場合 -> リセット
+    if (type === 'disabled') {
+        $('ytd-section-list-renderer').removeClass('video-filter-enabled');
+        $('ytd-grid-video-renderer').removeClass('hidden');
     }
 });
 
@@ -92,21 +92,48 @@ const videoStopObserver = new MutationObserver(() => {
     videoStopObserver.disconnect();
 });
 
-// メッセージイベント
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // タブ更新以外の場合 -> キャンセル
-    if (message.type !== 'UPDATED') return;
-    if (message.data.status !== 'complete') return;
-    // 初期化
+// 初期化
+const initialize = () => {
     videoStopObserver.disconnect();
     document.exitPictureInPicture().catch(() => {});
-    // パスが存在しない場合 -> キャンセル
-    const pathList = location.pathname.split('/').filter(path => path !== '');
-    if (pathList.length === 0) return;
     // チャンネルページの場合 -> チャンネル動画を停止する
+    const pathList = location.pathname.split('/').filter(path => path !== '');
+    const firstPath = pathList.length ? pathList[0] : '';
     const channelPaths = ['c', 'channel', 'user'];
-    if (channelPaths.includes(pathList[0])) {
+    if (channelPaths.includes(firstPath)) {
         const options = { childList: true, subtree: true };
         videoStopObserver.observe(document, options);
     }
+    // 登録チャンネルページの場合 -> 動画フィルターボタンを追加する
+    if (location.pathname === '/feed/subscriptions') {
+        $('ytd-section-list-renderer').removeClass('video-filter-enabled');
+        $('ytd-grid-video-renderer').removeClass('hidden');
+        addVideoFilterButton();
+    }
+};
+
+// チャットを更新する
+const reloadChat = () => {
+    if (location.pathname !== '/watch') return;
+    const button = $('#show-hide-button').find('paper-button');
+    Promise.resolve()
+    .then(() => new Promise((resolve) => {
+        // チャット非表示ボタンをクリックする
+        if ($(button).length === 0) return;
+        $(button).click();
+        resolve();
+    }))
+    .then(() => new Promise(() => {
+        // チャット表示ボタンをクリックする
+        if ($(button).length === 0) return;
+        $(button).click();
+    }));
+};
+
+// メッセージイベント
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // タブが更新された場合
+    if (message.type === 'UPDATED') initialize();
+    // チャット更新ボタンが押された場合
+    if (message.type === 'RELOAD_CHAT') reloadChat();
 });

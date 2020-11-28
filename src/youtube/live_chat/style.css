@@ -2,18 +2,18 @@ yt-live-chat-viewer-engagement-message-renderer {
     display: none !important;
 }
 
-.chat-switch-btn {
+.chat-switch-btn, .chat-reload-btn {
     height: 40px;
     width: 40px;
     padding: 8px;
 }
 
-.chat-switch-btn svg {
+.chat-switch-btn svg, .chat-reload-btn svg {
     height: 100%;
     width: 100%;
 }
 
-.chat-switch-btn[type="default"] {
+.chat-switch-btn[type="default"], .chat-reload-btn {
     color: var(--yt-spec-icon-inactive);
 }
 

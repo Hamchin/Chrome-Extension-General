@@ -1,8 +1,7 @@
 // タブ更新イベント
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    // 更新情報を送信する
-    const message = { type: 'UPDATED', data: changeInfo };
-    chrome.tabs.sendMessage(tabId, message);
+    if (changeInfo.status !== 'complete') return;
+    chrome.tabs.sendMessage(tabId, { type: 'UPDATED' });
 });
 
 // タブ削除イベント
@@ -22,4 +21,13 @@ chrome.downloads.onChanged.addListener((downloadDelta) => {
     if (downloadDelta.state.current !== 'complete') return;
     const item = { id: downloadDelta.id };
     setTimeout(() => chrome.downloads.erase(item), 5000);
+});
+
+// メッセージイベント
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // チャットをリロードする
+    if (message.type === 'RELOAD_CHAT') {
+        chrome.tabs.sendMessage(sender.tab.id, message);
+        return true;
+    }
 });

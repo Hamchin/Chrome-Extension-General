@@ -3,10 +3,29 @@
     -webkit-line-clamp: 4 !important;
 }
 
-.filter-enabled #contents.ytd-section-list-renderer {
+.video-filter-btn {
+    height: 40px;
+    width: 40px;
+    padding: 8px;
+}
+
+.video-filter-btn svg {
+    height: 100%;
+    width: 100%;
+}
+
+.video-filter-btn[type="disabled"] {
+    color: var(--yt-spec-icon-inactive);
+}
+
+.video-filter-btn[type="enabled"] {
+    color: var(--yt-spec-call-to-action);
+}
+
+.video-filter-enabled #contents.ytd-section-list-renderer {
     margin-bottom: 200vh !important;
 }
 
-.filter-enabled .hidden {
+.video-filter-enabled .hidden {
     display: none !important;
 }
