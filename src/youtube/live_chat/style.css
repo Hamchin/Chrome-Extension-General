@@ -2,26 +2,26 @@ yt-live-chat-viewer-engagement-message-renderer {
     display: none !important;
 }
 
-.chat-switch-btn, .chat-reload-btn {
+.chat-filter-btn, .chat-reload-btn {
     height: 40px;
     width: 40px;
     padding: 8px;
 }
 
-.chat-switch-btn svg, .chat-reload-btn svg {
+.chat-filter-btn svg, .chat-reload-btn svg {
     height: 100%;
     width: 100%;
 }
 
-.chat-switch-btn[type="default"], .chat-reload-btn {
+.chat-filter-btn[type="default"], .chat-reload-btn {
     color: var(--yt-spec-icon-inactive);
 }
 
-.chat-switch-btn[type="member"] {
+.chat-filter-btn[type="member"] {
     color: var(--yt-live-chat-sponsor-color);
 }
 
-.chat-switch-btn[type="hidden"] {
+.chat-filter-btn[type="hidden"] {
     color: #D00000;
 }
 
