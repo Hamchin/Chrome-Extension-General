@@ -56,6 +56,8 @@ $(document).on('click', '.video-filter-btn', () => {
 
 // キーダウンイベント: ドキュメント
 $(document).on('keydown', (e) => {
+    // 修飾キーの場合 -> キャンセル
+    if (e.altKey || e.ctrlKey || e.shiftKey || e.metaKey) return;
     // ライブチャットフローの表示を切り替える
     if (e.key === '=') {
         // コントロールボタンをクリックする
@@ -77,7 +79,7 @@ $(document).on('keydown', (e) => {
 });
 
 // キーダウンイベント: テキストエリア
-$(document).on('keydown', 'input, textarea', (e) => e.stopPropagation());
+$(document).on('keydown', 'input, textarea, .input-content', (e) => e.stopPropagation());
 
 // チャンネル動画停止用オブザーバー
 const videoStopObserver = new MutationObserver(() => {
