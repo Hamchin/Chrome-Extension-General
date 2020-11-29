@@ -1,14 +1,12 @@
 // ダイアログ監視 -> ゴミ箱を空にする
 const dialogObserver = new MutationObserver(() => {
     if ($('.lb-k').length === 0) return;
-    $('.h-De-Vb.h-De-Y').click();
+    $('button[name="d"]').click();
     dialogObserver.disconnect();
 });
 
 // マウスダウンイベント: [ゴミ箱を空にする]ボタン
-$(document).on('mousedown', '.h-v-x', (e) => {
-    const text = e.target.textContent;
-    if (text !== 'ゴミ箱を空にする') return;
+$(document).on('mousedown', 'button[aria-label="ゴミ箱を空にする"]', () => {
     const options = { childList: true, subtree: true };
     dialogObserver.observe(document, options);
 });
