@@ -9,9 +9,11 @@ $(document).on('mousedown', '.yt-simple-endpoint', () => {
 
 // クリックイベント: シンプルリンク
 $(document).on('click', '.yt-simple-endpoint', async () => {
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 10));
     // PIP中に画面トップまで戻った場合 -> 元のスクロール位置へ戻る
-    if (document.pictureInPictureElement === null) return;
+    const isPIP = document.pictureInPictureElement !== null;
+    const isFloated = $('.picture-in-picture').length > 0;
+    if (isPIP === false && isFloated === false) return;
     if ($(window).scrollTop() !== 0) return;
     $(window).scrollTop(state.scrollTop);
 });
@@ -76,6 +78,21 @@ $(document).on('keydown', (e) => {
             $(player).addClass('ytp-autohide');
         }, 2000);
     }
+    // ピクチャーインピクチャー
+    if (e.key === 'p') {
+        if (location.pathname !== '/watch') return;
+        const player = $('ytd-app #player');
+        $(player).toggleClass('picture-in-picture');
+        const isFloated = $(player).hasClass('picture-in-picture');
+        const videoPlayer = $(player).find('.html5-video-player');
+        const video = $(videoPlayer).find('video');
+        const info = $('ytd-app #info.ytd-watch-flexy');
+        const scrollTop = $(window).scrollTop();
+        $(videoPlayer).css('width', isFloated ? $(video).css('width') : '');
+        $(videoPlayer).css('height', isFloated ? $(video).css('height') : '');
+        $(info).css('padding-top', isFloated ? $(video).css('height') : '');
+        $(window).scrollTop(scrollTop);
+    }
 });
 
 // キーダウンイベント: テキストエリア
@@ -95,7 +112,7 @@ const videoStopObserver = new MutationObserver(() => {
 });
 
 // 初期化
-const initialize = () => {
+const initialize = async () => {
     videoStopObserver.disconnect();
     document.exitPictureInPicture().catch(() => {});
     // チャンネルページの場合 -> チャンネル動画を停止する
@@ -111,8 +128,11 @@ const initialize = () => {
         $('ytd-section-list-renderer').removeClass('video-filter-enabled');
         $('ytd-grid-video-renderer').removeClass('hidden');
         $('.video-filter-btn').remove();
-        addVideoFilterButton();
-        setTimeout(addVideoFilterButton, 1000);
+        // 1回/秒の間隔で10秒間ポーリングする
+        for (let i = 0; i < 10; i++) {
+            addVideoFilterButton();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
     }
 };
 

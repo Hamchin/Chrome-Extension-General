@@ -9,6 +9,7 @@
 
 - Prevent the channel video from being played.
 - Extend the space of the video title.
+- Press <kbd>p</kbd> on the video page to float the video.
 - Press <kbd>=</kbd> on the video page to switch the display of [Live Chat Flow](https://github.com/fiahfy/youtube-live-chat-flow).
 - Click the button on the live chat frame to filter the display of the live chat.
 - Click the button on the live chat frame to reload the live chat.
