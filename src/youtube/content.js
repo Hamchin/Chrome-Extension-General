@@ -12,7 +12,7 @@ $(document).on('click', '.yt-simple-endpoint', async () => {
     await new Promise(resolve => setTimeout(resolve, 10));
     // PIP中に画面トップまで戻った場合 -> 元のスクロール位置へ戻る
     const isPIP = document.pictureInPictureElement !== null;
-    const isFloated = $('.picture-in-picture').length > 0;
+    const isFloated = $('.video-float-frame').length > 0;
     if (isPIP === false && isFloated === false) return;
     if ($(window).scrollTop() !== 0) return;
     $(window).scrollTop(state.scrollTop);
@@ -78,25 +78,34 @@ $(document).on('keydown', (e) => {
             $(player).addClass('ytp-autohide');
         }, 2000);
     }
-    // ピクチャーインピクチャー
+    // 動画のフローティング設定を切り替える
     if (e.key === 'p') {
         if (location.pathname !== '/watch') return;
-        const player = $('ytd-app #player');
-        $(player).toggleClass('picture-in-picture');
-        const isFloated = $(player).hasClass('picture-in-picture');
-        const videoPlayer = $(player).find('.html5-video-player');
-        const video = $(videoPlayer).find('video');
-        const info = $('ytd-app #info.ytd-watch-flexy');
-        const scrollTop = $(window).scrollTop();
-        $(videoPlayer).css('width', isFloated ? $(video).css('width') : '');
-        $(videoPlayer).css('height', isFloated ? $(video).css('height') : '');
-        $(info).css('padding-top', isFloated ? $(video).css('height') : '');
-        $(window).scrollTop(scrollTop);
+        const player = $('ytd-app #player .html5-video-player');
+        $(player).toggleClass('video-float-frame');
+        const isFloated = $(player).hasClass('video-float-frame');
+        if (isFloated) $(player).addClass('video-zoom-out');
+        else $(player).removeClass('video-zoom-out');
+        const video = $(player).find('video');
+        $(player).css('width', isFloated ? $(video).css('width') : '');
+        $(player).css('height', isFloated ? $(video).css('height') : '');
     }
 });
 
 // キーダウンイベント: テキストエリア
 $(document).on('keydown', 'input, textarea, .input-content', (e) => e.stopPropagation());
+
+// マウスオーバーイベント: フロートフレーム -> ズームイン
+$(document).on('mouseenter', '.video-float-frame', (e) => {
+    const frame = $(e.target).closest('.video-float-frame');
+    $(frame).removeClass('video-zoom-out');
+});
+
+// マウスアウトイベント: フロートフレーム -> ズームアウト
+$(document).on('mouseleave', '.video-float-frame', (e) => {
+    const frame = $(e.target).closest('.video-float-frame');
+    $(frame).addClass('video-zoom-out');
+});
 
 // チャンネル動画停止用オブザーバー
 const videoStopObserver = new MutationObserver(() => {

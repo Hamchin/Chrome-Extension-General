@@ -30,16 +30,12 @@
     display: none !important;
 }
 
-.picture-in-picture {
+.video-float-frame {
     position: fixed !important;
     z-index: 1000 !important;
 }
 
-.picture-in-picture #player-container-inner {
-    padding-top: 0px !important;
-}
-
-.picture-in-picture .html5-video-player {
+.video-zoom-out {
     transform: scale(0.6);
     transform-origin: top right;
 }
