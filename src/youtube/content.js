@@ -9,7 +9,7 @@ $(document).on('mousedown', '.yt-simple-endpoint', () => {
 
 // クリックイベント: シンプルリンク
 $(document).on('click', '.yt-simple-endpoint', async () => {
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise(resolve => setTimeout(resolve, 100));
     // PIP中に画面トップまで戻った場合 -> 元のスクロール位置へ戻る
     const isPIP = document.pictureInPictureElement !== null;
     const isFloated = $('.video-float-frame').length > 0;
@@ -78,51 +78,74 @@ $(document).on('keydown', (e) => {
             $(player).addClass('ytp-autohide');
         }, 2000);
     }
-    // 動画のフローティング設定を切り替える
-    if (e.key === 'p') {
-        if (location.pathname !== '/watch') return;
-        const player = $('ytd-app #player .html5-video-player');
-        $(player).toggleClass('video-float-frame');
-        const isFloated = $(player).hasClass('video-float-frame');
-        if (isFloated) $(player).addClass('video-zoom-out');
-        else $(player).removeClass('video-zoom-out');
-        const video = $(player).find('video');
-        $(player).css('width', isFloated ? $(video).css('width') : '');
-        $(player).css('height', isFloated ? $(video).css('height') : '');
+    // ミュートを切り替える
+    if (e.key === 'Backspace') {
+        const message = { type: 'SWITCH_MUTE' };
+        chrome.runtime.sendMessage(message);
+    }
+    // 音量を上げる
+    if (e.key === ']') {
+    }
+    // 音量を下げる
+    if (e.key === '[') {
     }
 });
 
 // キーダウンイベント: テキストエリア
 $(document).on('keydown', 'input, textarea, .input-content', (e) => e.stopPropagation());
 
+// フロートフレームを設定する
+const setVideoFloatFrame = (enable) => {
+    const player = $('ytd-app #player .html5-video-player');
+    const video = $(player).find('video');
+    // フロートフレームを有効にする
+    if (enable) {
+        $(player).addClass('video-float-frame');
+        $(player).addClass('video-zoom-out');
+        $(player).css('width', $(video).css('width'));
+        $(player).css('height', $(video).css('height'));
+    }
+    // フロートフレームを無効にする
+    else {
+        $(player).removeClass('video-float-frame');
+        $(player).removeClass('video-zoom-out');
+        $(player).css('width', '');
+        $(player).css('height', '');
+    }
+};
+
 // マウスオーバーイベント: フロートフレーム -> ズームイン
 $(document).on('mouseenter', '.video-float-frame', (e) => {
-    const frame = $(e.target).closest('.video-float-frame');
-    $(frame).removeClass('video-zoom-out');
+    const player = $(e.target).closest('.video-float-frame');
+    $(player).removeClass('video-zoom-out');
 });
 
 // マウスアウトイベント: フロートフレーム -> ズームアウト
 $(document).on('mouseleave', '.video-float-frame', (e) => {
-    const frame = $(e.target).closest('.video-float-frame');
-    $(frame).addClass('video-zoom-out');
+    const player = $(e.target).closest('.video-float-frame');
+    $(player).addClass('video-zoom-out');
+});
+
+// フロートフレーム用オブザーバー
+const videoFloatFrameObserver = new IntersectionObserver((entries) => {
+    if (entries.length === 0) return;
+    if (entries[0].boundingClientRect.bottom < 0) return;
+    setVideoFloatFrame(entries[0].isIntersecting);
 });
 
 // チャンネル動画停止用オブザーバー
 const videoStopObserver = new MutationObserver(() => {
-    // 動画が存在しない場合 -> キャンセル
-    const video = $('ytd-channel-video-player-renderer video');
-    if ($(video).length === 0) return;
-    // 動画の準備が未完了の場合 -> キャンセル
-    const videoElement = $(video).get(0);
-    if (videoElement.paused) return;
-    // 動画を停止する
-    videoElement.pause();
+    const video = document.querySelector('ytd-channel-video-player-renderer video');
+    if (video === null || video.paused) return;
+    video.pause();
     videoStopObserver.disconnect();
 });
 
 // 初期化
 const initialize = async () => {
+    setVideoFloatFrame(false);
     videoStopObserver.disconnect();
+    videoFloatFrameObserver.disconnect();
     document.exitPictureInPicture().catch(() => {});
     // チャンネルページの場合 -> チャンネル動画を停止する
     const pathList = location.pathname.split('/').filter(path => path !== '');
@@ -142,6 +165,12 @@ const initialize = async () => {
             addVideoFilterButton();
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
+    }
+    // 動画ページの場合 -> フロートフレーム用オブザーバーを起動する
+    if (location.pathname === '/watch') {
+        const comments = document.querySelector('ytd-comments');
+        if (comments === null) return;
+        videoFloatFrameObserver.observe(comments);
     }
 };
 

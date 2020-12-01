@@ -30,4 +30,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.tabs.sendMessage(sender.tab.id, message);
         return true;
     }
+    // ミュートを切り替える
+    if (message.type === 'SWITCH_MUTE') {
+        const muted = sender.tab.mutedInfo.muted;
+        const updateProperties = { muted: !muted };
+        chrome.tabs.update(sender.tab.id, updateProperties);
+        return true;
+    }
 });
