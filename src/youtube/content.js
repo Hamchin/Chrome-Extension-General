@@ -1,10 +1,14 @@
+// 初期状態
+const initialState = { scrollTop: 0, clicked: false };
+
 // 状態
-const state = { scrollTop: 0 };
+let state = {};
 
 // マウスダウンイベント: シンプルリンク
 $(document).on('mousedown', '.yt-simple-endpoint', () => {
-    // スクロール位置を保持する
     state.scrollTop = $(window).scrollTop();
+    state.clicked = true;
+    setTimeout(() => state.clicked = false, 100);
 });
 
 // クリックイベント: シンプルリンク
@@ -24,36 +28,31 @@ const addVideoFilterButton = () => {
     const menu = $('#title-container #menu');
     if ($(menu).length === 0) return;
     const icon = $('<yt-icon>');
-    const iconButton = $('<yt-icon-button>', { class: 'video-filter-btn', title: 'Filter Videos', type: 'disabled' });
+    const iconButton = $('<yt-icon-button>', { class: 'video-filter-btn', title: 'Show Broadcast Videos', type: 'disabled' });
     $(iconButton).append(icon);
     $(menu).first().before(iconButton);
-    $(icon).html('<svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"></path></svg>');
+    $(icon).html('<svg viewBox="0 0 24 24"><path d="M16.94 6.91l-1.41 1.45c.9.94 1.46 2.22 1.46 3.64s-.56 2.71-1.46 3.64l1.41 1.45c1.27-1.31 2.05-3.11 2.05-5.09s-.78-3.79-2.05-5.09zM19.77 4l-1.41 1.45C19.98 7.13 21 9.44 21 12.01c0 2.57-1.01 4.88-2.64 6.54l1.4 1.45c2.01-2.04 3.24-4.87 3.24-7.99 0-3.13-1.23-5.96-3.23-8.01zM7.06 6.91c-1.27 1.3-2.05 3.1-2.05 5.09s.78 3.79 2.05 5.09l1.41-1.45c-.9-.94-1.46-2.22-1.46-3.64s.56-2.71 1.46-3.64L7.06 6.91zM5.64 5.45L4.24 4C2.23 6.04 1 8.87 1 11.99c0 3.13 1.23 5.96 3.23 8.01l1.41-1.45C4.02 16.87 3 14.56 3 11.99s1.01-4.88 2.64-6.54z"></path><circle cx="12" cy="12" r="3"></circle></svg>');
 };
 
 // クリックイベント: 動画フィルターボタン
 $(document).on('click', '.video-filter-btn', (e) => {
-    const button = $(e.target).closest('.video-filter-btn');
-    const type = $(button).attr('type') === 'disabled' ? 'enabled' : 'disabled';
-    $(button).attr('type', type);
+    const section = $(e.target).closest('ytd-section-list-renderer');
+    $(section).toggleClass('video-filter-enabled');
+    const enabled = $(section).hasClass('video-filter-enabled');
+    if (enabled === false) return;
     // フィルターが有効の場合 -> 配信情報のみ表示する
-    if (type === 'enabled') {
-        $('ytd-section-list-renderer').addClass('video-filter-enabled');
-        $('ytd-grid-video-renderer').each((_, item) => {
-            // 配信中の場合 -> キャンセル
-            const badge = $(item).find('.badge-style-type-live-now');
-            if ($(badge).length > 0) return;
-            // 配信予約の場合 -> キャンセル
-            const reminder = $(item).find('ytd-toggle-button-renderer');
-            if ($(reminder).length > 0) return;
-            // アイテムを非表示にする
-            $(item).addClass('hidden');
-        });
-    }
-    // フィルターが無効の場合 -> リセット
-    if (type === 'disabled') {
-        $('ytd-section-list-renderer').removeClass('video-filter-enabled');
-        $('ytd-grid-video-renderer').removeClass('hidden');
-    }
+    $(section).find('ytd-grid-video-renderer').each((_, item) => {
+        // 配信中の場合 -> キャンセル
+        const badge = $(item).find('.badge-style-type-live-now');
+        if ($(badge).length > 0) return;
+        // 配信予約の場合 -> キャンセル
+        const reminder = $(item).find('ytd-toggle-button-renderer');
+        if ($(reminder).length > 0) return;
+        // アイテムを非表示にする
+        $(item).addClass('hidden');
+    });
+    $(window).scrollTop(1);
+    $(window).scrollTop(0);
 });
 
 // キーダウンイベント: ドキュメント
@@ -95,15 +94,15 @@ $(document).on('keydown', (e) => {
 $(document).on('keydown', 'input, textarea, .input-content', (e) => e.stopPropagation());
 
 // フロートフレームを設定する
-const setVideoFloatFrame = (enable) => {
+const setVideoFloatFrame = (enabled) => {
     const player = $('ytd-app #player .html5-video-player');
-    const video = $(player).find('video');
+    const parent = $(player).closest('ytd-player');
     // フロートフレームを有効にする
-    if (enable) {
+    if (enabled) {
         $(player).addClass('video-float-frame');
         $(player).addClass('video-zoom-out');
-        $(player).css('width', $(video).css('width'));
-        $(player).css('height', $(video).css('height'));
+        $(player).css('width', $(parent).css('width'));
+        $(player).css('height', $(parent).css('height'));
     }
     // フロートフレームを無効にする
     else {
@@ -126,13 +125,6 @@ $(document).on('mouseleave', '.video-float-frame', (e) => {
     $(player).addClass('video-zoom-out');
 });
 
-// フロートフレーム用オブザーバー
-const videoFloatFrameObserver = new IntersectionObserver((entries) => {
-    if (entries.length === 0) return;
-    if (entries[0].boundingClientRect.bottom < 0) return;
-    setVideoFloatFrame(entries[0].isIntersecting);
-});
-
 // チャンネル動画停止用オブザーバー
 const videoStopObserver = new MutationObserver(() => {
     const video = document.querySelector('ytd-channel-video-player-renderer video');
@@ -141,8 +133,17 @@ const videoStopObserver = new MutationObserver(() => {
     videoStopObserver.disconnect();
 });
 
+// フロートフレーム用オブザーバー
+const videoFloatFrameObserver = new IntersectionObserver((entries) => {
+    if (state.clicked) return;
+    if (entries.length === 0) return;
+    if (entries[0].boundingClientRect.bottom < 0) return;
+    setVideoFloatFrame(entries[0].isIntersecting);
+});
+
 // 初期化
-const initialize = async () => {
+const initialize = () => {
+    state = { ...initialState };
     setVideoFloatFrame(false);
     videoStopObserver.disconnect();
     videoFloatFrameObserver.disconnect();
@@ -157,14 +158,8 @@ const initialize = async () => {
     }
     // 登録チャンネルページの場合 -> 動画フィルターボタンを追加する
     if (location.pathname === '/feed/subscriptions') {
-        $('ytd-section-list-renderer').removeClass('video-filter-enabled');
-        $('ytd-grid-video-renderer').removeClass('hidden');
-        $('.video-filter-btn').remove();
-        // 1回/秒の間隔で10秒間ポーリングする
-        for (let i = 0; i < 10; i++) {
-            addVideoFilterButton();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
+        addVideoFilterButton();
+        setTimeout(addVideoFilterButton, 2000);
     }
     // 動画ページの場合 -> フロートフレーム用オブザーバーを起動する
     if (location.pathname === '/watch') {

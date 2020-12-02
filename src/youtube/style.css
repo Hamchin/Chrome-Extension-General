@@ -14,11 +14,11 @@
     width: 100%;
 }
 
-.video-filter-btn[type="disabled"] {
+.video-filter-btn {
     color: var(--yt-spec-icon-inactive);
 }
 
-.video-filter-btn[type="enabled"] {
+.video-filter-enabled .video-filter-btn {
     color: var(--yt-spec-call-to-action);
 }
 

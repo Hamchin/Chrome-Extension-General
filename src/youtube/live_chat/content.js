@@ -14,8 +14,7 @@ const getChatFrame = () => $(parent.document).find('ytd-live-chat-frame');
 
 // チャットのフィルタータイプを設定する
 const setChatType = (type) => {
-    $('.chat-filter-btn').attr('type', type);
-    $('.yt-live-chat-item-list-renderer').attr('type', type);
+    $('yt-live-chat-renderer').attr('type', type);
     const frame = getChatFrame();
     if ($(frame).length === 0) return;
     $(frame).attr('type', type);
@@ -38,13 +37,13 @@ $(document).ready(() => {
 });
 
 // クリックイベント: チャットフィルターボタン (デフォルト)
-$(document).on('click', '.chat-filter-btn[type="default"]', () => setChatType('member'));
+$(document).on('click', 'yt-live-chat-renderer[type="default"] .chat-filter-btn', () => setChatType('member'));
 
 // クリックイベント: チャットフィルターボタン (メンバー限定)
-$(document).on('click', '.chat-filter-btn[type="member"]', () => setChatType('hidden'));
+$(document).on('click', 'yt-live-chat-renderer[type="member"] .chat-filter-btn', () => setChatType('hidden'));
 
 // クリックイベント: チャットフィルターボタン (非表示)
-$(document).on('click', '.chat-filter-btn[type="hidden"]', () => setChatType('default'));
+$(document).on('click', 'yt-live-chat-renderer[type="hidden"] .chat-filter-btn', () => setChatType('default'));
 
 // クリックイベント: チャットリロードボタン
 $(document).on('click', '.chat-reload-btn', () => chrome.runtime.sendMessage({ type: 'RELOAD_CHAT' }));
