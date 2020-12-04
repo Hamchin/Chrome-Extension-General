@@ -77,17 +77,6 @@ $(document).on('keydown', (e) => {
             $(player).addClass('ytp-autohide');
         }, 2000);
     }
-    // ミュートを切り替える
-    if (e.key === 'Backspace') {
-        const message = { type: 'SWITCH_MUTE' };
-        chrome.runtime.sendMessage(message);
-    }
-    // 音量を上げる
-    if (e.key === ']') {
-    }
-    // 音量を下げる
-    if (e.key === '[') {
-    }
 });
 
 // キーダウンイベント: テキストエリア
