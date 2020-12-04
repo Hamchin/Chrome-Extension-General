@@ -84,7 +84,7 @@ $(document).on('keydown', 'input, textarea, .input-content', (e) => e.stopPropag
 
 // フロートフレームを設定する
 const setVideoFloatFrame = (enabled) => {
-    const player = $('ytd-app #player .html5-video-player');
+    const player = $('.html5-video-player');
     const parent = $(player).closest('ytd-player');
     // フロートフレームを有効にする
     if (enabled) {
@@ -126,9 +126,11 @@ const videoStopObserver = new MutationObserver(() => {
 const videoFloatFrameObserver = new IntersectionObserver((entries) => {
     if (state.clicked) return;
     if (entries.length === 0) return;
-    if (entries[0].boundingClientRect.bottom < 0) return;
-    setVideoFloatFrame(entries[0].isIntersecting);
+    setVideoFloatFrame(!entries[0].isIntersecting);
 });
+
+// 動画音量リセット用オブザーバー
+const volumeResetObserver = new MutationObserver(() => localStorage.removeItem('yt-player-volume'));
 
 // 初期化
 const initialize = () => {
@@ -136,6 +138,7 @@ const initialize = () => {
     setVideoFloatFrame(false);
     videoStopObserver.disconnect();
     videoFloatFrameObserver.disconnect();
+    volumeResetObserver.disconnect();
     document.exitPictureInPicture().catch(() => {});
     // チャンネルページの場合 -> チャンネル動画を停止する
     const pathList = location.pathname.split('/').filter(path => path !== '');
@@ -150,11 +153,15 @@ const initialize = () => {
         addVideoFilterButton();
         setTimeout(addVideoFilterButton, 2000);
     }
-    // 動画ページの場合 -> フロートフレーム用オブザーバーを起動する
+    // 動画ページの場合
     if (location.pathname === '/watch') {
-        const comments = document.querySelector('ytd-comments');
-        if (comments === null) return;
-        videoFloatFrameObserver.observe(comments);
+        // フロートフレーム用オブザーバーを起動する
+        const player = document.querySelector('ytd-player');
+        if (player !== null) videoFloatFrameObserver.observe(player);
+        // 動画音量リセット用オブザーバーを起動する
+        const panel = document.querySelector('.ytp-volume-panel');
+        const options = { attributes: true };
+        if (panel !== null) volumeResetObserver.observe(panel, options);
     }
 };
 
