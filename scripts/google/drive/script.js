@@ -1,7 +1,7 @@
 // ダイアログ監視 -> ゴミ箱を空にする
 const dialogObserver = new MutationObserver(() => {
-    if ($('.lb-k').length === 0) return;
-    $('button[name="d"]').click();
+    if ($('.Jf0hed').length === 0) return;
+    $('.RQiBD').click();
     dialogObserver.disconnect();
 });
 

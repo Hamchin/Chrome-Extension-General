@@ -2,11 +2,10 @@
   "name": "My General Extension",
   "version": "1.0.0",
   "manifest_version": 2,
-  "description": "",
   "icons": {
-    "16": "img/icon16.png",
-    "48": "img/icon48.png",
-    "128": "img/icon128.png"
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
   "permissions": [
     "tabs",
@@ -16,7 +15,7 @@
   ],
   "background": {
     "scripts": [
-      "src/background.js"
+      "background/script.js"
     ],
     "persistent": false
   },
@@ -26,11 +25,11 @@
         "https://www.youtube.com/*"
       ],
       "js": [
-        "src/lib/jquery.min.js",
-        "src/youtube/content.js"
+        "vendor/jquery.min.js",
+        "scripts/youtube/script.js"
       ],
       "css": [
-        "src/youtube/style.css"
+        "scripts/youtube/style.css"
       ]
     },
     {
@@ -38,11 +37,11 @@
         "https://www.youtube.com/live_chat*"
       ],
       "js": [
-        "src/lib/jquery.min.js",
-        "src/youtube/live_chat/content.js"
+        "vendor/jquery.min.js",
+        "scripts/youtube/live_chat/script.js"
       ],
       "css": [
-        "src/youtube/live_chat/style.css"
+        "scripts/youtube/live_chat/style.css"
       ],
       "all_frames": true
     },
@@ -51,8 +50,8 @@
         "https://twitter.com/*"
       ],
       "js": [
-        "src/lib/jquery.min.js",
-        "src/twitter/content.js"
+        "vendor/jquery.min.js",
+        "scripts/twitter/script.js"
       ]
     },
     {
@@ -61,7 +60,7 @@
         "https://www.google.co.jp/*"
       ],
       "css": [
-        "src/google/search/style.css"
+        "scripts/google/search/style.css"
       ]
     },
     {
@@ -69,11 +68,11 @@
         "https://drive.google.com/*"
       ],
       "js": [
-        "src/lib/jquery.min.js",
-        "src/google/drive/content.js"
+        "vendor/jquery.min.js",
+        "scripts/google/drive/script.js"
       ],
       "css": [
-        "src/google/drive/style.css"
+        "scripts/google/drive/style.css"
       ]
     },
     {
@@ -81,8 +80,8 @@
         "https://colab.research.google.com/*"
       ],
       "js": [
-        "src/lib/jquery.min.js",
-        "src/google/colab/content.js"
+        "vendor/jquery.min.js",
+        "scripts/google/colab/script.js"
       ]
     },
     {
@@ -90,8 +89,8 @@
         "https://accounts.google.com/*"
       ],
       "js": [
-        "src/lib/jquery.min.js",
-        "src/google/oauth/content.js"
+        "vendor/jquery.min.js",
+        "scripts/google/oauth/script.js"
       ]
     },
     {
@@ -99,7 +98,7 @@
         "https://app.slack.com/*"
       ],
       "css": [
-        "src/slack/style.css"
+        "scripts/slack/style.css"
       ]
     },
     {
@@ -107,7 +106,7 @@
         "http://jin115.com/*"
       ],
       "css": [
-        "src/blog/style.css"
+        "scripts/blog/style.css"
       ]
     }
   ]
