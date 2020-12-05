@@ -22,11 +22,11 @@
     color: var(--yt-spec-call-to-action);
 }
 
-.video-filter-enabled #contents.ytd-section-list-renderer {
-    margin-bottom: 200vh !important;
+.video-filter-enabled > #continuations {
+    display: none !important;
 }
 
-.video-filter-enabled .hidden {
+.video-filter-enabled ytd-grid-video-renderer[type="default"] {
     display: none !important;
 }
 

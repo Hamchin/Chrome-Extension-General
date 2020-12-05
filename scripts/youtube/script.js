@@ -38,18 +38,21 @@ const addVideoFilterButton = () => {
 $(document).on('click', '.video-filter-btn', (e) => {
     const section = $(e.target).closest('ytd-section-list-renderer');
     $(section).toggleClass('video-filter-enabled');
-    const enabled = $(section).hasClass('video-filter-enabled');
-    if (enabled === false) return;
-    // フィルターが有効の場合 -> 配信情報のみ表示する
+    // 各動画を分類する
     $(section).find('ytd-grid-video-renderer').each((_, item) => {
-        // 配信中の場合 -> キャンセル
-        const badge = $(item).find('.badge-style-type-live-now');
-        if ($(badge).length > 0) return;
-        // 配信予約の場合 -> キャンセル
-        const reminder = $(item).find('ytd-toggle-button-renderer');
-        if ($(reminder).length > 0) return;
-        // アイテムを非表示にする
-        $(item).addClass('hidden');
+        const isFound = (query) => $(item).find(query).length > 0;
+        // 配信中の場合
+        if (isFound('.badge-style-type-live-now')) {
+            $(item).attr('type', 'live');
+        }
+        // 配信予約の場合
+        else if (isFound('paper-button')) {
+            $(item).attr('type', 'reminder');
+        }
+        // それ以外の場合
+        else {
+            $(item).attr('type', 'default');
+        }
     });
     $(window).scrollTop(1);
     $(window).scrollTop(0);
@@ -61,6 +64,7 @@ $(document).on('keydown', (e) => {
     if (e.altKey || e.ctrlKey || e.shiftKey || e.metaKey) return;
     // ライブチャットフローの表示を切り替える
     if (e.key === '=') {
+        if (location.pathname !== '/watch') return;
         // コントロールボタンをクリックする
         const button = $('.ylcf-control-button');
         if ($(button).length === 0) return;
@@ -77,10 +81,21 @@ $(document).on('keydown', (e) => {
             $(player).addClass('ytp-autohide');
         }, 2000);
     }
+    // 音量を調節する
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        if (location.pathname !== '/watch') return;
+        e.preventDefault();
+        // 既にプレーヤーにフォーカス中の場合 -> キャンセル
+        const player = document.querySelector('.html5-video-player');
+        if (document.activeElement.isEqualNode(player)) return;
+        // プレーヤーにキーイベントを送信する
+        const keyEvent = new KeyboardEvent('keydown', { keyCode: e.keyCode });
+        player.dispatchEvent(keyEvent);
+    }
 });
 
 // キーダウンイベント: テキストエリア
-$(document).on('keydown', 'input, textarea, .input-content', (e) => e.stopPropagation());
+$(document).on('keydown', 'input, textarea, ytd-commentbox', (e) => e.stopPropagation());
 
 // フロートフレームを設定する
 const setVideoFloatFrame = (enabled) => {
@@ -129,7 +144,7 @@ const videoFloatFrameObserver = new IntersectionObserver((entries) => {
     setVideoFloatFrame(!entries[0].isIntersecting);
 });
 
-// 動画音量リセット用オブザーバー
+// 音量リセット用オブザーバー
 const volumeResetObserver = new MutationObserver(() => localStorage.removeItem('yt-player-volume'));
 
 // 初期化
@@ -158,7 +173,7 @@ const initialize = () => {
         // フロートフレーム用オブザーバーを起動する
         const player = document.querySelector('ytd-player');
         if (player !== null) videoFloatFrameObserver.observe(player);
-        // 動画音量リセット用オブザーバーを起動する
+        // 音量リセット用オブザーバーを起動する
         const panel = document.querySelector('.ytp-volume-panel');
         const options = { attributes: true };
         if (panel !== null) volumeResetObserver.observe(panel, options);
