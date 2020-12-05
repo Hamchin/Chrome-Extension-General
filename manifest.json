@@ -22,31 +22,6 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.youtube.com/*"
-      ],
-      "js": [
-        "vendor/jquery.min.js",
-        "scripts/youtube/script.js"
-      ],
-      "css": [
-        "scripts/youtube/style.css"
-      ]
-    },
-    {
-      "matches": [
-        "https://www.youtube.com/live_chat*"
-      ],
-      "js": [
-        "vendor/jquery.min.js",
-        "scripts/youtube/live_chat/script.js"
-      ],
-      "css": [
-        "scripts/youtube/live_chat/style.css"
-      ],
-      "all_frames": true
-    },
-    {
-      "matches": [
         "https://twitter.com/*"
       ],
       "js": [

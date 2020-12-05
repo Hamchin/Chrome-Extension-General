@@ -22,12 +22,3 @@ chrome.downloads.onChanged.addListener((downloadDelta) => {
     const item = { id: downloadDelta.id };
     setTimeout(() => chrome.downloads.erase(item), 5000);
 });
-
-// メッセージイベント
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // チャットをリロードする
-    if (message.type === 'RELOAD_CHAT') {
-        chrome.tabs.sendMessage(sender.tab.id, message);
-        return true;
-    }
-});
