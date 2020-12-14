@@ -31,6 +31,18 @@
     },
     {
       "matches": [
+        "https://github.com/*/edit/*.md"
+      ],
+      "js": [
+        "vendor/jquery.min.js",
+        "scripts/github/script.js"
+      ],
+      "css": [
+        "scripts/github/style.css"
+      ]
+    },
+    {
+      "matches": [
         "https://www.google.com/*",
         "https://www.google.co.jp/*"
       ],
