@@ -1,6 +1,6 @@
 // テキスト
-HIDE_TEXT = 'Hide Changes';
-SHOW_TEXT = 'Show Changes';
+const HIDE_TEXT = 'Hide Changes';
+const SHOW_TEXT = 'Show Changes';
 
 // ロードイベント
 $(document).ready(() => {
@@ -15,5 +15,5 @@ $(document).on('click', '.switch-diff-btn', (e) => {
     const preview = $('.commit-preview');
     const disabled = $(preview).attr('enabled') === undefined;
     disabled ? $(preview).attr('enabled', '') : $(preview).removeAttr('enabled');
-    $(e.target).text(disabled ? SHOW_TEXT : HIDE_TEXT);
+    $(e.currentTarget).text(disabled ? SHOW_TEXT : HIDE_TEXT);
 });
