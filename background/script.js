@@ -1,9 +1,3 @@
-// タブ更新イベント
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status !== 'complete') return;
-    chrome.tabs.sendMessage(tabId, { type: 'UPDATED' });
-});
-
 // タブ削除イベント
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
     // パターンにマッチする履歴を削除する

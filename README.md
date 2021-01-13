@@ -27,11 +27,6 @@
 - Reboot the runtime with one click.
 - Prevent the runtime from being disconnected.
 
-## Google OAuth
-
-- Automatically click the approve button.
-- Automatically copy the authorization code and close the tab.
-
 ## Slack
 
 - Remove distracting elements.

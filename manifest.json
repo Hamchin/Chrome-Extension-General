@@ -73,15 +73,6 @@
     },
     {
       "matches": [
-        "https://accounts.google.com/*"
-      ],
-      "js": [
-        "vendor/jquery.min.js",
-        "scripts/google/oauth/script.js"
-      ]
-    },
-    {
-      "matches": [
         "https://app.slack.com/*"
       ],
       "css": [
