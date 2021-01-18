@@ -69,6 +69,9 @@
       "js": [
         "vendor/jquery.min.js",
         "scripts/google/colab/script.js"
+      ],
+      "css": [
+        "scripts/google/colab/style.css"
       ]
     },
     {
