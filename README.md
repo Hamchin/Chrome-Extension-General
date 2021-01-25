@@ -13,7 +13,7 @@
 
 - Switch the display of editing differences in Markdown files.
 
-## Google Search
+## Google
 
 - Hide the search recommendation.
 

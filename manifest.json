@@ -47,7 +47,7 @@
         "https://www.google.co.jp/*"
       ],
       "css": [
-        "scripts/google/search/style.css"
+        "scripts/google/style.css"
       ]
     },
     {
@@ -56,10 +56,10 @@
       ],
       "js": [
         "vendor/jquery.min.js",
-        "scripts/google/drive/script.js"
+        "scripts/drive/script.js"
       ],
       "css": [
-        "scripts/google/drive/style.css"
+        "scripts/drive/style.css"
       ]
     },
     {
@@ -68,10 +68,10 @@
       ],
       "js": [
         "vendor/jquery.min.js",
-        "scripts/google/colab/script.js"
+        "scripts/colab/script.js"
       ],
       "css": [
-        "scripts/google/colab/style.css"
+        "scripts/colab/style.css"
       ]
     },
     {
