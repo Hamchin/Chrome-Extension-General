@@ -24,6 +24,7 @@
 
 ## Google Colaboratory
 
+- Cancel returning to the previous page.
 - Reboot the runtime with one click.
 - Prevent the runtime from being disconnected.
 

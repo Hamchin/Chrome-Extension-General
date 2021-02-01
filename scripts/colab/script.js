@@ -1,3 +1,6 @@
+// ブラウザバックイベント -> ブラウザバックをキャンセルする
+window.addEventListener('popstate', () => history.pushState(null, null, null));
+
 // 変更監視: ドキュメント
 const observer = new MutationObserver(() => {
     const dialog = $('.yes-no-dialog');
