@@ -1,13 +1,3 @@
-// タブ削除イベント
-chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-    // パターンにマッチする履歴を削除する
-    chrome.history.search({text: '', maxResults: 100}, (items) => {
-        const history = items.map(item => item.url);
-        const targets = history.filter(url => url.match(/[\?#@]/));
-        targets.forEach(url => chrome.history.deleteUrl({url: url}));
-    });
-});
-
 // ダウンロードイベント
 chrome.downloads.onChanged.addListener((downloadDelta) => {
     // ダウンロードアイテムを削除する
