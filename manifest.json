@@ -57,9 +57,6 @@
       "js": [
         "vendor/jquery.min.js",
         "scripts/drive/script.js"
-      ],
-      "css": [
-        "scripts/drive/style.css"
       ]
     },
     {
@@ -72,14 +69,6 @@
       ],
       "css": [
         "scripts/colab/style.css"
-      ]
-    },
-    {
-      "matches": [
-        "https://app.slack.com/*"
-      ],
-      "css": [
-        "scripts/slack/style.css"
       ]
     },
     {

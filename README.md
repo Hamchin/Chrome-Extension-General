@@ -19,17 +19,12 @@
 ## Google Drive
 
 - Empty the trash with one click.
-- Simplify the upload pop-up.
 
 ## Google Colaboratory
 
 - Cancel returning to the previous page.
 - Reboot the runtime with one click.
 - Prevent the runtime from being disconnected.
-
-## Slack
-
-- Remove distracting elements.
 
 ## Blog
 
