@@ -8,10 +8,6 @@
 
 - Prevent an accidental return to the top of the page.
 
-## GitHub
-
-- Switch the display of editing differences in Markdown files.
-
 ## Google
 
 - Hide the search recommendation.

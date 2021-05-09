@@ -22,23 +22,23 @@
   "content_scripts": [
     {
       "matches": [
+        "https://discord.com/*"
+      ],
+      "js": [
+        "vendor/jquery.min.js",
+        "scripts/discord/script.js"
+      ],
+      "css": [
+        "scripts/discord/style.css"
+      ]
+    },
+    {
+      "matches": [
         "https://twitter.com/*"
       ],
       "js": [
         "vendor/jquery.min.js",
         "scripts/twitter/script.js"
-      ]
-    },
-    {
-      "matches": [
-        "https://github.com/*/edit/*.md"
-      ],
-      "js": [
-        "vendor/jquery.min.js",
-        "scripts/github/script.js"
-      ],
-      "css": [
-        "scripts/github/style.css"
       ]
     },
     {
