@@ -73,6 +73,14 @@
     },
     {
       "matches": [
+        "https://www.mildom.com/*"
+      ],
+      "css": [
+        "scripts/mildom/style.css"
+      ]
+    },
+    {
+      "matches": [
         "http://jin115.com/*"
       ],
       "css": [
