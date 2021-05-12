@@ -4,6 +4,13 @@
 
 - Automatically clear downloaded items.
 
+## Discord
+
+You can change the user's background color in voice channels by following steps:
+
+1. Right-click on the user.
+2. Select a color from the menu.
+
 ## Twitter
 
 - Prevent an accidental return to the top of the page.

@@ -1,0 +1,159 @@
+/* カラーラベル */
+
+[class^="label"][color] {
+    font-size: 18px;
+}
+
+[class^="label"][color="black"] {
+    color: #3E464D;
+}
+
+[class^="label"][color="brown"] {
+    color: #6E4820;
+}
+
+[class^="label"][color="purple"] {
+    color: #5A3C94;
+}
+
+[class^="label"][color="blue"] {
+    color: #204399;
+}
+
+[class^="label"][color="cyan"] {
+    color: #76C6BB;
+}
+
+[class^="label"][color="green"] {
+    color: #1C7B3A;
+}
+
+[class^="label"][color="lime"] {
+    color: #71BB41;
+}
+
+[class^="label"][color="red"] {
+    color: #BA1B21;
+}
+
+[class^="label"][color="pink"] {
+    color: #CC599C;
+}
+
+[class^="label"][color="orange"] {
+    color: #E57918;
+}
+
+[class^="label"][color="yellow"] {
+    color: #EBEA60;
+}
+
+[class^="label"][color="white"] {
+    color: #D5DFEF;
+}
+
+/* ユーザーネーム */
+
+[class^="voiceUser"][color="black"] [class^="username"] {
+    color: #3E464D !important;
+    text-shadow: -1px 0 #F2F3F5, 0 1px #F2F3F5, 1px 0 #F2F3F5, 0 -1px #F2F3F5 !important;
+}
+
+[class^="voiceUser"][color="brown"] [class^="username"] {
+    color: #6E4820 !important;
+    text-shadow: -1px 0 #F2F3F5, 0 1px #F2F3F5, 1px 0 #F2F3F5, 0 -1px #F2F3F5 !important;
+}
+
+[class^="voiceUser"][color="purple"] [class^="username"] {
+    color: #5A3C94 !important;
+    text-shadow: -1px 0 #F2F3F5, 0 1px #F2F3F5, 1px 0 #F2F3F5, 0 -1px #F2F3F5 !important;
+}
+
+[class^="voiceUser"][color="blue"] [class^="username"] {
+    color: #204399 !important;
+    text-shadow: -1px 0 #F2F3F5, 0 1px #F2F3F5, 1px 0 #F2F3F5, 0 -1px #F2F3F5 !important;
+}
+
+[class^="voiceUser"][color="cyan"] [class^="username"] {
+    color: #76C6BB !important;
+}
+
+[class^="voiceUser"][color="green"] [class^="username"] {
+    color: #1C7B3A !important;
+}
+
+[class^="voiceUser"][color="lime"] [class^="username"] {
+    color: #71BB41 !important;
+}
+
+[class^="voiceUser"][color="red"] [class^="username"] {
+    color: #BA1B21 !important;
+}
+
+[class^="voiceUser"][color="pink"] [class^="username"] {
+    color: #CC599C !important;
+}
+
+[class^="voiceUser"][color="orange"] [class^="username"] {
+    color: #E57918 !important;
+}
+
+[class^="voiceUser"][color="yellow"] [class^="username"] {
+    color: #EBEA60 !important;
+    text-shadow: -1px 0 #2F3136, 0 1px #2F3136, 1px 0 #2F3136, 0 -1px #2F3136 !important;
+}
+
+[class^="voiceUser"][color="white"] [class^="username"] {
+    color: #D5DFEF !important;
+    text-shadow: -1px 0 #2F3136, 0 1px #2F3136, 1px 0 #2F3136, 0 -1px #2F3136 !important;
+}
+
+/* 背景 */
+
+[class*="background"][color="black"] {
+    background-color: #3E464D !important;
+}
+
+[class*="background"][color="brown"] {
+    background-color: #6E4820 !important;
+}
+
+[class*="background"][color="purple"] {
+    background-color: #5A3C94 !important;
+}
+
+[class*="background"][color="blue"] {
+    background-color: #204399 !important;
+}
+
+[class*="background"][color="cyan"] {
+    background-color: #76C6BB !important;
+}
+
+[class*="background"][color="green"] {
+    background-color: #1C7B3A !important;
+}
+
+[class*="background"][color="lime"] {
+    background-color: #71BB41 !important;
+}
+
+[class*="background"][color="red"] {
+    background-color: #BA1B21 !important;
+}
+
+[class*="background"][color="pink"] {
+    background-color: #CC599C !important;
+}
+
+[class*="background"][color="orange"] {
+    background-color: #E57918 !important;
+}
+
+[class*="background"][color="yellow"] {
+    background-color: #EBEA60 !important;
+}
+
+[class*="background"][color="white"] {
+    background-color: #D5DFEF !important;
+}
