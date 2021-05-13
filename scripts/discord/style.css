@@ -1,3 +1,9 @@
+/* 無音中ユーザーのタイル枠 */
+
+[class^="border"]:not([class*="speaking"]) {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
 /* カラーラベル */
 
 [class^="label"][color] {

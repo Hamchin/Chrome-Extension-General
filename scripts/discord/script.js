@@ -26,9 +26,9 @@ const UserColorMap = new Map();
 
 // 画像URLからユーザーIDを取得する
 const getUserIdFromSrc = (src) => {
-    const result = src.match('/avatars/([0-9]+)/');
-    if (result === null || result.length !== 2) return '';
-    return result[1];
+    const result = src.match('/(avatars|assets)/([a-zA-Z0-9]+)');
+    if (result === null || result.length !== 3) return '';
+    return result[2];
 };
 
 // ユーザーDOMからユーザーIDを取得する
@@ -99,6 +99,11 @@ document.oncontextmenu = async (e) => {
     });
     $(group).append(container);
     $(separator).after(group);
+    // メニューの位置を調整する
+    const layer = $(menu).closest('[class^=layer]');
+    if ($(layer).length === 0) return;
+    const top = $(layer).css('top');
+    $(layer).css('top', `calc(${top} - 40px)`);
 };
 
 // クリックイベント: カラーラベル -> 対象ユーザーのカラーを設定する

@@ -6,10 +6,8 @@
 
 ## Discord
 
-You can change the user's background color in voice channels by following steps:
-
-1. Right-click on the user.
-2. Select a color from the menu.
+- Darken the background of silent users in voice channels.
+- Change the user's background color in voice channels from the right-click menu.
 
 ## Twitter
 
