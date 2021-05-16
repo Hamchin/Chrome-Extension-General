@@ -33,7 +33,7 @@ const getUserIdFromSrc = (src) => {
 
 // ユーザーDOMからユーザーIDを取得する
 const getUserIdFromUser = (user) => {
-    const avatar = $(user).find('[class^="avatar"]');
+    const avatar = $(user).find('[class*="avatar-"]');
     if ($(avatar).length === 0) return '';
     const src = $(avatar).css('background-image');
     return getUserIdFromSrc(src);
@@ -41,7 +41,7 @@ const getUserIdFromUser = (user) => {
 
 // 背景DOMからユーザーIDを取得する
 const getUserIdFromBackground = (background) => {
-    const avatar = $(background).find('img[class^="avatar"]');
+    const avatar = $(background).find('img[class*="avatar-"]');
     if ($(avatar).length === 0) return '';
     const src = $(avatar).attr('src');
     return getUserIdFromSrc(src);
@@ -67,8 +67,13 @@ const changeBackgroundColor = (background) => {
 
 // 全ユーザーの色を変える
 const changeAllUserColor = () => {
-    $('[class^="voiceUser"]').each((_, user) => changeUserNameColor(user));
-    $('[class*="background"]').each((_, user) => changeBackgroundColor(user));
+    $('[class*="voiceUser-"]').each((_, user) => changeUserNameColor(user));
+    $('[class*="tileChild-"]').each((_, tile) => {
+        const background = $(tile).find('[class*="background-"]');
+        if ($(background).length > 0) changeBackgroundColor(background);
+        const video = $(tile).find('video');
+        if ($(video).length > 0) $(tile).find('[class*="border-"]').remove();
+    });
 };
 
 // 右クリックイベント: ユーザー -> メニューにカラーラベルを配置する
@@ -76,15 +81,15 @@ document.oncontextmenu = async (e) => {
     await new Promise(resolve => setTimeout(resolve, 1));
     // ユーザーIDを取得する
     const userId = (() => {
-        const user = $(e.target).closest('[class^="voiceUser"]');
+        const user = $(e.target).closest('[class*="voiceUser-"]');
         if ($(user).length > 0) return getUserIdFromUser(user);
-        const background = $(e.target).closest('[class*="background"]');
+        const background = $(e.target).closest('[class*="background-"]');
         if ($(background).length > 0) return getUserIdFromBackground(background);
         return '';
     })();
     if (userId === '') return;
     // メニューにユーザーIDをセットする
-    const menu = $('[class^="menu"]');
+    const menu = $('[class*="menu-"]');
     if ($(menu).length === 0) return;
     $(menu).data('userId', userId);
     // メニューにカラーラベルを配置する
@@ -100,19 +105,19 @@ document.oncontextmenu = async (e) => {
     $(group).append(container);
     $(separator).after(group);
     // メニューの位置を調整する
-    const layer = $(menu).closest('[class^=layer]');
+    const layer = $(menu).closest('[class*=layer-]');
     if ($(layer).length === 0) return;
     const top = $(layer).css('top');
     $(layer).css('top', `calc(${top} - 40px)`);
 };
 
 // クリックイベント: カラーラベル -> 対象ユーザーのカラーを設定する
-$(document).on('click', '[class^="label"][color]', (e) => {
+$(document).on('click', '[class*="label-"][color]', (e) => {
     // カラーを取得する
     const color = $(e.currentTarget).attr('color');
     if (!ColorList.includes(color)) return;
     // メニューを取得する
-    const menu = $(e.currentTarget).closest('[class^="menu"]');
+    const menu = $(e.currentTarget).closest('[class*="menu-"]');
     if ($(menu).length === 0) return;
     // ユーザーIDを取得する
     const userId = $(menu).data('userId');
