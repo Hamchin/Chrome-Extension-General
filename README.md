@@ -27,10 +27,6 @@
 - Reboot the runtime with one click.
 - Prevent the runtime from being disconnected.
 
-## Mildom
-
-- Remove distracting elements.
-
 ## Blog
 
 - Remove distracting elements.
