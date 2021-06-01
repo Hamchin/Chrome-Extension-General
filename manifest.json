@@ -22,14 +22,14 @@
   "content_scripts": [
     {
       "matches": [
-        "https://discord.com/*"
+        "https://streamkit.discord.com/overlay/voice/*"
       ],
       "js": [
         "vendor/jquery.min.js",
-        "scripts/discord/script.js"
+        "scripts/streamkit/script.js"
       ],
       "css": [
-        "scripts/discord/style.css"
+        "scripts/streamkit/style.css"
       ]
     },
     {

@@ -4,10 +4,10 @@
 
 - Automatically clear downloaded items.
 
-## Discord
+## Discord StreamKit Overlay
 
-- Darken the background of silent users in voice channels.
-- Change the user's background color in voice channels from the right-click menu.
+- Change user icons to Among Us skins.
+- Change the skin color from the color panel.
 
 ## Twitter
 
