@@ -1,5 +1,5 @@
 {
-  "name": "My General Extension",
+  "name": "Chrome Extension",
   "version": "1.0.0",
   "manifest_version": 2,
   "icons": {
@@ -8,10 +8,7 @@
     "128": "icons/icon128.png"
   },
   "permissions": [
-    "tabs",
-    "history",
-    "downloads",
-    "clipboardWrite"
+    "downloads"
   ],
   "background": {
     "scripts": [
@@ -34,49 +31,11 @@
     },
     {
       "matches": [
-        "https://twitter.com/*"
-      ],
-      "js": [
-        "vendor/jquery.min.js",
-        "scripts/twitter/script.js"
-      ]
-    },
-    {
-      "matches": [
         "https://www.google.com/*",
         "https://www.google.co.jp/*"
       ],
       "css": [
         "scripts/google/style.css"
-      ]
-    },
-    {
-      "matches": [
-        "https://drive.google.com/*"
-      ],
-      "js": [
-        "vendor/jquery.min.js",
-        "scripts/drive/script.js"
-      ]
-    },
-    {
-      "matches": [
-        "https://colab.research.google.com/*"
-      ],
-      "js": [
-        "vendor/jquery.min.js",
-        "scripts/colab/script.js"
-      ],
-      "css": [
-        "scripts/colab/style.css"
-      ]
-    },
-    {
-      "matches": [
-        "http://jin115.com/*"
-      ],
-      "css": [
-        "scripts/blog/style.css"
       ]
     }
   ]
